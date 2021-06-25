@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://unpkg.com/vue@next"></script>
+  </head>
+  <body>
+    <main id="app">
+      is Serial supported: {{ isSerialSupported }}
+    </main>
+    <script>
+      const app = Vue.createApp({
+        data() { return {
+          isSerialSupported: 'serial' in navigator
+        } }
+      });
+      const vm = app.mount('#app');
+      console.log(vm.isSerialSupported);
+    </script>
+  </body>
+</html>
