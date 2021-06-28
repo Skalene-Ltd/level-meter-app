@@ -101,6 +101,10 @@
   text-align: center;
 }
 
+.sk-form > :last-child {
+  margin-bottom: 0;
+}
+
 .sk-button {
   display: inline-block;
   font-size: 1rem;
@@ -131,8 +135,7 @@
 }
 
 .sk-form-group {
-  padding-bottom: 1.5rem;
-  margin-bottom: -1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .sk-label {
