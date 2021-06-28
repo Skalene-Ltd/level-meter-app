@@ -13,4 +13,10 @@ const app = Vue.createApp({
     }
   }
 });
+
+app.component('serial-port-item', {
+  props: ['port'],
+  template: `<li>a port</li>`
+});
+
 const vm = app.mount('#app');

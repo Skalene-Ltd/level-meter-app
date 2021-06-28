@@ -25,7 +25,10 @@
             </div>
           </div>
           <ul>
-            <li v-for="port in availablePorts">some port</li>
+            <serial-port-item
+              v-for="port in availablePorts"
+              v-bind:port="port"
+            ></serial-port-item>
           </ul>
         </section>
       </main>
