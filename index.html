@@ -38,52 +38,54 @@
             <h2 class="sk-panel__title">Config</h2>
           </div>
           <div class="sk-panel__body">
-            <form class="sk-form">
-              <div class="sk-form-group">
-                <label class="sk-input__descriptor" for="window_size">window size</label>
-                <div class="sk-input__wrapper">
-                  <input id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
-                  <div class="sk-input__affix" aria-hidden="true">
-                    <span class="sk-input__affix-text">ms</span>
+            <form class="sk-form sk--flex sk--flex-gap sk--flex-wrap sk--flex-space-around-items">
+              <div>
+                <div class="sk-form-group">
+                  <label class="sk-input__descriptor" for="window_size">window size</label>
+                  <div class="sk-input__wrapper">
+                    <input id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
+                    <div class="sk-input__affix" aria-hidden="true">
+                      <span class="sk-input__affix-text">ms</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sk-form-group">
+                  <label class="sk-input__descriptor" for="discharge_time">discharge time</label>
+                  <div class="sk-input__wrapper">
+                    <input id="discharge_time" name="discharge_time" spellcheck="false" class="sk-input sk--width-4rem">
+                    <div class="sk-input__affix" aria-hidden="true">
+                      <span class="sk-input__affix-text">µs</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sk-form-group">
+                  <label class="sk-input__descriptor" for="integration_time">integration time</label>
+                  <div class="sk-input__wrapper">
+                    <input id="integration_time" name="integration_time" spellcheck="false" class="sk-input sk--width-4rem">
+                    <div class="sk-input__affix" aria-hidden="true">
+                      <span class="sk-input__affix-text">µs</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sk-form-group">
+                  <span class="sk-input__descriptor">start trigger</span>
+                  <div class="sk--flex sk--flex-gap">
+                    <div class="sk-radio__wrapper">
+                      <input type="radio" name="start_trigger" id="start_trigger_comms" value="comms" class="sk-radio__input">
+                      <label for="start_trigger_comms">comms</label>
+                    </div>
+                    <div class="sk-radio__wrapper">
+                      <input type="radio" name="start_trigger" id="start_trigger_hardware" value="hardware" class="sk-radio__input">
+                      <label for="start_trigger_hardware">hardware</label>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="sk-form-group">
-                <label class="sk-input__descriptor" for="discharge_time">discharge time</label>
-                <div class="sk-input__wrapper">
-                  <input id="discharge_time" name="discharge_time" spellcheck="false" class="sk-input sk--width-4rem">
-                  <div class="sk-input__affix" aria-hidden="true">
-                    <span class="sk-input__affix-text">µs</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="sk-form-group">
-                <label class="sk-input__descriptor" for="integration_time">integration time</label>
-                <div class="sk-input__wrapper">
-                  <input id="integration_time" name="integration_time" spellcheck="false" class="sk-input sk--width-4rem">
-                  <div class="sk-input__affix" aria-hidden="true">
-                    <span class="sk-input__affix-text">µs</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="sk-form-group">
-                <span class="sk-input__descriptor">start trigger</span>
-                <div class="sk--flex sk--flex-gap">
-                  <div class="sk-radio__wrapper">
-                    <input type="radio" name="start_trigger" id="start_trigger_comms" value="comms" class="sk-radio__input">
-                    <label for="start_trigger_comms">comms</label>
-                  </div>
-                  <div class="sk-radio__wrapper">
-                    <input type="radio" name="start_trigger" id="start_trigger_hardware" value="hardware" class="sk-radio__input">
-                    <label for="start_trigger_hardware">hardware</label>
-                  </div>
-                </div>
-              </div>
-
-              <fieldset>
+              <fieldset class="sk-fieldset">
                 <legend>LEDs</legend>
 
                 <div v-for="i in [1,2,3,4,5,6,7,8]" class="sk-form-group">

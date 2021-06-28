@@ -213,6 +213,16 @@
   padding: 4px;
 }
 
+.sk-fieldset {
+  border: 1px solid var(--primary-shadow);
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.sk-fieldset > :last-child {
+  margin-bottom: 0;
+}
+
 .sk--width-4rem {
   width: 4rem;
 }
@@ -234,12 +244,20 @@
   gap: 1rem;
 }
 
+.sk--flex-wrap {
+  flex-wrap: wrap;
+}
+
 .sk--flex-auto {
   flex: auto;
 }
 
 .sk--flex-space-between-items {
   justify-content: space-between;
+}
+
+.sk--flex-space-around-items {
+  justify-content: space-around;
 }
 
 .sk--flex-vertical-centre-items {
