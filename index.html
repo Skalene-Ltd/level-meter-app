@@ -10,7 +10,7 @@
         <h1 class="sk-header__title">Level Meter</h1>
       </header>
 
-      <main class="sk-app__main sk--centre-panel-xl sk--flex-vertical sk--flex-gap">
+      <main class="sk-app__main sk--centre-panel-xl sk--flex sk--flex-vertical sk--flex-gap">
         <section class="sk-notice sk-notice--problem sk--content" v-if="!isSerialSupported">
           <h2 class="sk-notice__headline">Serial is not supported.</h2>
           <p class="sk-notice__details">This app needs to connect to a serial port, but this browser does not support connecting to serial ports.</p>
@@ -18,8 +18,11 @@
         </section>
 
         <section class="sk-panel">
-          <div class="sk-panel__header">
-            <h2 class="sk-panel__title">Available Ports</h2>
+          <div class="sk-panel__header sk--flex sk--flex-space-between-items sk--flex-vertical-centre-items">
+            <h2 class="sk-panel__title sk--flex-auto">Available Ports</h2>
+            <div>
+              <button class="sk-button sk-button--secondary">connect</button>
+            </div>
           </div>
           <ul>
             <li v-for="port in availablePorts">some port</li>
