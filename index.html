@@ -43,8 +43,8 @@
                 <label class="sk-input__descriptor" for="window_size">window size</label>
                 <div class="sk-input__wrapper">
                   <input id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
-                  <div class="sk-input__suffix" aria-hidden="true">
-                    <span class="sk-input__fix-text">ms</span>
+                  <div class="sk-input__affix" aria-hidden="true">
+                    <span class="sk-input__affix-text">ms</span>
                   </div>
                 </div>
               </div>
@@ -53,8 +53,8 @@
                 <label class="sk-input__descriptor" for="discharge_time">discharge time</label>
                 <div class="sk-input__wrapper">
                   <input id="discharge_time" name="discharge_time" spellcheck="false" class="sk-input sk--width-4rem">
-                  <div class="sk-input__suffix" aria-hidden="true">
-                    <span class="sk-input__fix-text">µs</span>
+                  <div class="sk-input__affix" aria-hidden="true">
+                    <span class="sk-input__affix-text">µs</span>
                   </div>
                 </div>
               </div>
@@ -63,8 +63,8 @@
                 <label class="sk-input__descriptor" for="integration_time">integration time</label>
                 <div class="sk-input__wrapper">
                   <input id="integration_time" name="integration_time" spellcheck="false" class="sk-input sk--width-4rem">
-                  <div class="sk-input__suffix" aria-hidden="true">
-                    <span class="sk-input__fix-text">µs</span>
+                  <div class="sk-input__affix" aria-hidden="true">
+                    <span class="sk-input__affix-text">µs</span>
                   </div>
                 </div>
               </div>
@@ -82,6 +82,22 @@
                   </div>
                 </div>
               </div>
+
+              <fieldset>
+                <legend>LEDs</legend>
+
+                <div v-for="i in [1,2,3,4,5,6,7,8]" class="sk-form-group">
+                  <div class="sk-input__wrapper">
+                    <div class="sk-input__affix">
+                      <label v-bind:for="'led' + i" class="sk-input__affix-text">CH{{ i }}</label>
+                    </div>
+                    <input v-bind:id="'led' + i" v-bind:name="'led' + i" class="sk-input sk--width-4rem">
+                    <div class="sk-input__affix">
+                      <span class="sk-input__affix-text">%</span>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
             </form>
           </div>
         </section>

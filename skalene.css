@@ -180,7 +180,7 @@
   display: flex;
 }
 
-.sk-input__suffix {
+.sk-input__affix {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -208,7 +208,7 @@
   margin-right: 0;
 }
 
-.sk-input__fix-text {
+.sk-input__affix-text {
   font-size: 1rem;
   padding: 4px;
 }
