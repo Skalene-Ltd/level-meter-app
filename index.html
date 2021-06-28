@@ -19,17 +19,18 @@
 
         <section class="sk-panel">
           <div class="sk-panel__header sk--flex sk--flex-space-between-items sk--flex-vertical-centre-items">
-            <h2 class="sk-panel__title sk--flex-auto">Available Ports</h2>
+            <h2 class="sk-panel__title sk--flex-auto">Serial port</h2>
             <div>
               <button v-on:click="connect" class="sk-button sk-button--secondary">connect</button>
             </div>
           </div>
-          <ul>
-            <serial-port-item
-              v-for="port in availablePorts"
-              v-bind:port="port"
-            ></serial-port-item>
-          </ul>
+          <div class="sk-panel__body">
+            <serial-port-details
+              v-if="serialPort"
+              v-bind:port="serialPort"
+            ></serial-port-details>
+            <div v-if="!serialPort" class="sk-panel__empty">No serial port connected</div>
+          </div>
         </section>
       </main>
     </div>

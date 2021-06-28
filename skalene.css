@@ -17,6 +17,7 @@
 	--danger-fg: #F5E6E7;
 	--danger-shadow: #5e030a;
 	--danger-hover-bg: #8e0510;
+  --blue: #2e83dd;
 }
 
 .sk-body {
@@ -81,6 +82,19 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 400;
+}
+
+.sk-panel__body {
+  padding: 1rem;
+}
+
+.sk-panel__empty {
+  display: block;
+  padding: 1rem;
+  border: 4px dotted var(--secondary-bg);
+  color: var(--secondary-fg);
+  border-radius: 1rem;
+  text-align: center;
 }
 
 .sk-button {
