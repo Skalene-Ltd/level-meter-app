@@ -2,8 +2,8 @@
 	--primary-bg: #fff;
 	--primary-fg: #000;
 	--primary-shadow: rgba(0, 0, 0, 0.2);
-	--secondary-bg: #eee;
-	--secondary-fg: #444;
+	--secondary-bg: #eeedec;
+	--secondary-fg: #4b4540;
 	--secondary-shadow: rgba(0, 0, 0, 0.05);
 	--secondary-hover-bg: #ddd;
 	--secondary-hover-fg: #222;
@@ -25,37 +25,37 @@
 }
 
 .sk-header {
-  padding: 0.5rem;
+  padding: 1rem;
   background: darkslateblue;
   color: white;
 }
 
 .sk-header__title {
   margin: 0;
-  padding: 0.5rem;
   font-size: 2rem;
 }
 
 .sk-app__main {
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
 .sk-notice {
-  padding: 0.5rem;
+  padding: 1rem;
   max-width: 40rem;
+}
+
+.sk-notice :last-child {
+  margin-bottom: 0;
 }
 
 .sk-notice__headline {
   margin: 0;
-  padding: 0.5rem;
   font-size: 2rem;
   font-weight: 500;
 }
 
 .sk-notice__details {
   font-size: 1rem;
-  margin: 0.2rem;
-  padding: 0.3rem
 }
 
 .sk-notice--problem {
@@ -63,11 +63,36 @@
   color: var(--problem-fg);
 }
 
+.sk-panel {
+  border: 1px solid var(--primary-shadow);
+  border-radius: 6px;
+}
+
+.sk-panel__header {
+  margin: -1px -1px 0;
+  border: 1px solid var(--primary-shadow);
+  border-radius: 6px 6px 0 0;
+  background: var(--secondary-bg);
+  color: var(--secondary-fg);
+}
+
+.sk-panel__title {
+  margin: 0;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
 .sk--centre-panel-xl {
   margin: 0 auto;
   max-width: 80rem;
 }
 
-.sk--content {
-  margin: 0.5rem;
+.sk--flex-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.sk--flex-gap {
+  gap: 1rem;
 }

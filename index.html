@@ -9,18 +9,29 @@
       <header class="sk-header">
         <h1 class="sk-header__title">Level Meter</h1>
       </header>
-      <main class="sk-app__main sk--centre-panel-xl">
+
+      <main class="sk-app__main sk--centre-panel-xl sk--flex-vertical sk--flex-gap">
         <section class="sk-notice sk-notice--problem sk--content" v-if="!isSerialSupported">
           <h2 class="sk-notice__headline">Serial is not supported.</h2>
           <p class="sk-notice__details">This app needs to connect to a serial port, but this browser does not support connecting to serial ports.</p>
           <p class="sk-notice__details">Use a browser that supports serial connections. For example, the latest Microsoft Edge.</p>
+        </section>
+
+        <section class="sk-panel">
+          <div class="sk-panel__header">
+            <h2 class="sk-panel__title">Available Ports</h2>
+          </div>
+          <ul>
+            <li v-for="port in availablePorts">some port</li>
+          </ul>
         </section>
       </main>
     </div>
     <script>
       const app = Vue.createApp({
         data() { return {
-          isSerialSupported: 'serial' in navigator
+          isSerialSupported: 'serial' in navigator,
+          availablePorts: []
         } }
       });
       const vm = app.mount('#app');
