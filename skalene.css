@@ -138,7 +138,22 @@
   margin-bottom: 1.5rem;
 }
 
-.sk-label {
+.sk-radio__wrapper {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 1.2rem;
+  line-height: 2rem;
+}
+
+.sk-radio__input {
+  margin: 0;
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+.sk-input__descriptor {
+  color: var(--primary-fg);
   display: inline-block;
   height: 1.5rem;
   font-size: 1rem;
