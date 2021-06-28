@@ -32,6 +32,25 @@
             <div v-if="!serialPort" class="sk-panel__empty">No serial port connected</div>
           </div>
         </section>
+
+        <section class="sk-panel">
+          <div class="sk-panel__header">
+            <h2 class="sk-panel__title">Config</h2>
+          </div>
+          <div class="sk-panel__body">
+            <form>
+              <div class="sk-form-group">
+                <label class="sk-label" for="window_size">window size</label>
+                <div class="sk-input__wrapper">
+                  <input id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
+                  <div class="sk-input__suffix" aria-hidden="true">
+                    <span class="sk-input__fix-text">ms</span>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
       </main>
     </div>
     <script src="app.js"></script>
