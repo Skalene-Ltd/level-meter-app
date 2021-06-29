@@ -1,7 +1,8 @@
 const app = Vue.createApp({
   data() { return {
     isSerialSupported: 'serial' in navigator,
-    serialPort: null
+    serialPort: null,
+    bootloaderFile: null
   } },
   methods: {
     async connect() {
