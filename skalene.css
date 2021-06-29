@@ -15,6 +15,9 @@
   --primary-interaction-bg: #2e83dd;
   --primary-interaction-fg: #fff;
 
+  --interaction-field-bg: #c0daf5;
+  --interaction-field-fg: #2e83dd;
+
 	--focus-bg: #ff650c;
 	--focus-fg: #fff;
 
@@ -268,6 +271,14 @@
 
 .sk-fieldset > :last-child {
   margin-bottom: 0;
+}
+
+.sk-dropzone {
+  background: var(--interaction-field-bg);
+  color: var(--interaction-field-fg);
+  padding: 3rem 1rem;
+  text-align: center;
+  border-radius: 6px;
 }
 
 .sk--width-4rem {

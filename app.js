@@ -8,6 +8,23 @@ const app = Vue.createApp({
     async connect() {
       const Serial = navigator.serial;
       this.serialPort = await Serial.requestPort();
+    },
+    handleDrop(e) {
+      const items = e.dataTransfer.items;
+
+      if (items.length !== 1) {
+        alert('Drop one file into the drop zone.');
+        throw new Error('incorrect number of files');
+      }
+
+      const droppedItem = items[0];
+
+      if (droppedItem.kind !== 'file') {
+        alert('Drop a file into the drop zone.');
+        throw new Error('incorrect item type');
+      }
+
+      this.bootloaderFile = droppedItem.getAsFile();
     }
   }
 });

@@ -41,7 +41,9 @@
             </div>
           </div>
           <div class="sk-panel__body">
-            <div v-if="!bootloaderFile" class="sk-panel__empty">No file selected</div>
+            <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone">
+              Drag and drop a file here
+            </div>
           </div>
         </section>
 
