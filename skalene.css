@@ -289,6 +289,11 @@
   width: 4rem;
 }
 
+.sk--centre-panel-l {
+  margin: 0 auto;
+  max-width: 60rem;
+}
+
 .sk--centre-panel-xl {
   margin: 0 auto;
   max-width: 80rem;
