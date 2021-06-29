@@ -25,6 +25,14 @@ const app = Vue.createApp({
       }
 
       this.bootloaderFile = droppedItem.getAsFile();
+    },
+    async program() {
+      const device = 'PIC32MZ';
+      const size = 16384;
+      const address = 0x9D000000;
+      const blob = await this.bootloaderFile.arrayBuffer();
+      console.log(blob);
+      console.log(blob.byteLength);
     }
   }
 });
