@@ -163,7 +163,8 @@
 
 .sk-button:disabled {
   cursor: not-allowed;
-  text-decoration: line-through 2px;
+  text-decoration-line: line-through;
+  text-decoration-thickness: 2px;
   opacity: 0.5;
 }
 
