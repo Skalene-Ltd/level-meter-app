@@ -2,21 +2,30 @@
 	--primary-bg: #fff;
 	--primary-fg: #000;
 	--primary-shadow: rgba(0, 0, 0, 0.2);
+
+  --header-bg: #000;
+  --header-fg: #fff;
+
 	--secondary-bg: #eeedec;
 	--secondary-fg: #4b4540;
 	--secondary-shadow: rgba(0, 0, 0, 0.05);
 	--secondary-hover-bg: #ddd;
 	--secondary-hover-fg: #222;
+
 	--focus-bg: #ff650c;
 	--focus-fg: #fff;
+
 	--success-bg: #129e06;
 	--success-fg: #fff;
+
 	--problem-bg: #9e0612;
 	--problem-fg: #F5E6E7;
+
 	--danger-bg: #9e0612;
 	--danger-fg: #F5E6E7;
 	--danger-shadow: #5e030a;
 	--danger-hover-bg: #8e0510;
+
   --blue: #2e83dd;
 }
 
@@ -31,8 +40,8 @@
 
 .sk-header {
   padding: 1rem;
-  background: darkslateblue;
-  color: white;
+  background: var(--header-bg);
+  color: var(--header-fg);
 }
 
 .sk-header__title {
