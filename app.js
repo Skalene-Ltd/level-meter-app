@@ -52,4 +52,12 @@ app.component('serial-port-details', {
   beforeUpdate() { this.getInfo(); }
 });
 
+app.component('file-details', {
+  props: ['file'],
+  template: `<div class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
+    <div aria-hidden="true" style="font-size:3rem">📄</div>
+    <div class="sk--flex-auto">{{ file.name }}</div>
+  </div>`
+});
+
 const vm = app.mount('#app');

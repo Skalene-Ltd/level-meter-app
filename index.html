@@ -44,6 +44,7 @@
             <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone">
               Drag and drop a file here
             </div>
+            <file-details v-if="bootloaderFile" v-bind:file="bootloaderFile"></file-details>
           </div>
         </section>
 
