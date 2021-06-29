@@ -12,6 +12,9 @@
 	--secondary-hover-bg: #ddd;
 	--secondary-hover-fg: #222;
 
+  --primary-interaction-bg: #2e83dd;
+  --primary-interaction-fg: #fff;
+
 	--focus-bg: #ff650c;
 	--focus-fg: #fff;
 
@@ -25,8 +28,6 @@
 	--danger-fg: #F5E6E7;
 	--danger-shadow: #5e030a;
 	--danger-hover-bg: #8e0510;
-
-  --blue: #2e83dd;
 }
 
 *, ::before, ::after {
@@ -127,13 +128,19 @@
 }
 
 .sk-button:focus {
-  outline: 2px solid var(--focus-bg);
-  border-color: var(--focus-bg);
+  outline: 3px solid var(--focus-bg);
+  border-color: transparent;
   z-index: 1;
 }
 
 .sk-button:active {
   filter: brightness(0.8);
+}
+
+.sk-button--primary {
+  color: var(--primary-interaction-fg);
+  background: var(--primary-interaction-bg);
+  border-color: var(--primary-interaction-bg);
 }
 
 .sk-button--secondary {
