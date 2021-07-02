@@ -8,6 +8,12 @@ const app = Vue.createApp({
     async connect() {
       const Serial = navigator.serial;
       this.serialPort = await Serial.requestPort();
+      try {
+        await this.serialPort.open({ baudRate: 115200, bufferSize: 65536 });
+      } catch (e) {
+        this.serialPort = null;
+        console.error(e);
+      }
     },
     handleDrop(e) {
       const items = e.dataTransfer.items;
