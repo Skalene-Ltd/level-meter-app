@@ -1,3 +1,48 @@
+const UNLOCK_COMMAND = 0xA0;
+const DATA_COMMAND = 0xA1;
+const VERIFY_COMMAND = 0xA2;
+const ERASE_SIZE = 16384;
+const ADDRESS = 0x9D000000;
+
+const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
+const crc32Tab = Uint32Array.from([...Array(256).keys()])
+  .map(f)
+  .map(f)
+  .map(f)
+  .map(f)
+  .map(f)
+  .map(f)
+  .map(f)
+  .map(f);
+
+const crc32 = (data, tab) => {
+  var crc = 0xffffffff;
+  for (d of data) {
+    crc = tab[(crc ^ d) & 0xff] ^ (crc >>> 8);
+  }
+  return crc;
+};
+
+const intToArrayOfBytes = i => Array.from([
+  (i >>> 0) & 0xff,
+  (i >>> 8) & 0xff,
+  (i >>> 16) & 0xff,
+  (i >>> 24) & 0xff
+]);
+
+const sendCommand = (writable, command, data) => {
+  const GUARD = intToArrayOfBytes(0x5048434D);
+  const bodyLength = intToArrayOfBytes(data.length);
+  const payload = Uint8Array.from(Array.prototype.concat(
+    GUARD,
+    bodyLength,
+    command,
+    data
+  )).buffer;
+
+  return writable.write(payload);
+};
+
 const app = Vue.createApp({
   data() { return {
     isSerialSupported: 'serial' in navigator,
