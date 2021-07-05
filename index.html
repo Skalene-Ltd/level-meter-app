@@ -3,6 +3,14 @@
   <head>
     <link href="/skalene.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@next"></script>
+    <style>
+      .app-collapsible__content {
+        display: none;
+      }
+      .app-collapsible__toggle:checked ~ .app-collapsible__content {
+        display: initial;
+      }
+    </style>
   </head>
   <body class="sk-body">
     <div id="app">
@@ -49,84 +57,90 @@
           </div>
         </section>
 
-        <section class="sk-panel">
-          <div class="sk-panel__header sk--flex-vertical-centre-items">
-            <h2 class="sk-panel__title sk--flex-auto">Config</h2>
-            <div class="sk-button-group">
-              <button class="sk-button sk-button--secondary">get config</button>
-              <button class="sk-button sk-button--secondary">set config</button>
-            </div>
-            <div class="sk-button-group">
-              <button class="sk-button sk-button--secondary">load file</button>
-              <button class="sk-button sk-button--secondary">save file</button>
-            </div>
-          </div>
-          <div class="sk-panel__body">
-            <form class="sk-form sk--flex sk--flex-gap sk--flex-wrap sk--flex-space-around-items">
-              <div>
-                <div class="sk-form-group">
-                  <label class="sk-input__descriptor" for="window_size">window size</label>
-                  <div class="sk-input__wrapper">
-                    <input id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
-                    <div class="sk-input__affix" aria-hidden="true">
-                      <span class="sk-input__affix-text">ms</span>
-                    </div>
-                  </div>
+        <div class="app-collapsible__wrapper">
+          <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
+          <label for="show_advanced">show advanced</label>
+          <div class="app-collapsible__content">
+            <section class="sk-panel">
+              <div class="sk-panel__header sk--flex-vertical-centre-items">
+                <h2 class="sk-panel__title sk--flex-auto">Config</h2>
+                <div class="sk-button-group">
+                  <button class="sk-button sk-button--secondary">get config</button>
+                  <button class="sk-button sk-button--secondary">set config</button>
                 </div>
-
-                <div class="sk-form-group">
-                  <label class="sk-input__descriptor" for="discharge_time">discharge time</label>
-                  <div class="sk-input__wrapper">
-                    <input id="discharge_time" name="discharge_time" spellcheck="false" class="sk-input sk--width-4rem">
-                    <div class="sk-input__affix" aria-hidden="true">
-                      <span class="sk-input__affix-text">µs</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sk-form-group">
-                  <label class="sk-input__descriptor" for="integration_time">integration time</label>
-                  <div class="sk-input__wrapper">
-                    <input id="integration_time" name="integration_time" spellcheck="false" class="sk-input sk--width-4rem">
-                    <div class="sk-input__affix" aria-hidden="true">
-                      <span class="sk-input__affix-text">µs</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="sk-form-group">
-                  <span class="sk-input__descriptor">start trigger</span>
-                  <div class="sk--flex sk--flex-gap">
-                    <div class="sk-radio__wrapper">
-                      <input type="radio" name="start_trigger" id="start_trigger_comms" value="comms" class="sk-radio__input">
-                      <label for="start_trigger_comms">comms</label>
-                    </div>
-                    <div class="sk-radio__wrapper">
-                      <input type="radio" name="start_trigger" id="start_trigger_hardware" value="hardware" class="sk-radio__input">
-                      <label for="start_trigger_hardware">hardware</label>
-                    </div>
-                  </div>
+                <div class="sk-button-group">
+                  <button class="sk-button sk-button--secondary">load file</button>
+                  <button class="sk-button sk-button--secondary">save file</button>
                 </div>
               </div>
-
-              <fieldset class="sk-fieldset">
-                <legend>LEDs</legend>
-
-                <div v-for="i in [1,2,3,4,5,6,7,8]" class="sk-form-group">
-                  <div class="sk-input__wrapper">
-                    <div class="sk-input__affix">
-                      <label v-bind:for="'led' + i" class="sk-input__affix-text">CH{{ i }}</label>
+              <div class="sk-panel__body">
+                <form class="sk-form sk--flex sk--flex-gap sk--flex-wrap sk--flex-space-around-items">
+                  <div>
+                    <div class="sk-form-group">
+                      <label class="sk-input__descriptor" for="window_size">window size</label>
+                      <div class="sk-input__wrapper">
+                        <input id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
+                        <div class="sk-input__affix" aria-hidden="true">
+                          <span class="sk-input__affix-text">ms</span>
+                        </div>
+                      </div>
                     </div>
-                    <input v-bind:id="'led' + i" v-bind:name="'led' + i" class="sk-input sk--width-4rem">
-                    <div class="sk-input__affix">
-                      <span class="sk-input__affix-text">%</span>
+    
+                    <div class="sk-form-group">
+                      <label class="sk-input__descriptor" for="discharge_time">discharge time</label>
+                      <div class="sk-input__wrapper">
+                        <input id="discharge_time" name="discharge_time" spellcheck="false" class="sk-input sk--width-4rem">
+                        <div class="sk-input__affix" aria-hidden="true">
+                          <span class="sk-input__affix-text">µs</span>
+                        </div>
+                      </div>
+                    </div>
+    
+                    <div class="sk-form-group">
+                      <label class="sk-input__descriptor" for="integration_time">integration time</label>
+                      <div class="sk-input__wrapper">
+                        <input id="integration_time" name="integration_time" spellcheck="false" class="sk-input sk--width-4rem">
+                        <div class="sk-input__affix" aria-hidden="true">
+                          <span class="sk-input__affix-text">µs</span>
+                        </div>
+                      </div>
+                    </div>
+    
+                    <div class="sk-form-group">
+                      <span class="sk-input__descriptor">start trigger</span>
+                      <div class="sk--flex sk--flex-gap">
+                        <div class="sk-radio__wrapper">
+                          <input type="radio" name="start_trigger" id="start_trigger_comms" value="comms" class="sk-radio__input">
+                          <label for="start_trigger_comms">comms</label>
+                        </div>
+                        <div class="sk-radio__wrapper">
+                          <input type="radio" name="start_trigger" id="start_trigger_hardware" value="hardware" class="sk-radio__input">
+                          <label for="start_trigger_hardware">hardware</label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </fieldset>
-            </form>
+    
+                  <fieldset class="sk-fieldset">
+                    <legend>LEDs</legend>
+    
+                    <div v-for="i in [1,2,3,4,5,6,7,8]" class="sk-form-group">
+                      <div class="sk-input__wrapper">
+                        <div class="sk-input__affix">
+                          <label v-bind:for="'led' + i" class="sk-input__affix-text">CH{{ i }}</label>
+                        </div>
+                        <input v-bind:id="'led' + i" v-bind:name="'led' + i" class="sk-input sk--width-4rem">
+                        <div class="sk-input__affix">
+                          <span class="sk-input__affix-text">%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+            </section>
           </div>
-        </section>
+        </div>
       </main>
     </div>
     <script src="app.js"></script>
