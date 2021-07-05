@@ -51,6 +51,19 @@ const sendCommand = async (writer, command, bodyBuffers) => {
   }
 };
 
+const readUnwrapOrTimeout = (reader, timeout) => Promise.race([
+  reader.read().then(result => {
+    if (result.done) {
+      throw new Error('stream closed');
+    } else {
+      return result.value;
+    }
+  }),
+  new Promise((_, reject) => {
+    setTimeout(() => reject("read timeout"), timeout)
+  })
+]);
+
 const app = Vue.createApp({
   data() { return {
     isSerialSupported: 'serial' in navigator,
@@ -90,6 +103,8 @@ const app = Vue.createApp({
       console.log("got file of length: " + bootloaderFileBuffer.byteLength);
 
       const writer = this.serialPort.writable.getWriter();
+      const reader = this.serialPort.readable.getReader();
+
       console.log("unlocking...");
 
       await sendCommand(writer, UNLOCK_COMMAND, [
@@ -97,7 +112,13 @@ const app = Vue.createApp({
         intToBuffer(16384)
       ]);
 
+      console.log("sent unlock command");
+
+      const unlockResponse = await readUnwrapOrTimeout(reader, 1000);
+      console.log(unlockResponse);
+
       writer.releaseLock();
+      reader.releaseLock();
     }
   }
 });
