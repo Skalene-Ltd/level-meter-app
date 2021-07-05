@@ -1,8 +1,11 @@
 const UNLOCK_COMMAND = 0xA0;
 const DATA_COMMAND = 0xA1;
 const VERIFY_COMMAND = 0xA2;
+const SWAP_COMMAND = 0xA4;
 const ERASE_SIZE = 16384;
 const ADDRESS = 0x9D000000;
+const OKAY_RESPONSE = 0x50;
+const CRC_OKAY = 0x53;
 
 const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
 const crc32Tab = Uint32Array.from([...Array(256).keys()])
@@ -38,7 +41,7 @@ const sendCommand = async (writer, command, bodyBuffers) => {
     .reduce((accumulator, length) => accumulator + length);
   const lengthBuffer = intToBuffer(bodyLength);
 
-  const commandBuffer = intToBuffer(command);
+  const commandBuffer = Uint8Array.from([command]);
 
   await writer.write(guardBuffer);
 
@@ -55,9 +58,13 @@ const readUnwrapOrTimeout = (reader, timeout) => Promise.race([
   reader.read().then(result => {
     if (result.done) {
       throw new Error('stream closed');
-    } else {
-      return result.value;
     }
+    
+    if (result.value.byteLength !== 1) {
+      console.warn(`response of unexpected length. response: ${result.value}`);
+    }
+
+    return result.value[0];
   }),
   new Promise((_, reject) => {
     setTimeout(() => reject("read timeout"), timeout)
@@ -100,22 +107,62 @@ const app = Vue.createApp({
     },
     async program() {
       const bootloaderFileBuffer = await this.bootloaderFile.arrayBuffer();
-      console.log("got file of length: " + bootloaderFileBuffer.byteLength);
+      const fileLength = bootloaderFileBuffer.byteLength;
+      console.log("got file of length: " + fileLength);
+
+      const bootloaderPayloadArray = new Uint8Array(
+        Math.ceil(fileLength / ERASE_SIZE) * ERASE_SIZE
+      ).fill(0xff);
+      bootloaderPayloadArray.set(bootloaderFileBuffer, 0);
+      const bootloaderPayloadBuffer = bootloaderPayloadArray.buffer;
+      console.log('created payload buffer of length: ' + bootloaderPayloadBuffer.byteLength);
 
       const writer = this.serialPort.writable.getWriter();
       const reader = this.serialPort.readable.getReader();
 
-      console.log("unlocking...");
-
+      console.log('unlocking');
       await sendCommand(writer, UNLOCK_COMMAND, [
         intToBuffer(ADDRESS),
         intToBuffer(16384)
       ]);
+      const unlockResponse = await readUnwrapOrTimeout(reader, 10000);
+      if (unlockResponse !== OKAY_RESPONSE) {
+        throw new Error(`unlock: invalid response code: ${unlockResponse[0]}`);
+      }
+      console.log('unlocking ✅');
 
-      console.log("sent unlock command");
+      console.log('programming');
+      const numberOfBlocks = Math.ceil(bootloaderPayloadBuffer.byteLength / ERASE_SIZE);
+      const indices = [...Array(numberOfBlocks).keys()].map(i => i * ERASE_SIZE);
+      for (const index of indices) {
+        const block = bootloaderPayloadBuffer.slice(index, index + ERASE_SIZE);
+        await sendCommand(writer, DATA_COMMAND, [
+          intToBuffer(ADDRESS + index),
+          block
+        ]);
+        const blockResponse = await readUnwrapOrTimeout(reader, 10000);
+        if (blockResponse !== OKAY_RESPONSE) {
+          throw new Error(`block write: invalid response code: ${blockResponse}`);
+        }
+      }
+      console.log('programming ✅');
 
-      const unlockResponse = await readUnwrapOrTimeout(reader, 1000);
-      console.log(unlockResponse);
+      console.log('verifying');
+      const crc = crc32(bootloaderPayloadArray, crc32Tab);
+      await sendCommand(writer, VERIFY_COMMAND, [intToBuffer(crc)]);
+      const verificationResponse = await readUnwrapOrTimeout(reader, 10000);
+      if (verificationResponse !== CRC_OKAY) {
+        throw new Error(`verification failed: response code ${verificationResponse}`);
+      }
+      console.log('verified ✅');
+
+      console.log('swapping bank and rebooting');
+      await sendCommand(writer, SWAP_COMMAND, [new ArrayBuffer(16)]);
+      const swapResponse = await readUnwrapOrTimeout(reader, 10000);
+      if (swapResponse !== OKAY_RESPONSE) {
+        throw new Error(`swap and reboot failed: response code ${swapResponse}`);
+      }
+      console.log('swap and reboot ✅');
 
       writer.releaseLock();
       reader.releaseLock();
