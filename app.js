@@ -33,7 +33,9 @@ const intToBuffer = i => Uint8Array.from([
   (i >>> 24) & 0xff
 ]).buffer;
 
-const sendCommand = async (writer, command, bodyBuffers) => {
+const sendCommand = async (writable, command, bodyBuffers) => {
+  const writer = writable.getWriter();
+
   const guardBuffer = intToBuffer(0x5048434D);
 
   const bodyLength = bodyBuffers
@@ -43,33 +45,42 @@ const sendCommand = async (writer, command, bodyBuffers) => {
 
   const commandBuffer = Uint8Array.from([command]);
 
-  await writer.write(guardBuffer);
-
-  await writer.write(lengthBuffer);
-
-  await writer.write(commandBuffer);
-
-  for (const buf of bodyBuffers) {
-    await writer.write(buf);
+  try {
+    await writer.write(guardBuffer);
+  
+    await writer.write(lengthBuffer);
+  
+    await writer.write(commandBuffer);
+  
+    for (const buf of bodyBuffers) {
+      await writer.write(buf);
+    }
+  } finally {
+    writer.releaseLock();
   }
 };
 
-const readUnwrapOrTimeout = (reader, timeout) => Promise.race([
-  reader.read().then(result => {
-    if (result.done) {
-      throw new Error('stream closed');
-    }
-    
-    if (result.value.byteLength !== 1) {
-      console.warn(`response of unexpected length. response: ${result.value}`);
-    }
+const readUnwrapOrTimeout = (readable, timeout) => {
+  const reader = readable.getReader();
+  return Promise.race([
+    reader.read().then(result => {
+      if (result.done) {
+        throw new Error('stream closed');
+      }
+      
+      if (result.value.byteLength !== 1) {
+        console.warn(`response of unexpected length. response: ${result.value}`);
+      }
 
-    return result.value[0];
-  }),
-  new Promise((_, reject) => {
-    setTimeout(() => reject("read timeout"), timeout)
-  })
-]);
+      return result.value[0];
+    }),
+    new Promise((_, reject) => {
+      setTimeout(() => reject("read timeout"), timeout)
+    })
+  ]).finally(() => {
+    reader.releaseLock();
+  });
+};
 
 const app = Vue.createApp({
   data() { return {
@@ -117,15 +128,15 @@ const app = Vue.createApp({
       const bootloaderPayloadBuffer = bootloaderPayloadArray.buffer;
       console.log('created payload buffer of length: ' + bootloaderPayloadBuffer.byteLength);
 
-      const writer = this.serialPort.writable.getWriter();
-      const reader = this.serialPort.readable.getReader();
+      const writable = this.serialPort.writable;
+      const readable = this.serialPort.readable;
 
       console.log('unlocking');
-      await sendCommand(writer, UNLOCK_COMMAND, [
+      await sendCommand(writable, UNLOCK_COMMAND, [
         intToBuffer(ADDRESS),
         intToBuffer(16384)
       ]);
-      const unlockResponse = await readUnwrapOrTimeout(reader, 10000);
+      const unlockResponse = await readUnwrapOrTimeout(readable, 10000);
       if (unlockResponse !== OKAY_RESPONSE) {
         throw new Error(`unlock: invalid response code: ${unlockResponse[0]}`);
       }
@@ -136,11 +147,11 @@ const app = Vue.createApp({
       const indices = [...Array(numberOfBlocks).keys()].map(i => i * ERASE_SIZE);
       for (const index of indices) {
         const block = bootloaderPayloadBuffer.slice(index, index + ERASE_SIZE);
-        await sendCommand(writer, DATA_COMMAND, [
+        await sendCommand(writable, DATA_COMMAND, [
           intToBuffer(ADDRESS + index),
           block
         ]);
-        const blockResponse = await readUnwrapOrTimeout(reader, 10000);
+        const blockResponse = await readUnwrapOrTimeout(readable, 10000);
         if (blockResponse !== OKAY_RESPONSE) {
           throw new Error(`block write: invalid response code: ${blockResponse}`);
         }
@@ -149,23 +160,20 @@ const app = Vue.createApp({
 
       console.log('verifying');
       const crc = crc32(bootloaderPayloadArray, crc32Tab);
-      await sendCommand(writer, VERIFY_COMMAND, [intToBuffer(crc)]);
-      const verificationResponse = await readUnwrapOrTimeout(reader, 10000);
+      await sendCommand(writable, VERIFY_COMMAND, [intToBuffer(crc)]);
+      const verificationResponse = await readUnwrapOrTimeout(readable, 10000);
       if (verificationResponse !== CRC_OKAY) {
         throw new Error(`verification failed: response code ${verificationResponse}`);
       }
       console.log('verified ✅');
 
       console.log('swapping bank and rebooting');
-      await sendCommand(writer, SWAP_COMMAND, [new ArrayBuffer(16)]);
-      const swapResponse = await readUnwrapOrTimeout(reader, 10000);
+      await sendCommand(writable, SWAP_COMMAND, [new ArrayBuffer(16)]);
+      const swapResponse = await readUnwrapOrTimeout(readable, 10000);
       if (swapResponse !== OKAY_RESPONSE) {
         throw new Error(`swap and reboot failed: response code ${swapResponse}`);
       }
       console.log('swap and reboot ✅');
-
-      writer.releaseLock();
-      reader.releaseLock();
     }
   }
 });
