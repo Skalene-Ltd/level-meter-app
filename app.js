@@ -23,24 +23,32 @@ const crc32 = (data, tab) => {
   return crc;
 };
 
-const intToArrayOfBytes = i => Array.from([
+const intToBuffer = i => Uint8Array.from([
   (i >>> 0) & 0xff,
   (i >>> 8) & 0xff,
   (i >>> 16) & 0xff,
   (i >>> 24) & 0xff
-]);
+]).buffer;
 
-const sendCommand = (writable, command, data) => {
-  const GUARD = intToArrayOfBytes(0x5048434D);
-  const bodyLength = intToArrayOfBytes(data.length);
-  const payload = Uint8Array.from(Array.prototype.concat(
-    GUARD,
-    bodyLength,
-    command,
-    data
-  )).buffer;
+const sendCommand = async (writer, command, bodyBuffers) => {
+  const guardBuffer = intToBuffer(0x5048434D);
 
-  return writable.write(payload);
+  const bodyLength = bodyBuffers
+    .map(buf => buf.byteLength)
+    .reduce((accumulator, length) => accumulator + length);
+  const lengthBuffer = intToBuffer(bodyLength);
+
+  const commandBuffer = intToBuffer(command);
+
+  await writer.write(guardBuffer);
+
+  await writer.write(lengthBuffer);
+
+  await writer.write(commandBuffer);
+
+  for (const buf of bodyBuffers) {
+    await writer.write(buf);
+  }
 };
 
 const app = Vue.createApp({
@@ -79,8 +87,17 @@ const app = Vue.createApp({
     },
     async program() {
       const bootloaderFileBuffer = await this.bootloaderFile.arrayBuffer();
-      console.log(bootloaderFileBuffer);
-      console.log(bootloaderFileBuffer.byteLength);
+      console.log("got file of length: " + bootloaderFileBuffer.byteLength);
+
+      const writer = this.serialPort.writable.getWriter();
+      console.log("unlocking...");
+
+      await sendCommand(writer, UNLOCK_COMMAND, [
+        intToBuffer(ADDRESS),
+        intToBuffer(16384)
+      ]);
+
+      writer.releaseLock();
     }
   }
 });
