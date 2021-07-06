@@ -119,14 +119,13 @@ const app = Vue.createApp({
     async program() {
       const bootloaderFileBuffer = await this.bootloaderFile.arrayBuffer();
       const fileLength = bootloaderFileBuffer.byteLength;
-      console.log("got file of length: " + fileLength);
+      const bootloaderFileArray = new Uint8Array(bootloaderFileBuffer);
 
       const bootloaderPayloadArray = new Uint8Array(
         Math.ceil(fileLength / ERASE_SIZE) * ERASE_SIZE
       ).fill(0xff);
-      bootloaderPayloadArray.set(bootloaderFileBuffer, 0);
+      bootloaderPayloadArray.set(bootloaderFileArray, 0);
       const bootloaderPayloadBuffer = bootloaderPayloadArray.buffer;
-      console.log('created payload buffer of length: ' + bootloaderPayloadBuffer.byteLength);
 
       const writable = this.serialPort.writable;
       const readable = this.serialPort.readable;
