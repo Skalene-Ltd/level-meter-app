@@ -6,14 +6,20 @@
   --header-bg: #181b1f;
   --header-fg: #fbfcfd;
 
-	--secondary-bg: #eeedec;
+	--secondary-bg: #f3f2f1;
 	--secondary-fg: #4b4540;
 	--secondary-shadow: rgba(0, 0, 0, 0.05);
-	--secondary-hover-bg: #ddd;
-	--secondary-hover-fg: #222;
+
+  --secondary-interaction-bg: #fdfcfb;
+  --secondary-interaction-fg: #4b4540;
+	--secondary-interaction-hover-bg: #eeeceb;
+	--secondary-interaction-hover-fg: #211e1c;
+  --secondary-interaction-shadow: rgba(0,0,0,0.2);
 
   --primary-interaction-bg: #2e83dd;
-  --primary-interaction-fg: #fff;
+  --primary-interaction-fg: #edf4fc;
+  --primary-interaction-hover-bg: #2276d0;
+  --primary-interaction-hover-fg: #fff;
 
   --interaction-field-bg: #c0daf5;
   --interaction-field-fg: #2e83dd;
@@ -152,14 +158,21 @@
   border-color: var(--primary-interaction-bg);
 }
 
+.sk-button--primary:hover {
+  color: var(--primary-interaction-hover-fg);
+  background: var(--primary-interaction-hover-bg);
+  border-color: var(--primary-interaction-hover-bg);
+}
+
 .sk-button--secondary {
-  color: var(--secondary-fg);
-  background: var(--secondary-bg);
+  color: var(--secondary-interaction-fg);
+  background: var(--secondary-interaction-bg);
+  border-color: var(--secondary-interaction-shadow);
 }
 
 .sk-button--secondary:hover {
-  color: var(--secondary-hover-fg);
-  background: var(--secondary-hover-bg);
+  color: var(--secondary-interaction-hover-fg);
+  background: var(--secondary-interaction-hover-bg);
 }
 
 .sk-button:disabled {
@@ -187,8 +200,12 @@
   margin-right: 0;
 }
 
-.sk-button-group > .sk-button:focus {
+.sk-button-group > .sk-button:hover {
   z-index: 1;
+}
+
+.sk-button-group > .sk-button:focus {
+  z-index: 2;
 }
 
 .sk-form-group {
