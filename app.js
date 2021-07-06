@@ -3,7 +3,7 @@ const DATA_COMMAND = 0xA1;
 const VERIFY_COMMAND = 0xA2;
 const SWAP_COMMAND = 0xA4;
 const ERASE_SIZE = 16384;
-const ADDRESS = 0x9D000000;
+const ADDRESS = 0x9D100000;
 const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
