@@ -307,6 +307,13 @@
   border-radius: 6px;
 }
 
+.sk-code {
+  background: var(--secondary-shadow);
+  font-family: monospace;
+  border-radius: 4px;
+  padding: .2em .4em;
+}
+
 .sk--width-4rem {
   width: 4rem;
 }
