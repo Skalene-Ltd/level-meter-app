@@ -51,6 +51,7 @@
 .sk-header__title {
   margin: 0;
   font-size: 2rem;
+  line-height: 2rem;
 }
 
 .sk-app__main {
