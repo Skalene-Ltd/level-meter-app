@@ -73,7 +73,34 @@ const intToBuffer = i => Uint8Array.from([
   (i >>> 24) & 0xff
 ]).buffer;
 
-const sendCommand = async (writable, command, bodyBuffers) => {
+const sendSkaleneCommand = async (writable, bodyText) => {
+  const writer = writable.getWriter();
+  const encoder = new TextEncoder();
+
+  const bodyBuffer = encoder.encode(bodyText).buffer;
+
+  const colonBuffer = encoder.encode(':').buffer;
+
+  const crc = crc16ccitt(bodyBuffer);
+  const crcBuffer = encoder.encode(crc.toString(10)).buffer;
+
+  const crlfBuffer = encoder.encode('\r\n').buffer;
+
+  try {
+    console.log(bodyBuffer);
+    await writer.write(bodyBuffer);
+    console.log(colonBuffer);
+    await writer.write(colonBuffer);
+    console.log(crcBuffer);
+    await writer.write(crcBuffer);
+    console.log(crlfBuffer);
+    await writer.write(crlfBuffer);
+  } finally {
+    writer.releaseLock();
+  }
+};
+
+const sendBootloaderCommand = async (writable, command, bodyBuffers) => {
   const writer = writable.getWriter();
 
   const guardBuffer = intToBuffer(0x5048434D);
@@ -117,9 +144,14 @@ const readUnwrapOrTimeout = (readable, timeout) => {
     new Promise((_, reject) => {
       setTimeout(() => reject("read timeout"), timeout)
     })
-  ]).finally(() => {
+  ]).then(() => {
     reader.releaseLock();
   });
+};
+
+const readSkalene = readable => {
+  const reader = readable.getReader();
+  return reader.read().then(result => result.value);
 };
 
 const app = Vue.createApp({
@@ -171,7 +203,7 @@ const app = Vue.createApp({
       const readable = this.serialPort.readable;
 
       console.log('unlocking');
-      await sendCommand(writable, UNLOCK_COMMAND, [
+      await sendBootloaderCommand(writable, UNLOCK_COMMAND, [
         intToBuffer(ADDRESS),
         intToBuffer(16384)
       ]);
@@ -186,7 +218,7 @@ const app = Vue.createApp({
       const indices = [...Array(numberOfBlocks).keys()].map(i => i * ERASE_SIZE);
       for (const index of indices) {
         const block = bootloaderPayloadBuffer.slice(index, index + ERASE_SIZE);
-        await sendCommand(writable, DATA_COMMAND, [
+        await sendBootloaderCommand(writable, DATA_COMMAND, [
           intToBuffer(ADDRESS + index),
           block
         ]);
@@ -199,7 +231,7 @@ const app = Vue.createApp({
 
       console.log('verifying');
       const crc = crc32(bootloaderPayloadArray, crc32Tab);
-      await sendCommand(writable, VERIFY_COMMAND, [intToBuffer(crc)]);
+      await sendBootloaderCommand(writable, VERIFY_COMMAND, [intToBuffer(crc)]);
       const verificationResponse = await readUnwrapOrTimeout(readable, 10000);
       if (verificationResponse !== CRC_OKAY) {
         throw new Error(`verification failed: response code ${verificationResponse}`);
@@ -207,7 +239,7 @@ const app = Vue.createApp({
       console.log('verified ✅');
 
       console.log('swapping bank and rebooting');
-      await sendCommand(writable, SWAP_COMMAND, [new ArrayBuffer(16)]);
+      await sendBootloaderCommand(writable, SWAP_COMMAND, [new ArrayBuffer(16)]);
       const swapResponse = await readUnwrapOrTimeout(readable, 10000);
       if (swapResponse !== OKAY_RESPONSE) {
         throw new Error(`swap and reboot failed: response code ${swapResponse}`);
@@ -254,14 +286,33 @@ app.component('file-details', {
 
 app.component('results-panel', {
   props: ['port'],
+  data() { return {
+    raw: null
+  } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header sk--flex-vertical-centre-items">
       <h2 class="sk-panel__title sk--flex-auto">Results</h2>
       <div>
-        <button class="sk-button sk-button--primary">retrieve raw data</button>
+        <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!port">retrieve raw data</button>
       </div>
     </div>
-  </section>`
+    <div class="sk-panel__body">
+      <div v-if="!raw" class="sk-panel__empty">no data</div>
+      <div v-if="raw" class="sk-code">{ raw }</div>
+    </div>
+  </section>`,
+  methods: {
+    async getRaw() {
+      const readable = this.port.readable;
+      const writable = this.port.writable;
+
+      await sendSkaleneCommand(writable, "11 0");
+      const decoder = new TextDecoder();
+      const rawArray = await readSkalene(readable);
+      console.log(rawArray);
+      console.log(decoder.decode(rawArray.buffer));
+    }
+  }
 });
 
 const vm = app.mount('#app');
