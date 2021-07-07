@@ -61,6 +61,7 @@
           <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
           <label for="show_advanced">show advanced</label>
           <div class="app-collapsible__content">
+            <results-panel v-bind:port="serialPort" />
             <section class="sk-panel">
               <div class="sk-panel__header sk--flex-vertical-centre-items">
                 <h2 class="sk-panel__title sk--flex-auto">Config</h2>
