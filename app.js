@@ -290,8 +290,8 @@ app.component('results-panel', {
     raw: null
   } },
   template: `<section class="sk-panel">
-    <div class="sk-panel__header sk--flex-vertical-centre-items">
-      <h2 class="sk-panel__title sk--flex-auto">Results</h2>
+    <div class="sk-panel__header">
+      <h2 class="sk-panel__title">Results</h2>
       <div>
         <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!port">retrieve raw data</button>
       </div>

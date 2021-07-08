@@ -28,8 +28,8 @@
         </section>
 
         <section class="sk-panel">
-          <div class="sk-panel__header sk--flex-space-between-items sk--flex-vertical-centre-items">
-            <h2 class="sk-panel__title sk--flex-auto">Serial port</h2>
+          <div class="sk-panel__header">
+            <h2 class="sk-panel__title">Serial port</h2>
             <div>
               <button v-on:click="connect" class="sk-button sk-button--primary" v-bind:disabled="!isSerialSupported">connect</button>
             </div>
@@ -65,8 +65,8 @@
           <label for="show_advanced">show advanced</label>
           <div class="app-collapsible__content">
             <section class="sk-panel">
-              <div class="sk-panel__header sk--flex-vertical-centre-items">
-                <h2 class="sk-panel__title sk--flex-auto">Config</h2>
+              <div class="sk-panel__header">
+                <h2 class="sk-panel__title">Config</h2>
                 <div class="sk-button-group">
                   <button class="sk-button sk-button--secondary">get config</button>
                   <button class="sk-button sk-button--secondary">set config</button>
