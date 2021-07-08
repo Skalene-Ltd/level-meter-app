@@ -144,7 +144,7 @@ const readUnwrapOrTimeout = (readable, timeout) => {
     new Promise((_, reject) => {
       setTimeout(() => reject("read timeout"), timeout)
     })
-  ]).then(() => {
+  ]).finally(() => {
     reader.releaseLock();
   });
 };
