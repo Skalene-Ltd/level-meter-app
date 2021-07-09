@@ -158,7 +158,7 @@ const readLine = async readable => {
       }
       const textParts = decoder.decode(value).split('\r\n');
       response += textParts[0];
-      if (textParts.length) {
+      if (textParts.length > 1) {
         return response;
       }
     }
