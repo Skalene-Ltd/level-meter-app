@@ -315,7 +315,7 @@ app.component('results-panel', {
     </div>
     <div class="sk-panel__body">
       <div v-if="!raw" class="sk-panel__empty">no data</div>
-      <div v-if="raw" class="sk-code">{ raw }</div>
+      <div v-if="raw" class="sk-code">{{ raw }}</div>
     </div>
   </section>`,
   methods: {
@@ -324,10 +324,8 @@ app.component('results-panel', {
       const writable = this.port.writable;
 
       await sendSkaleneCommand(writable, "11 0");
-      const decoder = new TextDecoder();
-      const rawArray = await readSkalene(readable);
-      console.log(rawArray);
-      console.log(decoder.decode(rawArray.buffer));
+      const response = await readLine(readable);
+      this.raw = response;
     }
   }
 });
