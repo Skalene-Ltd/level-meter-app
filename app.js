@@ -103,25 +103,36 @@ const sendSkaleneCommand = async (writable, bodyText) => {
 const sendBootloaderCommand = async (writable, command, bodyBuffers) => {
   const writer = writable.getWriter();
 
-  const guardBuffer = intToBuffer(0x5048434D);
+  const guardArray = new Uint8Array(intToBuffer(0x5048434D));
 
   const bodyLength = bodyBuffers
     .map(buf => buf.byteLength)
     .reduce((accumulator, length) => accumulator + length);
-  const lengthBuffer = intToBuffer(bodyLength);
+  const lengthArray = new Uint8Array(intToBuffer(bodyLength));
 
-  const commandBuffer = Uint8Array.from([command]);
+  const commandArray = Uint8Array.from([command]);
+
+  const contentArrays = [
+    guardArray,
+    lengthArray,
+    commandArray,
+    ...bodyBuffers.map(buf => new Uint8Array(buf))
+  ];
+
+  const payloadByteLength = contentArrays
+    .map(buf => buf.byteLength)
+    .reduce((accumulator, length) => accumulator + length);
+
+  const payloadArray = new Uint8Array(payloadByteLength);
+
+  var index = 0;
+  for (const content of contentArrays) {
+    payloadArray.set(content, index);
+    index += content.byteLength;
+  }
 
   try {
-    await writer.write(guardBuffer);
-  
-    await writer.write(lengthBuffer);
-  
-    await writer.write(commandBuffer);
-  
-    for (const buf of bodyBuffers) {
-      await writer.write(buf);
-    }
+    await writer.write(payloadArray.buffer);
   } finally {
     writer.releaseLock();
   }
@@ -201,15 +212,16 @@ const app = Vue.createApp({
 
       const writable = this.serialPort.writable;
       const readable = this.serialPort.readable;
+      const crc = crc32(bootloaderPayloadArray, crc32Tab);
 
       console.log('unlocking');
       await sendBootloaderCommand(writable, UNLOCK_COMMAND, [
         intToBuffer(ADDRESS),
-        intToBuffer(16384)
+        intToBuffer(bootloaderPayloadArray.byteLength)
       ]);
-      const unlockResponse = await readUnwrapOrTimeout(readable, 10000);
+       const unlockResponse = await readUnwrapOrTimeout(readable, 10000);
       if (unlockResponse !== OKAY_RESPONSE) {
-        throw new Error(`unlock: invalid response code: ${unlockResponse[0]}`);
+        throw new Error(`unlock: invalid response code: ${unlockResponse}`);
       }
       console.log('unlocking ✅');
 
@@ -230,7 +242,6 @@ const app = Vue.createApp({
       console.log('programming ✅');
 
       console.log('verifying');
-      const crc = crc32(bootloaderPayloadArray, crc32Tab);
       await sendBootloaderCommand(writable, VERIFY_COMMAND, [intToBuffer(crc)]);
       const verificationResponse = await readUnwrapOrTimeout(readable, 10000);
       if (verificationResponse !== CRC_OKAY) {
