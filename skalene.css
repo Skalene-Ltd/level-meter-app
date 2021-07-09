@@ -316,6 +316,10 @@
   padding: .2em .4em;
 }
 
+.sk--hidden {
+  display: none;
+}
+
 .sk--width-4rem {
   width: 4rem;
 }
