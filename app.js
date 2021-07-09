@@ -87,13 +87,9 @@ const sendSkaleneCommand = async (writable, bodyText) => {
   const crlfBuffer = encoder.encode('\r\n').buffer;
 
   try {
-    console.log(bodyBuffer);
     await writer.write(bodyBuffer);
-    console.log(colonBuffer);
     await writer.write(colonBuffer);
-    console.log(crcBuffer);
     await writer.write(crcBuffer);
-    console.log(crlfBuffer);
     await writer.write(crlfBuffer);
   } finally {
     writer.releaseLock();
