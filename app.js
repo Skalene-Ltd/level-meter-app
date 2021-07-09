@@ -149,9 +149,26 @@ const readUnwrapOrTimeout = (readable, timeout) => {
   });
 };
 
-const readSkalene = readable => {
+const readLine = async readable => {
   const reader = readable.getReader();
-  return reader.read().then(result => result.value);
+  const decoder = new TextDecoder();
+  var response = '';
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) {
+        // reader is cancelled
+        break;
+      }
+      const textParts = decoder.decode(value).split('\r\n');
+      response += textParts[0];
+      if (textParts.length) {
+        return response;
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
 };
 
 const app = Vue.createApp({
