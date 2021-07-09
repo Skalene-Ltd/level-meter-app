@@ -167,6 +167,25 @@ const readLine = async readable => {
   }
 };
 
+const parseSkaleneMessage = payload => {
+  const parts = payload.split(':');
+
+  if (parts.length !== 2) {
+    throw new Error('malformed payload');
+  }
+
+  const [message, crcText] = parts;
+  const crcValue = parseInt(crcText);
+  const messageBuffer = new TextEncoder().encode(message + ':').buffer;
+  const expectedCrc = crc16ccitt(messageBuffer);
+
+  if (crcValue !== expectedCrc) {
+    throw new Error(`invalid crc. got ${crcValue}. expected ${expectedCrc}. payload: ${payload}`);
+  }
+
+  return message;
+};
+
 const app = Vue.createApp({
   data() { return {
     isSerialSupported: 'serial' in navigator,
@@ -320,7 +339,8 @@ app.component('results-panel', {
       const writable = this.port.writable;
 
       await sendSkaleneCommand(writable, "11 0");
-      const response = await readLine(readable);
+      const response = await readLine(readable)
+        .then(parseSkaleneMessage);
       this.raw = response;
     }
   }
