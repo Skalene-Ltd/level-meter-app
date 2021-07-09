@@ -20,6 +20,13 @@
       </header>
 
       <main class="sk-app__main sk--centre-panel-l sk--flex sk--flex-vertical sk--flex-gap">
+
+        <section class="sk-notice sk-notice--problem" v-if="false">
+          <h2 class="sk-notice__headline">The app failed to load.</h2>
+          <p class="sk-notice__details">A component of this app failed to load.</p>
+          <p class="sk-notice__details">Make sure JavaScript is enabled in your web browser.</p>
+        </section>
+
         <section class="sk-notice sk-notice--problem" v-if="!isSerialSupported">
           <h2 class="sk-notice__headline">Serial is not supported.</h2>
           <p class="sk-notice__details">This app needs to connect to a serial port, but this browser does not support connecting to serial ports.</p>
