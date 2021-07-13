@@ -100,6 +100,7 @@
 .sk-panel__header {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
   margin: -1px -1px 0;
   padding: 0.5rem;
   border: 1px solid var(--primary-shadow);
@@ -112,6 +113,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 500;
+  flex: auto;
 }
 
 .sk-panel__body {
@@ -307,11 +309,15 @@
   border-radius: 6px;
 }
 
-.sk-code {
+.sk--code {
   background: var(--secondary-shadow);
   font-family: monospace;
   border-radius: 4px;
   padding: .2em .4em;
+}
+
+.sk--hidden {
+  display: none;
 }
 
 .sk--width-4rem {
