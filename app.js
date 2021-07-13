@@ -239,7 +239,8 @@ const app = Vue.createApp({
         this.rawSerialReadable = teed[0];
         this.debugMessageReadable = teed[1]
           .pipeThrough(textDecoderTransformStream)
-          .pipeThrough(readLineTransformStream);
+          .pipeThrough(readLineTransformStream)
+          .pipeThrough(debugMessageFilterTransformStream);
       } catch (e) {
         this.serialPort = null;
         console.error(e);
