@@ -407,7 +407,6 @@ app.component('debug-panel', {
     if (this.readable && !this.readable.locked) {
       const output = new WritableStream({
         write: chunk => {
-          console.log(chunk);
           const lines = this.text.split('\n');
           if (lines.push(chunk) > 20) {
             lines.shift();
