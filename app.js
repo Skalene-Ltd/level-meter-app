@@ -186,10 +186,47 @@ const parseSkaleneMessage = payload => {
   return message;
 };
 
+const textDecoder = new TextDecoder();
+
+const textDecoderTransformStream = new TransformStream({
+  transform(chunk, controller) {
+    controller.enqueue(textDecoder.decode(chunk));
+  }
+});
+
+class DelimiterTransformer {
+  constructor(delimiter) {
+    this.delimiter = delimiter;
+    this.bufferString = ""
+  }
+  transform(chunk, controller) {
+    this.bufferString += chunk;
+    let position;
+    while ((position = this.bufferString.indexOf(this.delimiter)) !== -1) {
+      controller.enqueue(this.bufferString.slice(0, position));
+      this.bufferString = this.bufferString.slice(position + this.delimiter.length);
+    }
+  }
+};
+
+const readLineTransformStream = new TransformStream(
+  new DelimiterTransformer('\r\n')
+);
+
+const debugMessageFilterTransformStream = new TransformStream({
+  transform(chunk, controller) {
+    if (chunk.startsWith('15 ')) {
+      controller.enqueue(chunk);
+    }
+  }
+});
+
 const app = Vue.createApp({
   data() { return {
     isSerialSupported: 'serial' in navigator,
     serialPort: null,
+    rawSerialReadable: null,
+    debugMessageReadable: null,
     bootloaderFile: null
   } },
   methods: {
@@ -198,9 +235,16 @@ const app = Vue.createApp({
       this.serialPort = await Serial.requestPort();
       try {
         await this.serialPort.open({ baudRate: 115200, bufferSize: 65536 });
+        const teed = this.serialPort.readable.tee();
+        this.rawSerialReadable = teed[0];
+        this.debugMessageReadable = teed[1]
+          .pipeThrough(textDecoderTransformStream)
+          .pipeThrough(readLineTransformStream)
+          .pipeThrough(debugMessageFilterTransformStream);
       } catch (e) {
         this.serialPort = null;
         console.error(e);
+        // TODO: tell user about error
       }
     },
     handleDrop(e) {
@@ -232,7 +276,7 @@ const app = Vue.createApp({
       const bootloaderPayloadBuffer = bootloaderPayloadArray.buffer;
 
       const writable = this.serialPort.writable;
-      const readable = this.serialPort.readable;
+      const readable = this.rawSerialReadable;
 
       console.log('unlocking');
       await sendBootloaderCommand(writable, UNLOCK_COMMAND, [
@@ -342,6 +386,31 @@ app.component('results-panel', {
       const response = await readLine(readable)
         .then(parseSkaleneMessage);
       this.raw = response;
+    }
+  }
+});
+
+app.component('debug-panel', {
+  props: ['readable'],
+  data() { return {
+    text: ''
+  } },
+  template: `<section class="sk-panel">
+    <div class="sk-panel__header">
+      <h2 class="sk-panel__title">Debug</h2>
+    </div>
+    <div class="sk-panel__body">
+      <div id="debug-output" class="sk--code">{{ text }}</div>
+    </div>
+  </section>`,
+  beforeUpdate() {
+    if (this.readable && !this.readable.locked) {
+      const output = new WritableStream({
+        write: chunk => {
+          this.text += chunk;
+        }
+      });
+      this.readable.pipeTo(output);
     }
   }
 });
