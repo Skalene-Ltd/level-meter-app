@@ -400,18 +400,18 @@ app.component('debug-panel', {
       <h2 class="sk-panel__title">Debug</h2>
     </div>
     <div class="sk-panel__body">
-      <pre class="sk--code">{{ text }}</pre>
+      <pre class="sk--code sk--height-20rem sk--vertical-overflow-scrollable">{{ text }}</pre>
     </div>
   </section>`,
   beforeUpdate() {
     if (this.readable && !this.readable.locked) {
       const output = new WritableStream({
         write: chunk => {
-          const lines = this.text.split('\n');
-          if (lines.push(chunk) > 20) {
-            lines.shift();
-          }
-          this.text = lines.join('\n');
+          this.text = this.text
+            .split('\n')
+            .concat(chunk)
+            .slice(-30)
+            .join('\n');
         }
       });
       this.readable.pipeTo(output);

@@ -324,6 +324,14 @@
   width: 4rem;
 }
 
+.sk--height-20rem {
+  height: 20rem;
+}
+
+.sk--vertical-overflow-scrollable {
+  overflow-y: auto;
+}
+
 .sk--centre-panel-l {
   margin: 0 auto;
   max-width: 60rem;
