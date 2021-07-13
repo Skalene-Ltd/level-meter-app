@@ -239,8 +239,7 @@ const app = Vue.createApp({
         this.rawSerialReadable = teed[0];
         this.debugMessageReadable = teed[1]
           .pipeThrough(textDecoderTransformStream)
-          .pipeThrough(readLineTransformStream)
-          .pipeThrough(debugMessageFilterTransformStream);
+          .pipeThrough(readLineTransformStream);
       } catch (e) {
         this.serialPort = null;
         console.error(e);
@@ -393,21 +392,23 @@ app.component('results-panel', {
 app.component('debug-panel', {
   props: ['readable'],
   data() { return {
-    text: ''
+    messages: []
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Debug</h2>
     </div>
     <div class="sk-panel__body">
-      <div id="debug-output" class="sk--code">{{ text }}</div>
+      <div class="sk--code" v-for="message in messages">{{ message }}</div>
     </div>
   </section>`,
   beforeUpdate() {
     if (this.readable && !this.readable.locked) {
       const output = new WritableStream({
         write: chunk => {
-          this.text += chunk;
+          if (this.messages.push(chunk) >= 10) {
+            this.messages.shift();
+          }
         }
       });
       this.readable.pipeTo(output);
