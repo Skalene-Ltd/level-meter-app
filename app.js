@@ -393,23 +393,26 @@ app.component('results-panel', {
 app.component('debug-panel', {
   props: ['readable'],
   data() { return {
-    messages: []
+    text: ''
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Debug</h2>
     </div>
     <div class="sk-panel__body">
-      <div class="sk--code" v-for="message in messages">{{ message }}</div>
+      <pre class="sk--code">{{ text }}</pre>
     </div>
   </section>`,
   beforeUpdate() {
     if (this.readable && !this.readable.locked) {
       const output = new WritableStream({
         write: chunk => {
-          if (this.messages.push(chunk) >= 10) {
-            this.messages.shift();
+          console.log(chunk);
+          const lines = this.text.split('\n');
+          if (lines.push(chunk) > 20) {
+            lines.shift();
           }
+          this.text = lines.join('\n');
         }
       });
       this.readable.pipeTo(output);
