@@ -309,7 +309,7 @@
   border-radius: 6px;
 }
 
-.sk-code {
+.sk--code {
   background: var(--secondary-shadow);
   font-family: monospace;
   border-radius: 4px;
