@@ -160,7 +160,7 @@
   border-color: var(--primary-interaction-bg);
 }
 
-.sk-button--primary:hover {
+.sk-button--primary:hover:not(:disabled) {
   color: var(--primary-interaction-hover-fg);
   background: var(--primary-interaction-hover-bg);
   border-color: var(--primary-interaction-hover-bg);
@@ -172,7 +172,7 @@
   border-color: var(--secondary-interaction-shadow);
 }
 
-.sk-button--secondary:hover {
+.sk-button--secondary:hover:not(:disabled) {
   color: var(--secondary-interaction-hover-fg);
   background: var(--secondary-interaction-hover-bg);
 }
