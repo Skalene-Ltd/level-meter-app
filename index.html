@@ -5,11 +5,11 @@
     <link href="/skalene.css" rel="stylesheet">
     <script src="https://unpkg.com/vue@3.1.4/dist/vue.global.js"></script>
     <style>
-      .app-collapsible__content {
+      .app-collapsible__toggle:not(:checked) ~ .app-collapsible__content {
         display: none;
       }
-      .app-collapsible__toggle:checked ~ .app-collapsible__content {
-        display: initial;
+      .app-collapsible__content {
+        padding-top: 1rem;
       }
     </style>
   </head>
@@ -71,7 +71,7 @@
         <div class="app-collapsible__wrapper">
           <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
           <label for="show_advanced">show advanced</label>
-          <div class="app-collapsible__content">
+          <div class="app-collapsible__content sk--flex sk--flex-vertical sk--flex-gap">
 
             <debug-panel v-bind:readable="debugMessageReadable"></debug-panel>
 
