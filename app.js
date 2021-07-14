@@ -221,14 +221,24 @@ const debugMessageFilterTransformStream = new TransformStream({
   }
 });
 
+const notDebugMessageFilterTransformStream = new TransformStream({
+  transform(chunk, controller) {
+    if (!chunk.startsWith('15 ')) {
+      controller.enqueue(chunk);
+    }
+  }
+});
+
 const app = Vue.createApp({
   data() { return {
     isSerialSupported: 'serial' in navigator,
     serialPort: null,
     rawSerialReadable: null,
     debugMessageReadable: null,
+    responseMessageReadable: null,
     bootloaderFile: null,
-    serialStatus: null
+    serialStatus: null,
+    bootloaderStatus: null
   } },
   methods: {
     async connect() {
@@ -242,13 +252,21 @@ const app = Vue.createApp({
           await this.serialPort.open({ baudRate: 115200, bufferSize: 65536 });
           const teed = this.serialPort.readable.tee();
           this.rawSerialReadable = teed[0];
-          this.debugMessageReadable = teed[1]
+          const linesReadableTeed = teed[1]
             .pipeThrough(textDecoderTransformStream)
             .pipeThrough(readLineTransformStream)
+            .tee();
+          this.debugMessageReadable = linesReadableTeed[0]
             .pipeThrough(debugMessageFilterTransformStream);
+          this.responseMessageReadable = linesReadableTeed[1]
+            .pipeThrough(notDebugMessageFilterTransformStream);
           this.serialStatus = null;
         } catch (e) {
-          this.serialPort = null;
+          this.serialPort =
+            this.rawSerialReadable =
+            this.debugMessageReadable =
+            this.responseMessageReadable =
+            null;
           throw e;
         }
       } catch (e) {
@@ -354,8 +372,8 @@ app.component('serial-port-details', {
     <div class="sk--flex-auto">
       <h3 style="font-size:1rem;margin:0 0 0.5rem 0;font-weight:500">connected</h3>
       <p style="margin:0">
-        vendor ID: <span class="sk-code">{{ usbVendorId || 'unknown' }}</span>
-        product ID: <span class="sk-code">{{ usbProductId || 'unknown' }}</span>
+        vendor ID: <span class="sk--code">{{ usbVendorId || 'unknown' }}</span>
+        product ID: <span class="sk--code">{{ usbProductId || 'unknown' }}</span>
       </p>
     </div>
   </div>`,
