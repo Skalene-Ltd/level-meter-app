@@ -38,7 +38,7 @@
           <div class="sk-panel__header">
             <h2 class="sk-panel__title">Serial port</h2>
             <div>
-              <button v-on:click="connect" class="sk-button sk-button--primary" v-bind:disabled="!isSerialSupported">connect</button>
+              <button v-on:click="connect" class="sk-button sk-button--primary" v-bind:disabled="!isSerialSupported || serialPort">connect</button>
             </div>
           </div>
           <div class="sk-panel__body">

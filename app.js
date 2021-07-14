@@ -231,6 +231,9 @@ const app = Vue.createApp({
   } },
   methods: {
     async connect() {
+      if (this.serialPort) {
+        throw new Error('already connected to a serial port');
+      }
       const Serial = navigator.serial;
       this.serialPort = await Serial.requestPort();
       try {
