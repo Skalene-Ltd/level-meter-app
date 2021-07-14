@@ -227,27 +227,35 @@ const app = Vue.createApp({
     serialPort: null,
     rawSerialReadable: null,
     debugMessageReadable: null,
-    bootloaderFile: null
+    bootloaderFile: null,
+    serialStatus: null
   } },
   methods: {
     async connect() {
-      if (this.serialPort) {
-        throw new Error('already connected to a serial port');
-      }
-      const Serial = navigator.serial;
-      this.serialPort = await Serial.requestPort();
       try {
-        await this.serialPort.open({ baudRate: 115200, bufferSize: 65536 });
-        const teed = this.serialPort.readable.tee();
-        this.rawSerialReadable = teed[0];
-        this.debugMessageReadable = teed[1]
-          .pipeThrough(textDecoderTransformStream)
-          .pipeThrough(readLineTransformStream)
-          .pipeThrough(debugMessageFilterTransformStream);
+        if (this.serialPort) {
+          throw new Error('already connected to a serial port');
+        }
+        const Serial = navigator.serial;
+        this.serialPort = await Serial.requestPort();
+        try {
+          await this.serialPort.open({ baudRate: 115200, bufferSize: 65536 });
+          const teed = this.serialPort.readable.tee();
+          this.rawSerialReadable = teed[0];
+          this.debugMessageReadable = teed[1]
+            .pipeThrough(textDecoderTransformStream)
+            .pipeThrough(readLineTransformStream)
+            .pipeThrough(debugMessageFilterTransformStream);
+          this.serialStatus = null;
+        } catch (e) {
+          this.serialPort = null;
+          throw e;
+        }
       } catch (e) {
-        this.serialPort = null;
-        console.error(e);
-        // TODO: tell user about error
+        this.serialStatus = {
+          kind: 'problem',
+          details: e.message
+        };
       }
     },
     handleDrop(e) {
@@ -326,6 +334,13 @@ const app = Vue.createApp({
       console.log('swap and reboot ✅');
     }
   }
+});
+
+app.component('inline-status', {
+  props: ['kind', 'details'],
+  template: `<div class="sk--flex-greedy sk--flex">
+    <div class="sk-notice--inline" v-bind:class="'sk--' + kind">{{ details }}</div>
+  </div>`
 });
 
 app.component('serial-port-details', {

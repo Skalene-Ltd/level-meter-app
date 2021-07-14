@@ -33,6 +33,9 @@
 	--problem-bg: #9e0612;
 	--problem-fg: #F5E6E7;
 
+  --info-bg: #fff;
+  --info-fg: #70aae8;
+
 	--danger-bg: #9e0612;
 	--danger-fg: #F5E6E7;
 	--danger-shadow: #5e030a;
@@ -90,6 +93,12 @@
 .sk-notice--problem {
   background: var(--problem-bg);
   color: var(--problem-fg);
+}
+
+.sk-notice--inline {
+  padding: 3px 7px;
+  border-width: 2px;
+  border-style: solid; 
 }
 
 .sk-panel {
@@ -342,6 +351,24 @@
   max-width: 80rem;
 }
 
+.sk--problem {
+  background: var(--problem-bg);
+  border-color: var(--problem-bg);
+  color: var(--problem-fg);
+}
+
+.sk--success {
+  background: var(--success-bg);
+  border-color: var(--success-bg);
+  color: var(--success-fg);
+}
+
+.sk--info {
+  background: var(--info-bg);
+  border-color: var(--info-fg);
+  color: var(--info-fg);
+}
+
 .sk--flex {
   display: flex;
 }
@@ -360,6 +387,10 @@
 
 .sk--flex-auto {
   flex: auto;
+}
+
+.sk--flex-greedy {
+  flex: 1 0 auto;
 }
 
 .sk--flex-space-between-items {
