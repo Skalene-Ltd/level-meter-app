@@ -309,49 +309,60 @@ const app = Vue.createApp({
       const writable = this.serialPort.writable;
       const readable = this.rawSerialReadable;
 
-      console.log('unlocking');
-      await sendBootloaderCommand(writable, UNLOCK_COMMAND, [
-        intToBuffer(ADDRESS),
-        intToBuffer(bootloaderPayloadBuffer.byteLength)
-      ]);
-      const unlockResponse = await readUnwrapOrTimeout(readable, 10000);
-      if (unlockResponse !== OKAY_RESPONSE) {
-        throw new Error(`unlock: invalid response code: ${unlockResponse[0]}`);
-      }
-      console.log('unlocking ✅');
-
-      console.log('programming');
-      const numberOfBlocks = Math.ceil(bootloaderPayloadBuffer.byteLength / ERASE_SIZE);
-      const indices = [...Array(numberOfBlocks).keys()].map(i => i * ERASE_SIZE);
-      for (const index of indices) {
-        const block = bootloaderPayloadBuffer.slice(index, index + ERASE_SIZE);
-        await sendBootloaderCommand(writable, DATA_COMMAND, [
-          intToBuffer(ADDRESS + index),
-          block
+      try {
+        this.bootloaderStatus = {
+          kind: 'info',
+          details: 'unlocking...'
+        };
+        await sendBootloaderCommand(writable, UNLOCK_COMMAND, [
+          intToBuffer(ADDRESS),
+          intToBuffer(bootloaderPayloadBuffer.byteLength)
         ]);
-        const blockResponse = await readUnwrapOrTimeout(readable, 10000);
-        if (blockResponse !== OKAY_RESPONSE) {
-          throw new Error(`block write: invalid response code: ${blockResponse}`);
+        const unlockResponse = await readUnwrapOrTimeout(readable, 10000);
+        if (unlockResponse !== OKAY_RESPONSE) {
+          throw new Error(`unlock: invalid response code: ${unlockResponse[0]}`);
         }
-      }
-      console.log('programming ✅');
 
-      console.log('verifying');
-      const crc = crc32(bootloaderPayloadArray, crc32Tab);
-      await sendBootloaderCommand(writable, VERIFY_COMMAND, [intToBuffer(crc)]);
-      const verificationResponse = await readUnwrapOrTimeout(readable, 10000);
-      if (verificationResponse !== CRC_OKAY) {
-        throw new Error(`verification failed: response code ${verificationResponse}`);
-      }
-      console.log('verified ✅');
+        this.bootloaderStatus.details = 'programming...';
+        const numberOfBlocks = Math.ceil(bootloaderPayloadBuffer.byteLength / ERASE_SIZE);
+        const indices = [...Array(numberOfBlocks).keys()].map(i => i * ERASE_SIZE);
+        for (const index of indices) {
+          const block = bootloaderPayloadBuffer.slice(index, index + ERASE_SIZE);
+          await sendBootloaderCommand(writable, DATA_COMMAND, [
+            intToBuffer(ADDRESS + index),
+            block
+          ]);
+          const blockResponse = await readUnwrapOrTimeout(readable, 10000);
+          if (blockResponse !== OKAY_RESPONSE) {
+            throw new Error(`block write: invalid response code: ${blockResponse}`);
+          }
+        }
 
-      console.log('swapping bank and rebooting');
-      await sendBootloaderCommand(writable, SWAP_COMMAND, [new ArrayBuffer(16)]);
-      const swapResponse = await readUnwrapOrTimeout(readable, 10000);
-      if (swapResponse !== OKAY_RESPONSE) {
-        throw new Error(`swap and reboot failed: response code ${swapResponse}`);
+        this.bootloaderStatus.details = 'verifying...'
+        const crc = crc32(bootloaderPayloadArray, crc32Tab);
+        await sendBootloaderCommand(writable, VERIFY_COMMAND, [intToBuffer(crc)]);
+        const verificationResponse = await readUnwrapOrTimeout(readable, 10000);
+        if (verificationResponse !== CRC_OKAY) {
+          throw new Error(`verification failed: response code ${verificationResponse}`);
+        }
+
+        this.bootloaderStatus.details = 'swapping bank and rebooting...';
+        await sendBootloaderCommand(writable, SWAP_COMMAND, [new ArrayBuffer(16)]);
+        const swapResponse = await readUnwrapOrTimeout(readable, 10000);
+        if (swapResponse !== OKAY_RESPONSE) {
+          throw new Error(`swap and reboot failed: response code ${swapResponse}`);
+        }
+        this.bootloaderStatus = {
+          kind: 'success',
+          details: 'programming complete'
+        };
+      } catch (e) {
+        this.bootloaderStatus = {
+          kind: 'problem',
+          details: e.message
+        };
+        console.error(e);
       }
-      console.log('swap and reboot ✅');
     }
   }
 });
