@@ -7,7 +7,7 @@ const ADDRESS = 0x9D100000;
 const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
-const SK_DEBUG = 20;
+const SK_DEBUG = 15;
 
 const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
 const crc32Tab = Uint32Array.from([...Array(256).keys()])
@@ -434,8 +434,11 @@ app.component('results-panel', {
         }
         const writable = this.port.writable;
         await sendSkaleneCommand(writable, "11 0");
-        const response = await readLine(this.readable)
-          .then(parseSkaleneMessage);
+        const reader = this.readable.getReader();
+        const response = await reader.read()
+          .then(result => result.value)
+          .then(parseSkaleneMessage)
+          .finally(() => { reader.releaseLock() });
         this.raw = response;
       } catch (e) {
         console.error(e);
