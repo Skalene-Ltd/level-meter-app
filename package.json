@@ -1,0 +1,20 @@
+{
+  "name": "level-meter-app",
+  "version": "0.0.0",
+  "description": "[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/Skalene-Ltd/level-meter-app)",
+  "main": "app.js",
+  "scripts": {
+    "start": "npx http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Skalene-Ltd/level-meter-app.git"
+  },
+  "author": "Alexander Gill",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Skalene-Ltd/level-meter-app/issues"
+  },
+  "homepage": "https://github.com/Skalene-Ltd/level-meter-app#readme"
+}
