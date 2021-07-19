@@ -369,6 +369,10 @@
   color: var(--info-fg);
 }
 
+.sk--margin-0 {
+  margin: 0;
+}
+
 .sk--flex {
   display: flex;
 }

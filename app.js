@@ -493,7 +493,7 @@ app.component('debug-panel', {
       <h2 class="sk-panel__title">Debug</h2>
     </div>
     <div class="sk-panel__body">
-      <pre class="sk--code sk--height-20rem sk--vertical-overflow-scrollable">{{ text }}</pre>
+      <pre class="sk--code sk--margin-0 sk--height-20rem sk--vertical-overflow-scrollable">{{ text }}</pre>
     </div>
   </section>`,
   beforeUpdate() {
