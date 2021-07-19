@@ -351,7 +351,7 @@ const app = Vue.createApp({
         ]);
         const unlockResponse = await readUnwrapOrTimeout(readable, 10000);
         if (unlockResponse !== OKAY_RESPONSE) {
-          throw new Error(`unlock: invalid response code: ${unlockResponse[0]}`);
+          throw new Error(`unlock: invalid response code: ${unlockResponse}`);
         }
 
         this.bootloaderStatus.details = 'programming...';
