@@ -7,7 +7,7 @@ const ADDRESS = 0x9D100000;
 const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
-const SK_DEBUG = 15;
+const SK_DEBUG = 20;
 
 const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
 const crc32Tab = Uint32Array.from([...Array(256).keys()])
