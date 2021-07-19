@@ -217,7 +217,8 @@ const querySkalene = (bodyText, readable, writable) => {
       if (done) { throw new Error('stream cancelled'); }
 
       try {
-        return parseSkaleneMessage(value);
+        const response = parseSkaleneMessage(value);
+        return resolve(response);
       } catch (e) {
         console.error(e);
       }
