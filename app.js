@@ -194,7 +194,7 @@ const querySkalene = async (bodyText, readable, writable) => {
     // hard limit of 10 seconds to give up whatever happens
     var timeout = setTimeout(() => { throw new Error('query time-out') }, 10_000);
 
-    const reader = readable.getReader();
+    var reader = readable.getReader();
 
     for (var i = 0; i < 10; i++) {
       sendSkaleneCommand(writable, bodyText);
@@ -463,14 +463,10 @@ app.component('results-panel', {
         if (!this.port) {
           throw new Error('no serial port connected');
         }
+        const readable = this.readable;
         const writable = this.port.writable;
-        await sendSkaleneCommand(writable, "11 0");
-        const reader = this.readable.getReader();
-        const response = await reader.read()
-          .then(result => result.value)
-          .then(parseSkaleneMessage)
-          .finally(() => { reader.releaseLock() });
-        this.raw = response;
+        const result = await querySkalene("11 0", readable, writable);
+        this.raw = result;
       } catch (e) {
         console.error(e);
       }
