@@ -215,6 +215,7 @@ const querySkalene = async (bodyText, readable, writable) => {
   } finally {
     clearInterval(sendInterval);
     clearTimeout(timeout);
+    reader.releaseLock();
   }
 };
 
