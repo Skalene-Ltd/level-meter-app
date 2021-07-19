@@ -78,7 +78,6 @@ const intToBuffer = i => Uint8Array.from([
 const sendSkaleneCommand = async (writable, bodyText) => {
   const writer = writable.getWriter();
   const encoder = new TextEncoder();
-  const decoder = new TextDecoder();
 
   const bodyArray = encoder.encode(bodyText);
   const colonArray = encoder.encode(':');
@@ -96,7 +95,6 @@ const sendSkaleneCommand = async (writable, bodyText) => {
     await writer.write(payloadArray.buffer);
     await writer.write(crcBuffer);
     await writer.write(crlfBuffer);
-    console.log(`sent body text [${decoder.decode(payloadArray)}] with crc ${crc}`);
   } finally {
     writer.releaseLock();
   }
@@ -224,7 +222,6 @@ const querySkalene = (bodyText, readable, writable) => {
       }
     }
   }).finally(() => {
-    console.log('finally block');
     clearInterval(sendInterval);
     clearTimeout(rejectTimeout);
     reader.releaseLock();
