@@ -78,14 +78,14 @@ const intToBuffer = i => Uint8Array.from([
 const sendSkaleneCommand = async (writable, bodyText) => {
   const writer = writable.getWriter();
   const encoder = new TextEncoder();
+  const decoder = new TextDecoder();
 
-  const bodyBuffer = encoder.encode(bodyText).buffer;
+  const bodyArray = encoder.encode(bodyText);
+  const colonArray = encoder.encode(':');
 
-  const colonBuffer = encoder.encode(':').buffer;
-
-  const payloadArray = new Uint8Array(bodyBuffer.byteLength + colonBuffer.byteLength);
-  payloadArray.set(bodyBuffer, 0);
-  payloadArray.set(colonBuffer, bodyBuffer.byteLength);
+  const payloadArray = new Uint8Array(bodyArray.length + colonArray.length);
+  payloadArray.set(bodyArray, 0);
+  payloadArray.set(colonArray, bodyArray.length);
 
   const crc = crc16ccitt(payloadArray.buffer);
   const crcBuffer = encoder.encode(crc.toString(10)).buffer;
@@ -93,11 +93,10 @@ const sendSkaleneCommand = async (writable, bodyText) => {
   const crlfBuffer = encoder.encode('\r\n').buffer;
 
   try {
-    await writer.write(bodyBuffer);
-    await writer.write(colonBuffer);
+    await writer.write(payloadArray.buffer);
     await writer.write(crcBuffer);
     await writer.write(crlfBuffer);
-    console.log(`sent body text [${bodyText}] with crc ${crc}`);
+    console.log(`sent body text [${decoder.decode(payloadArray)}] with crc ${crc}`);
   } finally {
     writer.releaseLock();
   }
