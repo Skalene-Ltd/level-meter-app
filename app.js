@@ -188,6 +188,36 @@ const parseSkaleneMessage = payload => {
   return message;
 };
 
+const querySkalene = async (bodyText, readable, writable) => {
+  try {
+    var sendInterval;
+    // hard limit of 10 seconds to give up whatever happens
+    var timeout = setTimeout(() => { throw new Error('query time-out') }, 10_000);
+
+    const reader = readable.getReader();
+
+    for (var i = 0; i < 10; i++) {
+      sendSkaleneCommand(writable, bodyText);
+      sendInterval = setInterval(() => {
+        sendSkaleneCommand(writable, bodyText);
+      }, 1_000);
+
+      const { value, done } = await reader.read();
+
+      if (done) { throw new Error('stream cancelled'); }
+
+      try {
+        return parseSkaleneMessage(value);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  } finally {
+    clearInterval(sendInterval);
+    clearTimeout(timeout);
+  }
+};
+
 const textDecoder = new TextDecoder();
 
 const textDecoderTransformStream = new TransformStream({
