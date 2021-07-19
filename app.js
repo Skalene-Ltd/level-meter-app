@@ -83,7 +83,11 @@ const sendSkaleneCommand = async (writable, bodyText) => {
 
   const colonBuffer = encoder.encode(':').buffer;
 
-  const crc = crc16ccitt(bodyBuffer);
+  const payloadArray = new Uint8Array(bodyBuffer.byteLength + colonBuffer.byteLength);
+  payloadArray.set(bodyBuffer, 0);
+  payloadArray.set(colonBuffer, bodyBuffer.byteLength);
+
+  const crc = crc16ccitt(payloadArray.buffer);
   const crcBuffer = encoder.encode(crc.toString(10)).buffer;
 
   const crlfBuffer = encoder.encode('\r\n').buffer;
@@ -93,6 +97,7 @@ const sendSkaleneCommand = async (writable, bodyText) => {
     await writer.write(colonBuffer);
     await writer.write(crcBuffer);
     await writer.write(crlfBuffer);
+    console.log(`sent body text [${bodyText}] with crc ${crc}`);
   } finally {
     writer.releaseLock();
   }
@@ -188,16 +193,22 @@ const parseSkaleneMessage = payload => {
   return message;
 };
 
-const querySkalene = async (bodyText, readable, writable) => {
-  try {
-    var sendInterval;
-    // hard limit of 10 seconds to give up whatever happens
-    var timeout = setTimeout(() => { throw new Error('query time-out') }, 10_000);
+const querySkalene = (bodyText, readable, writable) => {
+  var sendInterval;
+  var rejectTimeout;
 
-    var reader = readable.getReader();
+  var reader = readable.getReader();
+
+  return new Promise(async (resolve, reject) => {
+    // hard limit of 10 seconds to give up whatever happens
+    rejectTimeout = setTimeout(
+      () => { reject(new Error('query time-out')); },
+      10_000
+    );
 
     for (var i = 0; i < 10; i++) {
       sendSkaleneCommand(writable, bodyText);
+
       sendInterval = setInterval(() => {
         sendSkaleneCommand(writable, bodyText);
       }, 1_000);
@@ -212,11 +223,12 @@ const querySkalene = async (bodyText, readable, writable) => {
         console.error(e);
       }
     }
-  } finally {
+  }).finally(() => {
+    console.log('finally block');
     clearInterval(sendInterval);
-    clearTimeout(timeout);
+    clearTimeout(rejectTimeout);
     reader.releaseLock();
-  }
+  });
 };
 
 const textDecoder = new TextDecoder();
