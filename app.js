@@ -452,18 +452,23 @@ app.component('file-details', {
 app.component('results-panel', {
   props: ['port', 'readable'],
   data() { return {
-    raw: null
+    rawData: [],
+    progress: null,
+    fileContent: null
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Results</h2>
+      <div class="sk--flex-greedy" v-if="progress !== null">
+        <progress v-bind:value="progress" max="128"></progress>
+      </div>
       <div>
-        <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!port">retrieve raw data</button>
+        <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!port || (progress !== null)">retrieve raw data</button>
       </div>
     </div>
     <div class="sk-panel__body">
-      <div v-if="!raw" class="sk-panel__empty">no data</div>
-      <div v-if="raw" class="sk-code">{{ raw }}</div>
+      <div v-if="!fileContent" class="sk-panel__empty">no data</div>
+      <pre v-if="fileContent" class="sk--code sk--margin-0">{{ fileContent }}</pre>
     </div>
   </section>`,
   methods: {
@@ -474,8 +479,23 @@ app.component('results-panel', {
         }
         const readable = this.readable;
         const writable = this.port.writable;
-        const result = await querySkalene("11 0", readable, writable);
-        this.raw = result;
+        for (const i of [...Array(128).keys()]) {
+          this.progress = i;
+          const result = await querySkalene(`11 ${i}`, readable, writable);
+          this.rawData = this.rawData.concat(result
+            .split(' ')
+            .slice(2, -1)
+          );
+        }
+        this.progress = 128;
+        this.fileContent = 'q, w, e, r, t, y, u, i\r\n';
+        for (let i = 0; i < Math.ceil(this.rawData.length / 8); i++) {
+          this.fileContent += this.rawData
+            .slice(i * 8, i * 8 + 8)
+            .join(', ')
+            + '\r\n';
+        }
+        this.progress = null;
       } catch (e) {
         console.error(e);
       }
