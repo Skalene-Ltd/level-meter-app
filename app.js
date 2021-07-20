@@ -467,11 +467,29 @@ app.component('results-panel', {
       </div>
     </div>
     <div class="sk-panel__body">
-      <div v-if="!fileContent" class="sk-panel__empty">no data</div>
-      <pre v-if="fileContent" class="sk--code sk--margin-0">{{ fileContent }}</pre>
+      <div v-if="!fileContent || progress !== null" class="sk-panel__empty">no data</div>
+      <div v-if="fileContent && progress === null" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
+        <div aria-hidden="true" style="font-size:3rem">📄</div>
+        <div class="sk--flex-auto">
+          skalene-raw-data.csv
+          <button v-on:click.prevent="downloadRaw" class="sk-button sk-button--primary">⭳ download</button>
+        </div>
+      </div>
     </div>
   </section>`,
   methods: {
+    downloadRaw() {
+      const el = document.createElement('a');
+      el.setAttribute(
+        'href',
+        'data:text/csv;charset=utf-8,' + encodeURIComponent(this.fileContent)
+      );
+      el.setAttribute('download', 'skalene-raw-data.csv');
+      el.style.display = 'none';
+      document.body.appendChild(el);
+      el.click();
+      document.body.removeChild(el);
+    },
     async getRaw() {
       try {
         if (!this.port) {
