@@ -551,11 +551,47 @@ app.component('debug-panel', {
   }
 });
 
+app.component('peak-meter', {
+  props: ['value', 'isActive'],
+  data() { return {
+    max: null
+  } },
+  computed: {
+    currentTransform() {
+      return isNaN(this.value) ?
+        'none'
+        : `translateY(${100 - this.value / 41}%)`;
+    },
+    maxTransform() {
+      return isNaN(this.max) ?
+        'none'
+        : `translateY(${100 - this.max / 41}%)`;
+    }
+  },
+  template: `<div v-on:click.prevent="clear" class="app-peak-meter" v-bind:class="{ 'app-peak-meter--active': isActive }">
+    <div class="app-peak-meter__body">
+      <div class="app-peak-meter__current-container">
+        <div class="app-peak-meter__current" v-bind:style="{ transform: currentTransform }"></div>
+      </div>
+      <div class="app-peak-meter__peak-container" v-if="max !== null" v-bind:style="{ transform: maxTransform }">
+        <div class="app-peak-meter__peak"></div>
+      </div>
+    </div>
+    <div class="app-peak-meter__max">{{ max }}</div>
+    <div class="app-peak-meter__value">{{ value }}</div>
+  </div>`,
+  methods: {
+    clear() { this.max = null; }
+  },
+  beforeUpdate() { this.max = Math.max(this.value, this.max); }
+});
+
 app.component('live-view-panel', {
   props: ['port', 'readable'],
   data() { return {
     polling: false,
-    values: []
+    values: [],
+    tempValue: 2000
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
@@ -566,6 +602,8 @@ app.component('live-view-panel', {
       </div>
     </div>
     <div class="sk-panel__body">
+      <input type="number" v-model="tempValue">
+      <peak-meter v-bind:isActive="true" v-bind:value="tempValue"></peak-meter>
       <span v-for="value in values">{{ value }}</span>
     </div>
   </section>`,

@@ -11,6 +11,70 @@
       .app-collapsible__content {
         padding-top: 1rem;
       }
+      .app-peak-meter:not(.app-peak-meter--active) {
+        filter: grayscale(1);
+        opacity: 0.5;
+      }
+      .app-peak-meter {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 1ex;
+        height: 10rem
+      }
+      .app-peak-meter__body {
+        width: 100%;
+        max-width: 2rem;
+        flex-grow: 1;
+        border: 1px solid #59BB50;
+        position: relative;
+      }
+      .app-peak-meter__current-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .app-peak-meter__current {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #59BB50;
+      }
+      .app-peak-meter__peak-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .app-peak-meter__peak {
+        position: absolute;
+        top: -2px;
+        left: 3px;
+        right: 3px;
+        height: 4px;
+        background: grey;
+        border: 1px solid white;
+      }
+      .app-peak-meter__value, .app-peak-meter__max {
+        width: 100%;
+        max-width: 2rem;
+        height: 1em;
+        color: #449c3c;
+        font-weight: 600;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: right;
+        direction: rtl;
+      }
+      .app-peak-meter__max {
+        color: grey;
+      }
     </style>
   </head>
   <body class="sk-body">
@@ -70,7 +134,7 @@
         <results-panel v-bind:port="serialPort" v-bind:readable="responseMessageReadable"></results-panel>
 
         <div class="app-collapsible__wrapper">
-          <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
+          <input id="show_advanced" class="app-collapsible__toggle" type="checkbox" checked>
           <label for="show_advanced">show advanced</label>
           <div class="app-collapsible__content sk--flex sk--flex-vertical sk--flex-gap">
 
