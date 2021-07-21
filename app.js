@@ -7,6 +7,7 @@ const ADDRESS = 0x9D100000;
 const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
+const SK_GET_LIVE_DATA = 17;
 const SK_DEBUG = 20;
 
 const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
@@ -547,6 +548,47 @@ app.component('debug-panel', {
       });
       this.readable.pipeTo(output);
     }
+  }
+});
+
+app.component('live-view-panel', {
+  props: ['port', 'readable'],
+  data() { return {
+    polling: false,
+    values: []
+  } },
+  template: `<section class="sk-panel">
+    <div class="sk-panel__header">
+      <h2 class="sk-panel__title">Live data</h2>
+      <div>
+        <input type="checkbox" id="live_view_is_polling" v-model="polling" v-bind:disabled="!port" class="sk-checkbox" />
+        <label for="live_view_is_polling">update</label>
+      </div>
+    </div>
+    <div class="sk-panel__body">
+      <span v-for="value in values">{{ value }}</span>
+    </div>
+  </section>`,
+  methods: {
+    async poll() {
+      try {
+        if (!this.port) {
+          throw new Error('no port connected');
+        }
+        const writable = this.port.writable;
+        const response = await querySkalene(SK_GET_LIVE_DATA + '', this.readable, writable);
+        this.values = response.split(' ').slice(1, 9);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  },
+  created() {
+    setInterval((() => {
+      if (this.polling) {
+        this.poll();
+      }
+    }).bind(this), 1_000);
   }
 });
 

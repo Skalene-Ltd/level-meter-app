@@ -244,6 +244,10 @@
   font-size: 1rem;
 }
 
+.sk-checkbox:focus {
+  outline-color: var(--focus-bg);
+}
+
 .sk-input {
   background-color: var(--primary-bg);
   color: var(--primary-fg);

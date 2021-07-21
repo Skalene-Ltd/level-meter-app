@@ -74,6 +74,8 @@
           <label for="show_advanced">show advanced</label>
           <div class="app-collapsible__content sk--flex sk--flex-vertical sk--flex-gap">
 
+            <live-view-panel v-bind:port="serialPort" v-bind:readable="responseMessageReadable"></live-view-panel>
+
             <debug-panel v-bind:readable="debugMessageReadable"></debug-panel>
 
             <!--
