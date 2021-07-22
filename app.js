@@ -625,7 +625,7 @@ app.component('live-view-panel', {
       if (this.polling) {
         this.poll();
       }
-    }).bind(this), 1_000);
+    }).bind(this), 200);
   }
 });
 
