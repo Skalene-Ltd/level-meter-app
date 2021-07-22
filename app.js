@@ -602,7 +602,9 @@ app.component('live-view-panel', {
     </div>
     <div class="sk-panel__body">
       <div class="app-live-grid">
-        <peak-meter v-for="value in values" v-bind:isActive="polling" v-bind:value="value"></peak-meter>
+        <div v-for="value in values" class="app-peak-meter__wrapper">
+          <peak-meter v-bind:isActive="polling" v-bind:value="value"></peak-meter>
+        </div>
       </div>
     </div>
   </section>`,
