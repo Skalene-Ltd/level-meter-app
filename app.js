@@ -590,8 +590,7 @@ app.component('live-view-panel', {
   props: ['port', 'readable'],
   data() { return {
     polling: false,
-    values: [],
-    tempValue: 2000
+    values: []
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
@@ -602,9 +601,9 @@ app.component('live-view-panel', {
       </div>
     </div>
     <div class="sk-panel__body">
-      <input type="number" v-model="tempValue">
-      <peak-meter v-bind:isActive="true" v-bind:value="tempValue"></peak-meter>
-      <span v-for="value in values">{{ value }}</span>
+      <div class="app-live-grid">
+        <peak-meter v-for="value in values" v-bind:isActive="polling" v-bind:value="value"></peak-meter>
+      </div>
     </div>
   </section>`,
   methods: {
