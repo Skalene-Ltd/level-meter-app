@@ -129,6 +129,10 @@
   padding: 1rem;
 }
 
+.sk-panel__body:not(:last-child) {
+  border-bottom: 1px solid var(--primary-shadow);
+}
+
 .sk-panel__empty {
   display: block;
   padding: 1rem;
