@@ -450,7 +450,7 @@ app.component('file-details', {
   </div>`
 });
 
-app.component('results-panel', {
+app.component('raw-data-panel', {
   props: ['port', 'readable'],
   data() { return {
     rawData: [],
@@ -459,7 +459,7 @@ app.component('results-panel', {
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
-      <h2 class="sk-panel__title">Results</h2>
+      <h2 class="sk-panel__title">Raw data</h2>
       <div class="sk--flex-greedy" v-if="progress !== null">
         <progress v-bind:value="progress" max="128"></progress>
       </div>
