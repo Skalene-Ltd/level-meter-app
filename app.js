@@ -7,6 +7,7 @@ const ADDRESS = 0x9D100000;
 const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
+const SK_GET_RESULTS = 9;
 const SK_GET_LIVE_DATA = 17;
 const SK_DEBUG = 20;
 
@@ -448,6 +449,48 @@ app.component('file-details', {
     <div aria-hidden="true" style="font-size:3rem">📄</div>
     <div class="sk--flex-auto">{{ file.name }}</div>
   </div>`
+});
+
+app.component('results-panel', {
+  props: ['port', 'readable'],
+  data() { return {
+    results: null
+  } },
+  computed: {
+    ready() { return Boolean(this.port && this.readable) }
+  },
+  methods: {
+    async getResults() {
+      try {
+        if (!this.port) {
+          throw new Error('no serial port connected');
+        }
+        const response = await querySkalene(SK_GET_RESULTS + '', this.readable, this.port.writable);
+        this.results = response
+          .split(' ')
+          .slice(1, 8)
+          .map(parseInt);
+      } catch (e) {
+        alert(e);
+      }
+    }
+  },
+  template: `<section class="sk-panel">
+    <div class="sk-panel__header">
+      <h2 class="sk-panel__title">Results</h2>
+      <div>
+        <button
+          class="sk-button sk-button--primary"
+          v-on:click.prevent="getResults"
+          v-bind:disabled="!ready"
+        >get results</button>
+      </div>
+    </div>
+    <div class="sk-panel__body">
+      <div v-if="results">{{ results }}</div>
+      <div v-else class="sk-panel__empty">no results</div>
+    </div>
+  </section>`
 });
 
 app.component('raw-data-panel', {

@@ -147,6 +147,8 @@
 
         <raw-data-panel v-bind:port="serialPort" v-bind:readable="responseMessageReadable"></raw-data-panel>
 
+        <results-panel v-bind:port="serialPort" v-bind:readable="responseMessageReadable"></results-panel>
+
         <div class="app-collapsible__wrapper">
           <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
           <label for="show_advanced">show advanced</label>
