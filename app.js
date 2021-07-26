@@ -167,6 +167,11 @@ const parseSkaleneMessage = payload => {
     throw new Error(`invalid crc. got ${crcValue}. expected ${expectedCrc}. payload: ${payload}`);
   }
 
+  const errorCode = message.split(' ').pop();
+  if (parseInt(errorCode) !== 0) {
+    throw new Error(`got error code ${errorCode}. payload: ${payload}`);
+  }
+
   return message;
 };
 
