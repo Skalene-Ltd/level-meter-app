@@ -220,7 +220,7 @@ const querySkalene = (bodyText, readable, writable) => {
         const response = parseSkaleneMessage(value);
         return resolve(response);
       } catch (e) {
-        console.error(e);
+        return reject(e);
       }
     }
   }).finally(() => {
