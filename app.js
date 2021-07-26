@@ -151,28 +151,6 @@ const readUnwrapOrTimeout = (readable, timeout) => {
   });
 };
 
-const readLine = async readable => {
-  const reader = readable.getReader();
-  const decoder = new TextDecoder();
-  var response = '';
-  try {
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) {
-        // reader is cancelled
-        break;
-      }
-      const textParts = decoder.decode(value).split('\r\n');
-      response += textParts[0];
-      if (textParts.length > 1) {
-        return response;
-      }
-    }
-  } finally {
-    reader.releaseLock();
-  }
-};
-
 const parseSkaleneMessage = payload => {
   const parts = payload.split(':');
 
