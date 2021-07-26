@@ -481,14 +481,18 @@ app.component('raw-data-panel', {
   data() { return {
     rawData: [],
     progress: null,
+    errorText: null,
     fileContent: null
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Raw data</h2>
-      <div class="sk--flex-greedy" v-if="progress !== null">
+
+      <inline-status v-if="errorText" v-bind:kind="'problem'" v-bind:details="errorText"></inline-status>
+      <div v-else-if="progress !== null" class="sk--flex-greedy">
         <progress v-bind:value="progress" max="128"></progress>
       </div>
+
       <div>
         <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!port || (progress !== null)">retrieve raw data</button>
       </div>
@@ -533,6 +537,7 @@ app.component('raw-data-panel', {
           );
         }
         this.progress = 128;
+        this.errorText = null;
         this.fileContent = 'q, w, e, r, t, y, u, i\r\n';
         for (let i = 0; i < Math.ceil(this.rawData.length / 8); i++) {
           this.fileContent += this.rawData
@@ -542,7 +547,10 @@ app.component('raw-data-panel', {
         }
         this.progress = null;
       } catch (e) {
+        this.progress = null;
+        this.fileContent = '';
         console.error(e);
+        this.errorText = e.message;
       }
     }
   }
