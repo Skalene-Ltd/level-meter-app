@@ -423,3 +423,9 @@
 .sk--flex-vertical-centre-items {
   align-items: center;
 }
+
+.sk--sticky {
+  position: sticky;
+  top: 1rem;
+  z-index: 999;
+}

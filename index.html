@@ -112,6 +112,8 @@
           <a href="https://github.com/Skalene-Ltd/level-meter-app/blob/trunk/documentation/serial-is-not-supported.md#serial-is-not-supported-error" target="_blank">Help</a>
         </section>
 
+        <fatal-error-message v-if="fatalError" v-bind:error="fatalError"></fatal-error-message>
+
         <section class="sk-panel">
           <div class="sk-panel__header">
             <h2 class="sk-panel__title">Serial port</h2>

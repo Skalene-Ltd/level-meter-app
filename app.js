@@ -11,6 +11,14 @@ const SK_GET_RESULTS = 9;
 const SK_GET_LIVE_DATA = 17;
 const SK_DEBUG = 20;
 
+// custom 'SkFatalError' type handles fatal errors
+class SkFatalError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'SkFatalError';
+  }
+}
+
 const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
 const crc32Tab = Uint32Array.from([...Array(256).keys()])
   .map(f)
@@ -147,7 +155,15 @@ const readUnwrapOrTimeout = (readable, timeout) => {
       setTimeout(() => reject("read timeout"), timeout)
     })
   ]).finally(() => {
-    reader.releaseLock();
+    try {
+      reader.releaseLock();
+    } catch (e) {
+      console.error(e);
+      const fatal = new SkFatalError('No response from device');
+      fatal.details = `The app can't use the serial port because it couldn't receive a response from the device.
+      Refresh the page to try again.`;
+      throw fatal;
+    }
   });
 };
 
@@ -265,7 +281,8 @@ const app = Vue.createApp({
     responseMessageReadable: null,
     bootloaderFile: null,
     serialStatus: null,
-    bootloaderStatus: null
+    bootloaderStatus: null,
+    fatalError: null
   } },
   methods: {
     async connect() {
@@ -382,6 +399,9 @@ const app = Vue.createApp({
           details: 'programming complete'
         };
       } catch (e) {
+        if (e instanceof SkFatalError) {
+          this.fatalError = e;
+        }
         this.bootloaderStatus = {
           kind: 'problem',
           details: e.message
@@ -390,6 +410,15 @@ const app = Vue.createApp({
       }
     }
   }
+});
+
+app.component('fatal-error-message', {
+  props: ['error'],
+  template: `<section class="sk-notice sk-notice--problem sk--sticky">
+    <h2 class="sk-notice__headline">Fatal error: {{ error.message }}</h2>
+    <p v-if="error.details" class="sk-notice__details">{{ error.details }}</p>
+    <a v-if="error.helpURL" v-bind:href="error.helpURL" target="_blank">Help</a>
+  </section>`
 });
 
 app.component('inline-status', {
