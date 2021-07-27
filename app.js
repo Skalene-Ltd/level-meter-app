@@ -8,6 +8,7 @@ const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
 const SK_GET_RESULTS = 9;
+const SK_BOOTLOADER_MODE = 13;
 const SK_GET_LIVE_DATA = 17;
 const SK_DEBUG = 20;
 
@@ -352,6 +353,11 @@ const app = Vue.createApp({
       const readable = this.rawSerialReadable;
 
       try {
+        this.bootloaderStatus = {
+          kind: 'info',
+          details: 'setting bootloader mode...'
+        };
+        await querySkalene(SK_BOOTLOADER_MODE + '', this.responseMessageReadable, writable);
         this.bootloaderStatus = {
           kind: 'info',
           details: 'unlocking...'
