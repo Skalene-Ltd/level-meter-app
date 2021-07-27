@@ -653,6 +653,7 @@ app.component('live-view-panel', {
   props: ['port', 'readable'],
   data() { return {
     polling: false,
+    pollInterval: null,
     values: []
   } },
   template: `<section class="sk-panel">
@@ -681,12 +682,16 @@ app.component('live-view-panel', {
         const response = await querySkalene(SK_GET_LIVE_DATA + '', this.readable, writable);
         this.values = response.split(' ').slice(1, 9);
       } catch (e) {
+        // TODO: alert user of error
         console.error(e);
+        if (e instanceof SkFatalError) {
+          clearInterval(this.pollInterval);
+        }
       }
     }
   },
   created() {
-    setInterval((() => {
+    this.pollInterval = setInterval((() => {
       if (this.polling) {
         this.poll();
       }
