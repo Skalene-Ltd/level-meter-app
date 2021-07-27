@@ -63,6 +63,13 @@
   line-height: 2rem;
 }
 
+.sk-header__logo {
+  display: inline-block;
+  height: 2rem;
+  width: 5rem;
+  background: url("/images/logo-white-transparent.png") no-repeat center/contain;
+}
+
 .sk-app__main {
   padding: 1rem;
 }
