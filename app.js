@@ -534,7 +534,8 @@ app.component('file-details', {
 app.component('results-panel', {
   props: ['port', 'handler'],
   data() { return {
-    results: null
+    results: null,
+    status: null
   } },
   computed: {
     ready() { return Boolean(this.port && this.handler) }
@@ -545,6 +546,10 @@ app.component('results-panel', {
         if (!this.port) {
           throw new Error('no serial port connected');
         }
+        this.status = {
+          kind: 'info',
+          details: 'getting results...'
+        };
         const response = await querySkalene(
           SK_GET_RESULTS + '',
           this.handler,
@@ -554,15 +559,24 @@ app.component('results-panel', {
           .split(' ')
           .slice(1, 8)
           .map(parseInt);
+        this.status = null;
       } catch (e) {
         console.error(e);
-        alert(e);
+        this.status = {
+          kind: 'problem',
+          details: e.message
+        };
       }
     }
   },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Results</h2>
+      <inline-status
+        v-if="status"
+        v-bind:kind="status.kind"
+        v-bind:details="status.details"
+      ></inline-status>
       <div>
         <button
           class="sk-button sk-button--primary"
