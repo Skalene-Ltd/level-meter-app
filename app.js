@@ -230,7 +230,7 @@ const sendBootloaderCommand = async (writable, command, bodyBuffers) => {
 
 const queryBootloader = (command, bodyBuffers, handler, writable, expectedResponse) => {
   sendBootloaderCommand(writable, command, bodyBuffers);
-  return handler.next(10_000).then(response => {
+  return handler.next(1_000).then(response => {
     if (response.byteLength !== 1) {
       console.warn(`response of unexpected length. response: ${response}`);
     }
@@ -266,7 +266,7 @@ const parseSkaleneMessage = payload => {
 
 const querySkalene = (bodyText, handler, writable) => {
   sendSkaleneCommand(writable, bodyText);
-  return handler.next(10_000).then(parseSkaleneMessage);
+  return handler.next(1_000).then(parseSkaleneMessage);
 };
 
 const textDecoder = new TextDecoder();
