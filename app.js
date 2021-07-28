@@ -85,14 +85,25 @@ class StreamHandler {
   next(timeout) {
     const self = this;
     return new Promise((resolve, reject) => {
-      /* add the resolution of this promise to the
-      ** nextCallbackQueue, so that the next incoming chunk
-      ** resolves this promise */
-      self.nextCallbackQueue.push(resolve);
+      /* assigning `resolve` to a constant allows us to
+      ** remove it from the queue in the event of a timeout */
+      const callback = resolve;
+
+      /* add the callback to the nextCallbackQueue, so that
+      ** the next incoming chunk resolves this promise */
+      self.nextCallbackQueue.push(callback);
 
       // timeout after `timeout` milliseconds
       setTimeout(
-        () => reject(new Error('timeout')),
+        () => {
+          /* delete the callback from the queue (after
+          ** checking that it's still in there) */
+          const index = self.nextCallbackQueue.indexOf(callback);
+          if (index > -1) {
+            self.nextCallbackQueue.splice(index, 1);
+          }
+          reject(new Error('timeout'));
+        },
         timeout
       );
     });
@@ -363,7 +374,7 @@ const app = Vue.createApp({
           linesReadableTeed[1]
             .pipeThrough(notDebugMessageFilterTransformStream)
             .pipeTo(this.responseMessageHandler.writable);
-
+          this.responseMessageHandler.every(console.log);
           /* clear any errors from previous attempts to
           ** connect */
           this.serialStatus = null;
