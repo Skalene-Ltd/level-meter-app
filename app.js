@@ -532,12 +532,12 @@ app.component('file-details', {
 });
 
 app.component('results-panel', {
-  props: ['port', 'readable'],
+  props: ['port', 'handler'],
   data() { return {
     results: null
   } },
   computed: {
-    ready() { return Boolean(this.port && this.readable) }
+    ready() { return Boolean(this.port && this.handler) }
   },
   methods: {
     async getResults() {
@@ -545,12 +545,17 @@ app.component('results-panel', {
         if (!this.port) {
           throw new Error('no serial port connected');
         }
-        const response = await querySkalene(SK_GET_RESULTS + '', this.readable, this.port.writable);
+        const response = await querySkalene(
+          SK_GET_RESULTS + '',
+          this.handler,
+          this.port.writable
+        );
         this.results = response
           .split(' ')
           .slice(1, 8)
           .map(parseInt);
       } catch (e) {
+        console.error(e);
         alert(e);
       }
     }
@@ -574,7 +579,7 @@ app.component('results-panel', {
 });
 
 app.component('raw-data-panel', {
-  props: ['port', 'readable'],
+  props: ['port', 'handler'],
   data() { return {
     rawData: [],
     progress: null,
@@ -623,11 +628,10 @@ app.component('raw-data-panel', {
         if (!this.port) {
           throw new Error('no serial port connected');
         }
-        const readable = this.readable;
         const writable = this.port.writable;
         for (const i of [...Array(128).keys()]) {
           this.progress = i;
-          const result = await querySkalene(`11 ${i}`, readable, writable);
+          const result = await querySkalene(`11 ${i}`, this.handler, writable);
           this.rawData = this.rawData.concat(result
             .split(' ')
             .slice(2, -1)
