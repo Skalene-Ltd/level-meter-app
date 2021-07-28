@@ -222,7 +222,7 @@ const queryBootloader = (command, bodyBuffers, handler, writable, expectedRespon
   sendBootloaderCommand(writable, command, bodyBuffers);
   return handler.next(10_000).then(response => {
     if (response.byteLength !== 1) {
-      console.warn(`response of unexpected length. response: ${result.value}`);
+      console.warn(`response of unexpected length. response: ${response}`);
     }
     if (response[0] !== expectedResponse) {
       throw new Error(`unexpected response code (${response[0]})`);
