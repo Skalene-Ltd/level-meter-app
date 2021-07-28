@@ -20,6 +20,40 @@ class SkFatalError extends Error {
   }
 }
 
+/* stream handler processes streams. allows accessing the
+** next chunk, and setting a callback for every chunk */
+class StreamHandler {
+  constructor() {
+    this.everyChunkCallback = null;
+    const self = this;
+    this.writable = new WritableStream({
+      write(chunk) {
+        /* check that everyChunkCallback is set before
+        ** calling it */
+        if (self.everyChunkCallback instanceof Function) {
+          self.everyChunkCallback(chunk);
+        }
+      }
+    });
+  }
+
+  every(cb) {
+    /* warn the programmer if there's already an
+    ** everyChunkCallback set because we're going to
+    ** overwrite it */
+    if (this.everyChunkCallback instanceof Function) {
+      console.warn('overwriting already set everyChunkCallback');
+    }
+    /* check that the callback we're about to set is
+    ** actually a function */
+   if (cb instanceof Function) {
+     this.everyChunkCallback = cb;
+   } else {
+     throw new TypeError('callback is not a function');
+   }
+  }
+}
+
 const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
 const crc32Tab = Uint32Array.from([...Array(256).keys()])
   .map(f)
