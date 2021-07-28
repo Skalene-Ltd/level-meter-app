@@ -156,7 +156,7 @@
           <label for="show_advanced">show advanced</label>
           <div class="app-collapsible__content sk--flex sk--flex-vertical sk--flex-gap">
 
-            <live-view-panel v-bind:port="serialPort" v-bind:readable="responseMessageReadable"></live-view-panel>
+            <live-view-panel v-bind:port="serialPort" v-bind:handler="responseMessageHandler"></live-view-panel>
 
             <debug-panel v-bind:handler="debugMessageHandler"></debug-panel>
 

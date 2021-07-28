@@ -734,7 +734,7 @@ app.component('peak-meter', {
 });
 
 app.component('live-view-panel', {
-  props: ['port', 'readable'],
+  props: ['port', 'handler'],
   data() { return {
     polling: false,
     pollInterval: null,
@@ -763,7 +763,7 @@ app.component('live-view-panel', {
           throw new Error('no port connected');
         }
         const writable = this.port.writable;
-        const response = await querySkalene(SK_GET_LIVE_DATA + '', this.readable, writable);
+        const response = await querySkalene(SK_GET_LIVE_DATA + '', this.handler, writable);
         this.values = response.split(' ').slice(1, 9);
       } catch (e) {
         // TODO: alert user of error
