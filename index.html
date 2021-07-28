@@ -158,7 +158,7 @@
 
             <live-view-panel v-bind:port="serialPort" v-bind:readable="responseMessageReadable"></live-view-panel>
 
-            <debug-panel v-bind:readable="debugMessageReadable"></debug-panel>
+            <debug-panel v-bind:handler="debugMessageHandler"></debug-panel>
 
             <!--
             <section class="sk-panel">

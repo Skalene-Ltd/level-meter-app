@@ -312,7 +312,7 @@ const app = Vue.createApp({
     isSerialSupported: 'serial' in navigator,
     serialPort: null,
     rawSerialReadable: null,
-    debugMessageReadable: null,
+    debugMessageHandler: new StreamHandler(),
     responseMessageReadable: null,
     bootloaderFile: null,
     serialStatus: null,
@@ -335,8 +335,9 @@ const app = Vue.createApp({
             .pipeThrough(textDecoderTransformStream)
             .pipeThrough(readLineTransformStream)
             .tee();
-          this.debugMessageReadable = linesReadableTeed[0]
-            .pipeThrough(debugMessageFilterTransformStream);
+          linesReadableTeed[0]
+            .pipeThrough(debugMessageFilterTransformStream)
+            .pipeTo(this.debugMessageHandler.writable);
           this.responseMessageReadable = linesReadableTeed[1]
             .pipeThrough(notDebugMessageFilterTransformStream);
           this.serialStatus = null;
@@ -626,7 +627,7 @@ app.component('raw-data-panel', {
 });
 
 app.component('debug-panel', {
-  props: ['readable'],
+  props: ['handler'],
   data() { return {
     text: ''
   } },
@@ -638,19 +639,17 @@ app.component('debug-panel', {
       <pre class="sk--code sk--margin-0 sk--height-20rem sk--vertical-overflow-scrollable">{{ text }}</pre>
     </div>
   </section>`,
-  beforeUpdate() {
-    if (this.readable && !this.readable.locked) {
-      const output = new WritableStream({
-        write: chunk => {
-          this.text = this.text
-            .split('\n')
-            .concat(chunk)
-            .slice(-30)
-            .join('\n');
-        }
-      });
-      this.readable.pipeTo(output);
+  methods: {
+    appendLine(line) {
+      this.text = this.text
+        .split('\n')
+        .concat(line)
+        .slice(-30)
+        .join('\n');
     }
+  },
+  created() {
+    this.handler.every(this.appendLine);
   }
 });
 
