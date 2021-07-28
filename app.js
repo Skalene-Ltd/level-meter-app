@@ -629,7 +629,7 @@ app.component('raw-data-panel', {
     <div class="sk-panel__body">
       <div v-if="!fileContent || progress !== null" class="sk-panel__empty">no data</div>
       <div v-if="fileContent && progress === null" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
-        <div aria-hidden="true" style="font-size:3rem">📄</div>
+        <div aria-hidden="true" style="font-size:3rem">📗</div>
         <div class="sk--flex-auto">
           skalene-raw-data.csv
           <button v-on:click.prevent="downloadRaw" class="sk-button sk-button--primary">⭳ download</button>
