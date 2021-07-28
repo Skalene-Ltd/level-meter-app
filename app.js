@@ -229,36 +229,6 @@ const queryBootloader = (command, bodyBuffers, handler, writable, expectedRespon
   });
 };
 
-const readUnwrapOrTimeout = (readable, timeout) => {
-  const reader = readable.getReader();
-  return Promise.race([
-    reader.read().then(result => {
-      if (result.done) {
-        throw new Error('stream closed');
-      }
-      
-      if (result.value.byteLength !== 1) {
-        console.warn(`response of unexpected length. response: ${result.value}`);
-      }
-
-      return result.value[0];
-    }),
-    new Promise((_, reject) => {
-      setTimeout(() => reject("read timeout"), timeout)
-    })
-  ]).finally(() => {
-    try {
-      reader.releaseLock();
-    } catch (e) {
-      console.error(e);
-      const fatal = new SkFatalError('No response from device');
-      fatal.details = `The app can't use the serial port because it couldn't receive a response from the device.
-      Refresh the page to try again.`;
-      throw fatal;
-    }
-  });
-};
-
 const parseSkaleneMessage = payload => {
   const parts = payload.split(':');
 
