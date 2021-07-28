@@ -36,6 +36,7 @@ class StreamHandler {
     const self = this;
     this.writable = new WritableStream({
       write(chunk) {
+        console.log(chunk);
         /* check that everyChunkCallback is set before
         ** calling it */
         if (self.everyChunkCallback instanceof Function) {
@@ -217,6 +218,18 @@ const sendBootloaderCommand = async (writable, command, bodyBuffers) => {
   }
 };
 
+const queryBootloader = (command, bodyBuffers, handler, writable, expectedResponse) => {
+  sendBootloaderCommand(writable, command, bodyBuffers);
+  return handler.next(10_000).then(response => {
+    if (response.byteLength !== 1) {
+      console.warn(`response of unexpected length. response: ${result.value}`);
+    }
+    if (response[0] !== expectedResponse) {
+      throw new Error(`unexpected response code (${response[0]})`);
+    }
+  });
+};
+
 const readUnwrapOrTimeout = (readable, timeout) => {
   const reader = readable.getReader();
   return Promise.race([
@@ -271,42 +284,9 @@ const parseSkaleneMessage = payload => {
   return message;
 };
 
-const querySkalene = (bodyText, readable, writable) => {
-  var sendInterval;
-  var rejectTimeout;
-
-  var reader = readable.getReader();
-
-  return new Promise(async (resolve, reject) => {
-    // hard limit of 10 seconds to give up whatever happens
-    rejectTimeout = setTimeout(
-      () => { reject(new Error('query time-out')); },
-      10_000
-    );
-
-    for (var i = 0; i < 10; i++) {
-      sendSkaleneCommand(writable, bodyText);
-
-      sendInterval = setInterval(() => {
-        sendSkaleneCommand(writable, bodyText);
-      }, 1_000);
-
-      const { value, done } = await reader.read();
-
-      if (done) { throw new Error('stream cancelled'); }
-
-      try {
-        const response = parseSkaleneMessage(value);
-        return resolve(response);
-      } catch (e) {
-        return reject(e);
-      }
-    }
-  }).finally(() => {
-    clearInterval(sendInterval);
-    clearTimeout(rejectTimeout);
-    reader.releaseLock();
-  });
+const querySkalene = (bodyText, handler, writable) => {
+  sendSkaleneCommand(writable, bodyText);
+  return handler.next(10_000).then(parseSkaleneMessage);
 };
 
 const textDecoder = new TextDecoder();
@@ -358,7 +338,7 @@ const app = Vue.createApp({
     serialPort: null,
     rawHandler: new StreamHandler(),
     debugMessageHandler: new StreamHandler(),
-    responseMessageReadable: null,
+    responseMessageHandler: new StreamHandler(),
     bootloaderFile: null,
     serialStatus: null,
     bootloaderStatus: null,
@@ -381,30 +361,49 @@ const app = Vue.createApp({
           **           |
           **         <tee>--------------------------------->[rawHandler]
           **           |
+          **   |decode into text|
+          **           |
           **   |split into lines|
           **           |
           **         <tee>-->|filter only debug messages|-->[debugMessageHandler]
           **           |
           ** |filter out debug messages|------------------->[responseMessageHandler]
           */
+
+          // first tee
           const teed = this.serialPort.readable.tee();
-          this.rawSerialReadable = teed[0];
+
+          // pipe one branch of this tee to `rawHandler`
+          teed[0].pipeTo(this.rawHandler.writable);
+
+          /* pipe the other branch to the text decoder and
+          ** readLine transformer, then make second tee */
           const linesReadableTeed = teed[1]
             .pipeThrough(textDecoderTransformStream)
             .pipeThrough(readLineTransformStream)
             .tee();
+
+          /* filter one branch of this tee for only debug
+          ** messages and pipe it to `debugMessageHandler` */
           linesReadableTeed[0]
             .pipeThrough(debugMessageFilterTransformStream)
             .pipeTo(this.debugMessageHandler.writable);
-          this.responseMessageReadable = linesReadableTeed[1]
-            .pipeThrough(notDebugMessageFilterTransformStream);
+
+          /* filter the other branch for everything else
+          ** and pipe it to `responseMessageHandler` */
+          linesReadableTeed[1]
+            .pipeThrough(notDebugMessageFilterTransformStream)
+            .pipeTo(this.responseMessageHandler.writable);
+
+          /* clear any errors from previous attempts to
+          ** connect */
           this.serialStatus = null;
         } catch (e) {
-          this.serialPort =
-            this.rawSerialReadable =
-            this.debugMessageReadable =
-            this.responseMessageReadable =
-            null;
+          /* reset everything if there was an error */
+          this.serialPort = null;
+          this.rawHandler = new StreamHandler();
+          this.debugMessageReadable = new StreamHandler();
+          this.responseMessageReadable = new StreamHandler();
           throw e;
         }
       } catch (e) {
@@ -443,56 +442,57 @@ const app = Vue.createApp({
       const bootloaderPayloadBuffer = bootloaderPayloadArray.buffer;
 
       const writable = this.serialPort.writable;
-      const readable = this.rawSerialReadable;
 
       try {
         this.bootloaderStatus = {
           kind: 'info',
           details: 'setting bootloader mode...'
         };
-        await querySkalene(SK_BOOTLOADER_MODE + '', this.responseMessageReadable, writable);
+        await querySkalene(
+          SK_BOOTLOADER_MODE + '',
+          this.responseMessageHandler,
+          writable
+        );
+
         this.bootloaderStatus = {
           kind: 'info',
           details: 'unlocking...'
         };
-        await sendBootloaderCommand(writable, UNLOCK_COMMAND, [
-          intToBuffer(ADDRESS),
-          intToBuffer(bootloaderPayloadBuffer.byteLength)
-        ]);
-        const unlockResponse = await readUnwrapOrTimeout(readable, 10000);
-        if (unlockResponse !== OKAY_RESPONSE) {
-          throw new Error(`unlock: invalid response code: ${unlockResponse}`);
-        }
+        await queryBootloader(
+          UNLOCK_COMMAND,
+          [
+            intToBuffer(ADDRESS),
+            intToBuffer(bootloaderPayloadBuffer.byteLength)
+          ],
+          this.rawHandler,
+          writable,
+          OKAY_RESPONSE
+        ).catch(e => { throw new Error('unlock: ' + e.message) });
 
         this.bootloaderStatus.details = 'programming...';
         const numberOfBlocks = Math.ceil(bootloaderPayloadBuffer.byteLength / ERASE_SIZE);
         const indices = [...Array(numberOfBlocks).keys()].map(i => i * ERASE_SIZE);
         for (const index of indices) {
           const block = bootloaderPayloadBuffer.slice(index, index + ERASE_SIZE);
-          await sendBootloaderCommand(writable, DATA_COMMAND, [
-            intToBuffer(ADDRESS + index),
-            block
-          ]);
-          const blockResponse = await readUnwrapOrTimeout(readable, 10000);
-          if (blockResponse !== OKAY_RESPONSE) {
-            throw new Error(`block write: invalid response code: ${blockResponse}`);
-          }
+          await queryBootloader(
+            DATA_COMMAND,
+            [
+              intToBuffer(ADDRESS + index),
+              block
+            ],
+            this.rawHandler,
+            writable,
+            OKAY_RESPONSE
+          );
         }
 
         this.bootloaderStatus.details = 'verifying...'
         const crc = crc32(bootloaderPayloadArray, crc32Tab);
-        await sendBootloaderCommand(writable, VERIFY_COMMAND, [intToBuffer(crc)]);
-        const verificationResponse = await readUnwrapOrTimeout(readable, 10000);
-        if (verificationResponse !== CRC_OKAY) {
-          throw new Error(`verification failed: response code ${verificationResponse}`);
-        }
+        await queryBootloader(VERIFY_COMMAND, [intToBuffer(crc)], this.rawHandler, writable, CRC_OKAY);
 
         this.bootloaderStatus.details = 'swapping bank and rebooting...';
-        await sendBootloaderCommand(writable, SWAP_COMMAND, [new ArrayBuffer(16)]);
-        const swapResponse = await readUnwrapOrTimeout(readable, 10000);
-        if (swapResponse !== OKAY_RESPONSE) {
-          throw new Error(`swap and reboot failed: response code ${swapResponse}`);
-        }
+        await queryBootloader(SWAP_COMMAND, [new ArrayBuffer(16)], this.rawHandler, writable, OKAY_RESPONSE);
+
         this.bootloaderStatus = {
           kind: 'success',
           details: 'programming complete'
