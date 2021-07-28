@@ -93,7 +93,7 @@ class StreamHandler {
 
       // timeout after `timeout` milliseconds
       setTimeout(
-        () => reject('timeout'),
+        () => reject(new Error('timeout')),
         timeout
       );
     });
