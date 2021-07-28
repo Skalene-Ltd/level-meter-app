@@ -24,7 +24,15 @@ class SkFatalError extends Error {
 ** next chunk, and setting a callback for every chunk */
 class StreamHandler {
   constructor() {
+    // called for every incoming chunk
     this.everyChunkCallback = null;
+
+    /* a queue of callbacks executed on a first-come-first-
+    ** served basis. when the next chunk comes in, the
+    ** oldest callback in the queue will be removed and
+    ** called with the chunk as the only parameter. */
+    this.nextCallbackQueue = [];
+
     const self = this;
     this.writable = new WritableStream({
       write(chunk) {
@@ -32,6 +40,25 @@ class StreamHandler {
         ** calling it */
         if (self.everyChunkCallback instanceof Function) {
           self.everyChunkCallback(chunk);
+        }
+
+        /* also pass the chunk to the next callback waiting
+        ** in the nextCallbackQueue. if there aren't any
+        ** callbacks waiting, do nothing */
+        if (!self.nextCallbackQueue.length) {
+          return;
+        }
+
+        // take the oldest callback out of the queue
+        const nextCallback = self.nextCallbackQueue.shift();
+
+        /* this check shouldn't really be necessary but if
+        ** we've accidentally added a non-function to the
+        ** queue we don't want it to cause a problem */
+        if (nextCallback instanceof Function) {
+          nextCallback(chunk);
+        } else {
+          console.error(new TypeError("next callback wasn't a function"));
         }
       }
     });
@@ -51,6 +78,24 @@ class StreamHandler {
     } else {
       throw new TypeError('callback is not a function');
     }
+  }
+
+  /* returns a promise that resolves with the next chunk or
+  ** times out after `timeout` milliseconds */
+  next(timeout) {
+    const self = this;
+    return new Promise((resolve, reject) => {
+      /* add the resolution of this promise to the
+      ** nextCallbackQueue, so that the next incoming chunk
+      ** resolves this promise */
+      self.nextCallbackQueue.push(resolve);
+
+      // timeout after `timeout` milliseconds
+      setTimeout(
+        () => reject('timeout'),
+        timeout
+      );
+    });
   }
 }
 
