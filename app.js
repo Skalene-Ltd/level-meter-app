@@ -36,7 +36,6 @@ class StreamHandler {
     const self = this;
     this.writable = new WritableStream({
       write(chunk) {
-        console.log(chunk);
         /* check that everyChunkCallback is set before
         ** calling it */
         if (self.everyChunkCallback instanceof Function) {
