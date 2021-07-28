@@ -557,8 +557,8 @@ app.component('results-panel', {
         );
         this.results = response
           .split(' ')
-          .slice(1, 8)
-          .map(parseInt);
+          .slice(1, 9)
+          .map(parseFloat);
         this.status = null;
       } catch (e) {
         console.error(e);
