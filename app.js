@@ -586,7 +586,9 @@ app.component('results-panel', {
       </div>
     </div>
     <div class="sk-panel__body">
-      <div v-if="results">{{ results }}</div>
+      <div v-if="results" class="app-results-grid">
+        <span v-for="result in results">{{ result }}</span>
+      </div>
       <div v-else class="sk-panel__empty">no results</div>
     </div>
   </section>`

@@ -142,6 +142,7 @@
 
 .sk-panel__empty {
   display: block;
+  height: 4rem;
   padding: 1rem;
   border: 4px dotted var(--secondary-bg);
   color: var(--secondary-fg);
