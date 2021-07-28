@@ -46,11 +46,11 @@ class StreamHandler {
     }
     /* check that the callback we're about to set is
     ** actually a function */
-   if (cb instanceof Function) {
-     this.everyChunkCallback = cb;
-   } else {
-     throw new TypeError('callback is not a function');
-   }
+    if (cb instanceof Function) {
+      this.everyChunkCallback = cb;
+    } else {
+      throw new TypeError('callback is not a function');
+    }
   }
 }
 
