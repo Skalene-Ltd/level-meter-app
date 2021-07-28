@@ -356,7 +356,7 @@ const app = Vue.createApp({
   data() { return {
     isSerialSupported: 'serial' in navigator,
     serialPort: null,
-    rawSerialReadable: null,
+    rawHandler: new StreamHandler(),
     debugMessageHandler: new StreamHandler(),
     responseMessageReadable: null,
     bootloaderFile: null,
@@ -374,6 +374,19 @@ const app = Vue.createApp({
         this.serialPort = await Serial.requestPort();
         try {
           await this.serialPort.open({ baudRate: 115200, bufferSize: 65536 });
+          /* we want to take the incoming stream of bytes
+          ** and split it ultimately into three streams:
+          **
+          ** [serialPort readable] raw bytes come in here
+          **           |
+          **         <tee>--------------------------------->[rawHandler]
+          **           |
+          **   |split into lines|
+          **           |
+          **         <tee>-->|filter only debug messages|-->[debugMessageHandler]
+          **           |
+          ** |filter out debug messages|------------------->[responseMessageHandler]
+          */
           const teed = this.serialPort.readable.tee();
           this.rawSerialReadable = teed[0];
           const linesReadableTeed = teed[1]
