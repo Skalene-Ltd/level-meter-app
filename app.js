@@ -176,6 +176,97 @@ const intToBuffer = i => Uint8Array.from([
   (i >>> 24) & 0xff
 ]).buffer;
 
+/* take any object that we hope is a valid config, and
+** either return a valid config, or an error. */
+const parseConfig = candidate => {
+  // parsed config to return
+  const config = {};
+  // error object to return if anything is wrong
+  const errors = {};
+
+  // window size
+  const parsedWindowSize = parseInt(candidate.windowSize);
+  if (0 <= parsedWindowSize && parsedWindowSize <= 3000) {
+    config.windowSize = parsedWindowSize;
+  } else {
+    errors.windowSize = new RangeError(
+      `invalid value ${candidate.windowSize}. must be between 0 and 3000`
+    );
+  }
+
+  // discharge time
+  const parsedDischargeTime = parseInt(candidate.dischargeTime);
+  if (50 <= parsedDischargeTime && parsedDischargeTime <= 1000) {
+    config.dischargeTime = parsedDischargeTime;
+  } else {
+    errors.dischargeTime = new RangeError(
+      `invalid value ${candidate.dischargeTime}. must be between 50 and 1000`
+    );
+  }
+
+  // integration time
+  const parsedIntegrationTime = parseInt(candidate.integrationTime);
+  if (50 <= parsedIntegrationTime && parsedIntegrationTime <= 5000) {
+    config.integrationTime = parsedIntegrationTime;
+  } else {
+    errors.integrationTime = new RangeError(
+      `invalid value ${candidate.integrationTime}. must be between 50 and 5000`
+    );
+  }
+
+  // start trigger
+  const parsedStartTrigger = parseInt(candidate.startTrigger);
+  if ([0, 1, 2].includes(parsedStartTrigger)) {
+    config.startTrigger = parsedStartTrigger;
+  } else {
+    errors.startTrigger = new RangeError(
+      `invalid value ${candidate.startTrigger}. must be 0, 1, or 2`
+    );
+  }
+
+  // stop trigger
+  const parsedStopTrigger = parseInt(candidate.stopTrigger);
+  if ([0, 1].includes(parsedStopTrigger)) {
+    config.stopTrigger = parsedStopTrigger;
+  } else {
+    errors.stopTrigger = new RangeError(
+      `invalid value ${candidate.stopTrigger}. must be 0 or 1`
+    );
+  }
+
+  // led powers
+  const candidateLeds = candidate.leds;
+  if (!(candidateLeds instanceof Array && candidateLeds.length === 8)) {
+    errors.leds = new TypeError(
+      `must be Array of length 8`
+    );
+  } else {
+    const check = candidateLed => {
+      const parsedLed = parseInt(candidateLed);
+      if (1 <= parsedLed && parsedLed <= 100) {
+        return parsedLed;
+      } else {
+        return new RangeError(
+          `invalid value ${candidateLed}. must be between 1 and 100`
+        );
+      }
+    };
+    const parsedLeds = candidateLeds.map(check);
+    // if there are no errors:
+    if (parsedLeds.every(x => !(x instanceof Error))) {
+      config.leds = parsedLeds;
+    } else {
+      errors.leds = parsedLeds.map(x => x instanceof Error ? x : undefined);
+    }
+  }
+
+  if (Object.keys(errors).length) {
+    return { config: null, errors: errors };
+  } else {
+    return { config: config, errors: null };
+  }
+};
+
 const sendSkaleneCommand = async (writable, bodyText) => {
   const writer = writable.getWriter();
   const encoder = new TextEncoder();
@@ -326,7 +417,7 @@ const app = Vue.createApp({
     config: { leds: [] }
   } },
   methods: {
-    logConfig() { console.log(this.config); },
+    logConfig() { console.log(parseConfig(this.config)); },
     async connect() {
       try {
         if (this.serialPort) {
