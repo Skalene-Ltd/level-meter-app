@@ -322,9 +322,11 @@ const app = Vue.createApp({
     bootloaderFile: null,
     serialStatus: null,
     bootloaderStatus: null,
-    fatalError: null
+    fatalError: null,
+    config: { leds: [] }
   } },
   methods: {
+    logConfig() { console.log(this.config); },
     async connect() {
       try {
         if (this.serialPort) {
