@@ -218,12 +218,16 @@
                       <span class="sk-input__descriptor">start trigger</span>
                       <div class="sk--flex sk--flex-gap">
                         <div class="sk-radio__wrapper">
-                          <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_comms" v-bind:value="'comms'" class="sk-radio__input">
+                          <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_comms" v-bind:value="0" class="sk-radio__input">
                           <label for="start_trigger_comms">comms</label>
                         </div>
                         <div class="sk-radio__wrapper">
-                          <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_hardware" v-bind:value="'hardware'" class="sk-radio__input">
+                          <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_hardware" v-bind:value="1" class="sk-radio__input">
                           <label for="start_trigger_hardware">hardware</label>
+                        </div>
+                        <div class="sk-radio__wrapper">
+                          <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_config" v-bind:value="2" class="sk-radio__input">
+                          <label for="start_trigger_config">config</label>
                         </div>
                       </div>
                     </div>
