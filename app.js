@@ -585,6 +585,7 @@ const app = Vue.createApp({
       }
     },
     async getConfig() {
+      this.configStatus = null;
       try {
         if (!this.serialPort) {
           throw new Error('no serial port connected')
@@ -626,6 +627,7 @@ const app = Vue.createApp({
       }
     },
     async setConfig() {
+      this.configStatus = null;
       try {
         if (!this.serialPort) {
           throw new Error('no serial port connected');
