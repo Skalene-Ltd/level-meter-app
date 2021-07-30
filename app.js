@@ -420,7 +420,6 @@ const app = Vue.createApp({
     config: { leds: [] }
   } },
   methods: {
-    logConfig() { console.log(parseConfig(this.config)); },
     async connect() {
       try {
         if (this.serialPort) {
