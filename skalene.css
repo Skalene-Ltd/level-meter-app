@@ -389,6 +389,10 @@
   margin: 0;
 }
 
+.sk--padding-1rem {
+  padding: 1rem;
+}
+
 .sk--flex {
   display: flex;
 }
@@ -413,6 +417,10 @@
   flex: 1 0 auto;
 }
 
+.sk--flex-centre-items {
+  justify-content: center;
+}
+
 .sk--flex-space-between-items {
   justify-content: space-between;
 }
@@ -429,4 +437,12 @@
   position: sticky;
   top: 1rem;
   z-index: 999;
+}
+
+.sk--colour-primary-shadow {
+  color: var(--primary-shadow)
+}
+
+.sk--colour-primary-shadow a, .sk--colour-primary-shadow a:visited {
+  color: inherit;
 }
