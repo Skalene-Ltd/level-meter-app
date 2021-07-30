@@ -7,6 +7,7 @@ const ADDRESS = 0x9D100000;
 const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
+const SK_GET_CONFIG = 3;
 const SK_GET_RESULTS = 9;
 const SK_BOOTLOADER_MODE = 13;
 const SK_GET_LIVE_DATA = 17;
@@ -413,6 +414,7 @@ const app = Vue.createApp({
     bootloaderFile: null,
     serialStatus: null,
     bootloaderStatus: null,
+    configStatus: null,
     fatalError: null,
     config: { leds: [] }
   } },
@@ -579,6 +581,47 @@ const app = Vue.createApp({
           details: e.message
         };
         console.error(e);
+      }
+    },
+    async getConfig() {
+      try {
+        if (!this.serialPort) {
+          throw new Error('no serial port connected')
+        }
+
+        const response = await querySkalene(
+          SK_GET_CONFIG + '',
+          this.responseMessageHandler,
+          this.serialPort.writable
+        );
+
+        const parts = response.split(' ');
+
+        if (parts.length !== 15) {
+          throw new Error('invalid response from device');
+        }
+
+        const { config, error } = parseConfig({
+          windowSize: parts[1],
+          dischargeTime: parts[2],
+          integrationTime: parts[3],
+          startTrigger: parts[4],
+          stopTrigger: parts[5],
+          leds: parts.slice(6, 14)
+        });
+
+        if (error) {
+          console.warn(error);
+          throw new Error('invalid config from device');
+        }
+
+        this.config = config;
+      } catch (e) {
+        console.error(e);
+        this.configStatus = {
+          kind: 'problem',
+          details: e.message
+        };
       }
     }
   }
