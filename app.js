@@ -7,6 +7,7 @@ const ADDRESS = 0x9D100000;
 const OKAY_RESPONSE = 0x50;
 const CRC_OKAY = 0x53;
 
+const SK_SET_CONFIG = 1;
 const SK_GET_CONFIG = 3;
 const SK_GET_RESULTS = 9;
 const SK_BOOTLOADER_MODE = 13;
@@ -601,7 +602,7 @@ const app = Vue.createApp({
           throw new Error('invalid response from device');
         }
 
-        const { config, error } = parseConfig({
+        const { config, errors } = parseConfig({
           windowSize: parts[1],
           dischargeTime: parts[2],
           integrationTime: parts[3],
@@ -610,14 +611,48 @@ const app = Vue.createApp({
           leds: parts.slice(6, 14)
         });
 
-        if (error) {
-          console.warn(error);
+        if (errors) {
+          console.warn(errors);
           throw new Error('invalid config from device');
         }
 
         this.config = config;
       } catch (e) {
         console.error(e);
+        this.configStatus = {
+          kind: 'problem',
+          details: e.message
+        };
+      }
+    },
+    async setConfig() {
+      try {
+        if (!this.serialPort) {
+          throw new Error('no serial port connected');
+        }
+
+        const { config, errors } = parseConfig(this.config);
+
+        if (errors) {
+          console.warn(errors);
+          throw new Error('invalid config');
+        }
+
+        await querySkalene([
+          SK_SET_CONFIG,
+          config.windowSize,
+          config.dischargeTime,
+          config.integrationTime,
+          config.startTrigger,
+          config.stopTrigger,
+          ...config.leds
+        ].join(' '), this.responseMessageHandler, this.serialPort.writable);
+
+        this.configStatus = {
+          kind: 'success',
+          details: 'set config'
+        };
+      } catch (e) {
         this.configStatus = {
           kind: 'problem',
           details: e.message
