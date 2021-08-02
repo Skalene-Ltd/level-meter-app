@@ -213,7 +213,22 @@
                           <span class="sk-input__affix-text">µs</span>
                         </div>
                       </div>
-                      <input type="range" min="50" max="5000" v-model.number="config.integrationTime" v-on:change="setIntegration($event.target.value)">
+                    </div>
+
+                    <div class="sk-form-group">
+                      <label class="sk-input__descriptor" for="integration_slider">live patch integration time</label>
+                      <div class="sk-input__wrapper">
+                        <input
+                          type="range"
+                          id="integration_slider"
+                          min="50"
+                          max="5000"
+                          class="sk--flex-greedy"
+                          spellcheck="false"
+                          v-model.number="config.integrationTime"
+                          v-on:change="setIntegration($event.target.value)"
+                        >
+                      </div>
                     </div>
 
                     <div class="sk-form-group">
