@@ -13,6 +13,7 @@ const SK_GET_RESULTS = 9;
 const SK_BOOTLOADER_MODE = 13;
 const SK_GET_LIVE_DATA = 17;
 const SK_DEBUG = 20;
+const SK_SET_INTEGRATION = 21;
 
 // custom 'SkFatalError' type handles fatal errors
 class SkFatalError extends Error {
@@ -653,6 +654,33 @@ const app = Vue.createApp({
           kind: 'success',
           details: 'set config'
         };
+      } catch (e) {
+        this.configStatus = {
+          kind: 'problem',
+          details: e.message
+        };
+      }
+    },
+    async setIntegration(integration) {
+      this.configStatus = null;
+      try {
+        if (!this.serialPort) {
+          throw new Error('no serial port connected');
+        }
+
+        const parsedIntegration = parseInt(integration);
+        if (!(50 <= parsedIntegration && parsedIntegration <= 5000)) {
+          console.error(`invalid integration time ${integration}`);
+          throw new Error('invalid integration time');
+        }
+
+        await querySkalene(
+          SK_SET_INTEGRATION + ' ' + parsedIntegration,
+          this.responseMessageHandler,
+          this.serialPort.writable
+        );
+
+        this.config.integrationTime = parsedIntegration;
       } catch (e) {
         this.configStatus = {
           kind: 'problem',
