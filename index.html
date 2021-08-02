@@ -167,8 +167,6 @@
 
             <live-view-panel v-bind:port="serialPort" v-bind:handler="responseMessageHandler"></live-view-panel>
 
-            <debug-panel v-bind:handler="debugMessageHandler"></debug-panel>
-
             <section class="sk-panel">
               <div class="sk-panel__header">
                 <h2 class="sk-panel__title">Config</h2>
@@ -266,6 +264,8 @@
                 </form>
               </div>
             </section>
+
+            <debug-panel v-bind:handler="debugMessageHandler"></debug-panel>
 
           </div>
         </div>
