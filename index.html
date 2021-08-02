@@ -211,8 +211,9 @@
                           <span class="sk-input__affix-text">µs</span>
                         </div>
                       </div>
+                      <input type="range" min="50" max="5000" v-model.number="config.integrationTime" v-on:change="setIntegration($event.target.value)">
                     </div>
-    
+
                     <div class="sk-form-group">
                       <span class="sk-input__descriptor">start trigger</span>
                       <div class="sk--flex sk--flex-gap">
