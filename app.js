@@ -11,8 +11,8 @@ const SK_SET_CONFIG = 1;
 const SK_GET_CONFIG = 3;
 const SK_GET_RESULTS = 9;
 const SK_BOOTLOADER_MODE = 13;
+const SK_DEBUG = 16;
 const SK_GET_LIVE_DATA = 17;
-const SK_DEBUG = 20;
 const SK_SET_INTEGRATION = 21;
 
 // custom 'SkFatalError' type handles fatal errors
