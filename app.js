@@ -920,7 +920,10 @@ app.component('raw-data-panel', {
         }
         this.progress = 128;
         this.errorText = null;
-        this.fileContent = 'q, w, e, r, t, y, u, i\r\n';
+        this.fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
+          .map(i => 'Channel ' + i)
+          .join(', ')
+          + '\r\n';
         for (let i = 0; i < Math.ceil(this.rawData.length / 8); i++) {
           this.fileContent += this.rawData
             .slice(i * 8, i * 8 + 8)
