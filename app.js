@@ -345,43 +345,41 @@ const sendSkaleneCommand = (writableHandler, bodyText) => {
   return writableHandler.askToSend(payloadArray.buffer);
 };
 
-const sendBootloaderCommand = async (writable, command, bodyBuffers) => {
-  const writer = writable.getWriter();
-
-  const guardBuffer = intToBuffer(0x5048434D);
+const sendBootloaderCommand = async (writableHandler, command, bodyBuffers) => {
+  const guardArray = Array.from(intToBuffer(0x5048434D));
 
   const bodyLength = bodyBuffers
     .map(buf => buf.byteLength)
     .reduce((accumulator, length) => accumulator + length);
-  const lengthBuffer = intToBuffer(bodyLength);
+  const lengthArray = Array.from(intToBuffer(bodyLength));
 
-  const commandBuffer = Uint8Array.from([command]);
+  const commandArray = [command];
 
-  try {
-    await writer.write(guardBuffer);
-  
-    await writer.write(lengthBuffer);
-  
-    await writer.write(commandBuffer);
-  
-    for (const buf of bodyBuffers) {
-      await writer.write(buf);
-    }
-  } finally {
-    writer.releaseLock();
-  }
+  const bodyArray = bodyBuffers.flatMap(buf => Array.from(buf))
+
+  const payload = Uint8Array.from(Array.prototype.concat(
+    guardArray,
+    lengthArray,
+    commandArray,
+    bodyArray
+  )).buffer;
+
+  await writableHandler.askToSend(payload);
 };
 
-const queryBootloader = (command, bodyBuffers, handler, writable, expectedResponse) => {
-  sendBootloaderCommand(writable, command, bodyBuffers);
-  return handler.next(1_000).then(response => {
-    if (response.byteLength !== 1) {
-      console.warn(`response of unexpected length. response: ${response}`);
-    }
-    if (response[0] !== expectedResponse) {
-      throw new Error(`unexpected response code (${response[0]})`);
-    }
-  });
+const queryBootloader = async (command, bodyBuffers, readableHandler, writableHandler, expectedResponse) => {
+  await sendBootloaderCommand(writableHandler, command, bodyBuffers);
+
+  const response = await readableHandler.next(10_000).finally(writableHandler.done());
+
+  if (response.byteLength !== 1) {
+    console.warn(`response of unexpected length. response: ${response}`);
+  }
+  if (response[0] !== expectedResponse) {
+    throw new Error(`unexpected response code (${response[0]})`);
+  }
+
+  return response;
 };
 
 const parseSkaleneMessage = payload => {
@@ -410,8 +408,7 @@ const parseSkaleneMessage = payload => {
 
 const querySkalene = async (bodyText, readableHandler, writableHandler) => {
   await sendSkaleneCommand(writableHandler, bodyText);
-  const response = await readableHandler.next(1_000);
-  writableHandler.done();
+  const response = await readableHandler.next(1_000).finally(() => writableHandler.done());
   return parseSkaleneMessage(response);
 };
 
@@ -598,7 +595,7 @@ const app = Vue.createApp({
             intToBuffer(bootloaderPayloadBuffer.byteLength)
           ],
           this.rawHandler,
-          writable,
+          this.writableHandler,
           OKAY_RESPONSE
         ).catch(e => { throw new Error('unlock: ' + e.message) });
 
@@ -614,17 +611,17 @@ const app = Vue.createApp({
               block
             ],
             this.rawHandler,
-            writable,
+            this.writableHandler,
             OKAY_RESPONSE
           );
         }
 
         this.bootloaderStatus.details = 'verifying...'
         const crc = crc32(bootloaderPayloadArray, crc32Tab);
-        await queryBootloader(VERIFY_COMMAND, [intToBuffer(crc)], this.rawHandler, writable, CRC_OKAY);
+        await queryBootloader(VERIFY_COMMAND, [intToBuffer(crc)], this.rawHandler, this.writableHandler, CRC_OKAY);
 
         this.bootloaderStatus.details = 'swapping bank and rebooting...';
-        await queryBootloader(SWAP_COMMAND, [new ArrayBuffer(16)], this.rawHandler, writable, OKAY_RESPONSE);
+        await queryBootloader(SWAP_COMMAND, [new ArrayBuffer(16)], this.rawHandler, this.writableHandler, OKAY_RESPONSE);
 
         this.bootloaderStatus = {
           kind: 'success',
