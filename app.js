@@ -346,16 +346,16 @@ const sendSkaleneCommand = (writableHandler, bodyText) => {
 };
 
 const sendBootloaderCommand = async (writableHandler, command, bodyBuffers) => {
-  const guardArray = Array.from(intToBuffer(0x5048434D));
+  const guardArray = Array.from(new Uint8Array(intToBuffer(0x5048434D)));
 
   const bodyLength = bodyBuffers
     .map(buf => buf.byteLength)
     .reduce((accumulator, length) => accumulator + length);
-  const lengthArray = Array.from(intToBuffer(bodyLength));
+  const lengthArray = Array.from(new Uint8Array(intToBuffer(bodyLength)));
 
   const commandArray = [command];
 
-  const bodyArray = bodyBuffers.flatMap(buf => Array.from(buf))
+  const bodyArray = bodyBuffers.flatMap(buf => Array.from(new Uint8Array(buf)));
 
   const payload = Uint8Array.from(Array.prototype.concat(
     guardArray,
