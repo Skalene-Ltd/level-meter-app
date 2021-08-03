@@ -113,6 +113,54 @@ class StreamHandler {
   }
 }
 
+class WritableHandler {
+  constructor() {
+    const self = this;
+    this.ready = true;
+    this.queue = [];
+    this.readable = new ReadableStream({
+      start(controller) {
+        self.dispatch = chunk => controller.enqueue(chunk);
+      },
+      cancel(reason) {
+        console.error('stream cancelled: ' + reason);
+        self.dispatch = () => {};
+      }
+    });
+  }
+
+  askToSend(message) {
+    let payload;
+    if (message instanceof ArrayBuffer) {
+      payload = message;
+    } else if (typeof(message) === 'string') {
+      payload = Uint8Array.from(message).buffer;
+    } else {
+      throw new TypeError('invalid message type');
+    }
+
+    if (this.ready) {
+      this.ready = false;
+      this.dispatch(payload);
+      return Promise.resolve();
+    }
+
+    const self = this;
+    return new Promise((resolve, _) => {
+      self.queue.push({ payload, resolve });
+    });
+  }
+
+  done() {
+    if (this.queue.length === 0) { return this.ready = true; }
+
+    const next = this.queue.shift();
+
+    this.dispatch(next.payload);
+    next.resolve();
+  }
+}
+
 const f = i => i & 1 ? (i >>> 1) ^ 0xedb88320 : i >>> 1;
 const crc32Tab = Uint32Array.from([...Array(256).keys()])
   .map(f)
@@ -270,29 +318,31 @@ const parseConfig = candidate => {
   }
 };
 
-const sendSkaleneCommand = async (writable, bodyText) => {
-  const writer = writable.getWriter();
+const sendSkaleneCommand = (writableHandler, bodyText) => {
   const encoder = new TextEncoder();
 
   const bodyArray = encoder.encode(bodyText);
   const colonArray = encoder.encode(':');
 
-  const payloadArray = new Uint8Array(bodyArray.length + colonArray.length);
-  payloadArray.set(bodyArray, 0);
-  payloadArray.set(colonArray, bodyArray.length);
+  const contentArray = new Uint8Array(bodyArray.length + colonArray.length);
+  contentArray.set(bodyArray, 0);
+  contentArray.set(colonArray, bodyArray.length);
 
-  const crc = crc16ccitt(payloadArray.buffer);
-  const crcBuffer = encoder.encode(crc.toString(10)).buffer;
+  const crc = crc16ccitt(contentArray.buffer);
+  const crcArray = encoder.encode(crc.toString(10));
 
-  const crlfBuffer = encoder.encode('\r\n').buffer;
+  const crlfArray = encoder.encode('\r\n');
 
-  try {
-    await writer.write(payloadArray.buffer);
-    await writer.write(crcBuffer);
-    await writer.write(crlfBuffer);
-  } finally {
-    writer.releaseLock();
-  }
+  const payloadArray = new Uint8Array(
+    contentArray.length
+    + crcArray.length
+    + crlfArray.length
+  );
+  payloadArray.set(contentArray, 0);
+  payloadArray.set(crcArray, contentArray.length);
+  payloadArray.set(crlfArray, contentArray.length + crcArray.length);
+
+  return writableHandler.askToSend(payloadArray.buffer);
 };
 
 const sendBootloaderCommand = async (writable, command, bodyBuffers) => {
@@ -358,9 +408,11 @@ const parseSkaleneMessage = payload => {
   return message;
 };
 
-const querySkalene = (bodyText, handler, writable) => {
-  sendSkaleneCommand(writable, bodyText);
-  return handler.next(1_000).then(parseSkaleneMessage);
+const querySkalene = async (bodyText, readableHandler, writableHandler) => {
+  await sendSkaleneCommand(writableHandler, bodyText);
+  const response = await readableHandler.next(1_000);
+  writableHandler.done();
+  return parseSkaleneMessage(response);
 };
 
 const textDecoder = new TextDecoder();
@@ -413,6 +465,7 @@ const app = Vue.createApp({
     rawHandler: new StreamHandler(),
     debugMessageHandler: new StreamHandler(),
     responseMessageHandler: new StreamHandler(),
+    writableHandler: null,
     bootloaderFile: null,
     serialStatus: null,
     bootloaderStatus: null,
@@ -471,6 +524,11 @@ const app = Vue.createApp({
             .pipeThrough(notDebugMessageFilterTransformStream)
             .pipeTo(this.responseMessageHandler.writable);
           this.responseMessageHandler.every(console.log);
+
+          // connect a new WritableHandler to the port
+          this.writableHandler = new WritableHandler();
+          this.writableHandler.readable.pipeTo(this.serialPort.writable);
+
           /* clear any errors from previous attempts to
           ** connect */
           this.serialStatus = null;
@@ -480,6 +538,7 @@ const app = Vue.createApp({
           this.rawHandler = new StreamHandler();
           this.debugMessageReadable = new StreamHandler();
           this.responseMessageReadable = new StreamHandler();
+          this.writableHandler = null;
           throw e;
         }
       } catch (e) {
@@ -517,8 +576,6 @@ const app = Vue.createApp({
       bootloaderPayloadArray.set(bootloaderFileArray, 0);
       const bootloaderPayloadBuffer = bootloaderPayloadArray.buffer;
 
-      const writable = this.serialPort.writable;
-
       try {
         this.bootloaderStatus = {
           kind: 'info',
@@ -527,7 +584,7 @@ const app = Vue.createApp({
         await querySkalene(
           SK_BOOTLOADER_MODE + '',
           this.responseMessageHandler,
-          writable
+          this.writableHandler
         );
 
         this.bootloaderStatus = {
@@ -594,7 +651,7 @@ const app = Vue.createApp({
         const response = await querySkalene(
           SK_GET_CONFIG + '',
           this.responseMessageHandler,
-          this.serialPort.writable
+          this.writableHandler
         );
 
         const parts = response.split(' ');
@@ -648,7 +705,7 @@ const app = Vue.createApp({
           config.startTrigger,
           config.stopTrigger,
           ...config.leds
-        ].join(' '), this.responseMessageHandler, this.serialPort.writable);
+        ].join(' '), this.responseMessageHandler, this.writableHandler);
 
         this.configStatus = {
           kind: 'success',
@@ -677,7 +734,7 @@ const app = Vue.createApp({
         await querySkalene(
           SK_SET_INTEGRATION + ' ' + parsedIntegration,
           this.responseMessageHandler,
-          this.serialPort.writable
+          this.writableHandler
         );
 
         this.config.integrationTime = parsedIntegration;
@@ -743,18 +800,18 @@ app.component('file-details', {
 });
 
 app.component('results-panel', {
-  props: ['port', 'handler'],
+  props: ['readableHandler', 'writableHandler'],
   data() { return {
     results: null,
     status: null
   } },
   computed: {
-    ready() { return Boolean(this.port && this.handler) }
+    ready() { return Boolean(this.readableHandler && this.writableHandler) }
   },
   methods: {
     async getResults() {
       try {
-        if (!this.port) {
+        if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
         this.status = {
@@ -763,8 +820,8 @@ app.component('results-panel', {
         };
         const response = await querySkalene(
           SK_GET_RESULTS + '',
-          this.handler,
-          this.port.writable
+          this.readableHandler,
+          this.writableHandler
         );
         this.results = response
           .split(' ')
@@ -806,13 +863,14 @@ app.component('results-panel', {
 });
 
 app.component('raw-data-panel', {
-  props: ['port', 'handler'],
+  props: ['readableHandler', 'writableHandler'],
   data() { return {
     rawData: [],
     progress: null,
     errorText: null,
     fileContent: null
   } },
+  computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Raw data</h2>
@@ -823,7 +881,7 @@ app.component('raw-data-panel', {
       </div>
 
       <div>
-        <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!port || (progress !== null)">retrieve raw data</button>
+        <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!ready">retrieve raw data</button>
       </div>
     </div>
     <div class="sk-panel__body">
@@ -852,13 +910,12 @@ app.component('raw-data-panel', {
     },
     async getRaw() {
       try {
-        if (!this.port) {
+        if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
-        const writable = this.port.writable;
         for (const i of [...Array(128).keys()]) {
           this.progress = i;
-          const result = await querySkalene(`11 ${i}`, this.handler, writable);
+          const result = await querySkalene(`11 ${i}`, this.readableHandler, this.writableHandler);
           this.rawData = this.rawData.concat(result
             .split(' ')
             .slice(2, -1)
@@ -947,7 +1004,7 @@ app.component('peak-meter', {
 });
 
 app.component('live-view-panel', {
-  props: ['port', 'handler'],
+  props: ['readableHandler', 'writableHandler'],
   data() { return {
     polling: false,
     pollInterval: null,
@@ -957,7 +1014,7 @@ app.component('live-view-panel', {
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Live data</h2>
       <div>
-        <input type="checkbox" id="live_view_is_polling" v-model="polling" v-bind:disabled="!port" class="sk-checkbox" />
+        <input type="checkbox" id="live_view_is_polling" v-model="polling" v-bind:disabled="!writableHandler" class="sk-checkbox" />
         <label for="live_view_is_polling">update</label>
       </div>
     </div>
@@ -972,11 +1029,10 @@ app.component('live-view-panel', {
   methods: {
     async poll() {
       try {
-        if (!this.port) {
+        if (!this.writableHandler) {
           throw new Error('no port connected');
         }
-        const writable = this.port.writable;
-        const response = await querySkalene(SK_GET_LIVE_DATA + '', this.handler, writable);
+        const response = await querySkalene(SK_GET_LIVE_DATA + '', this.readableHandler, this.writableHandler);
         this.values = response.split(' ').slice(1, 9);
       } catch (e) {
         // TODO: alert user of error
