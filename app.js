@@ -562,7 +562,7 @@ const app = Vue.createApp({
 
       this.bootloaderFile = droppedItem.getAsFile();
     },
-    async program() {
+    async program(event) {
       const bootloaderFileBuffer = await this.bootloaderFile.arrayBuffer();
       const fileLength = bootloaderFileBuffer.byteLength;
       const bootloaderFileArray = new Uint8Array(bootloaderFileBuffer);
@@ -574,15 +574,17 @@ const app = Vue.createApp({
       const bootloaderPayloadBuffer = bootloaderPayloadArray.buffer;
 
       try {
-        this.bootloaderStatus = {
-          kind: 'info',
-          details: 'setting bootloader mode...'
-        };
-        await querySkalene(
-          SK_BOOTLOADER_MODE + '',
-          this.responseMessageHandler,
-          this.writableHandler
-        );
+        if (!event.shiftKey) {
+          this.bootloaderStatus = {
+            kind: 'info',
+            details: 'setting bootloader mode...'
+          };
+          await querySkalene(
+            SK_BOOTLOADER_MODE + '',
+            this.responseMessageHandler,
+            this.writableHandler
+          );
+        }
 
         this.bootloaderStatus = {
           kind: 'info',
