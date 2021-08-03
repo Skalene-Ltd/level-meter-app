@@ -1007,7 +1007,6 @@ app.component('live-view-panel', {
   props: ['readableHandler', 'writableHandler'],
   data() { return {
     polling: false,
-    pollInterval: null,
     values: []
   } },
   template: `<section class="sk-panel">
@@ -1037,19 +1036,18 @@ app.component('live-view-panel', {
       } catch (e) {
         // TODO: alert user of error
         console.error(e);
-        if (e instanceof SkFatalError) {
-          clearInterval(this.pollInterval);
-        }
+        this.polling = false;
       }
     }
   },
-  created() {
-    this.pollInterval = setInterval((() => {
-      if (this.polling) {
-        this.poll();
-      }
-    }).bind(this), 200);
-  }
+  async created() { while (true) {
+    if (this.polling) {
+      await this.poll();
+    }
+    await new Promise((resolve, _) => {
+      setTimeout(resolve, 200);
+    });
+  }}
 });
 
 const vm = app.mount('#app');
