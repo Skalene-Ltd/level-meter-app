@@ -2,4 +2,16 @@
 
 The level meter app lets you configure the level meter and update its firmware.
 
+## Launch the app
+
+To launch the app, open a window in a compatible web browser (the latest Google Chrome or Microsoft Edge) and navigate to [level-meter.app.skalene.com](https://level-meter.app.skalene.com).
+
+## Connect to the device
+
+Click on the blue 'connect' button in the 'Serial port' panel. A dialogue box should open saying the page wants to connect to the serial port.
+
+Then, plug your device into a USB port on your computer. The device should appear in the dialogue box as `USB Serial Port`. Click to select this opion, and then click 'connect'.
+
+The 'Serial port' panel should now say 'connected'.
+
 For more help, email alex@skalene.com.
