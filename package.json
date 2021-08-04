@@ -4,7 +4,7 @@
   "description": "[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/Skalene-Ltd/level-meter-app)",
   "main": "app.js",
   "scripts": {
-    "start": "npx http-server",
+    "start": "npx http-server app",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
