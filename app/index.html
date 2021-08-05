@@ -29,6 +29,11 @@
         gap: 1ex;
         height: 10rem
       }
+      .app-peak-meter__label {
+        font-weight: normal;
+        margin: 0 1rem;
+        color: var(--secondary-fg);
+      }
       .app-peak-meter__body {
         width: 2rem;
         flex-grow: 1;
@@ -173,9 +178,13 @@
               <div class="sk-panel__header">
                 <h2 class="sk-panel__title">Config</h2>
                 <inline-status v-if="configStatus" v-bind:kind="configStatus.kind" v-bind:details="configStatus.details"></inline-status>
+                <div>
+                  <input type="checkbox" id="config_enabled" v-model="configEnabled">
+                  <label for="config_enabled">allow config changes</label>
+                </div>
                 <div class="sk-button-group">
                   <button class="sk-button sk-button--secondary" v-on:click.prevent="getConfig">get config</button>
-                  <button class="sk-button sk-button--secondary" v-on:click.prevent="setConfig">set config</button>
+                  <button class="sk-button sk-button--secondary" v-on:click.prevent="setConfig" v-bind:disabled="!configEnabled">set config</button>
                 </div>
               </div>
               <div class="sk-panel__body">
