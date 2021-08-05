@@ -868,9 +868,9 @@ app.component('results-panel', {
 app.component('raw-data-panel', {
   props: ['readableHandler', 'writableHandler'],
   data() { return {
-    rawData: [],
     progress: null,
     errorText: null,
+    fileName: null,
     fileContent: null
   } },
   computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
@@ -892,7 +892,7 @@ app.component('raw-data-panel', {
       <div v-if="fileContent && progress === null" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
         <div aria-hidden="true" style="font-size:3rem">📗</div>
         <div class="sk--flex-auto">
-          skalene-raw-data.csv
+          {{ fileName }}
           <button v-on:click.prevent="downloadRaw" class="sk-button sk-button--primary">⭳ download</button>
         </div>
       </div>
@@ -905,7 +905,7 @@ app.component('raw-data-panel', {
         'href',
         'data:text/csv;charset=utf-8,' + encodeURIComponent(this.fileContent)
       );
-      el.setAttribute('download', 'skalene-raw-data.csv');
+      el.setAttribute('download', this.fileName);
       el.style.display = 'none';
       document.body.appendChild(el);
       el.click();
@@ -916,13 +916,11 @@ app.component('raw-data-panel', {
         if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
+        let rawData = [];
         for (const i of [...Array(128).keys()]) {
           this.progress = i;
           const result = await querySkalene(`11 ${i}`, this.readableHandler, this.writableHandler);
-          this.rawData = this.rawData.concat(result
-            .split(' ')
-            .slice(2, -1)
-          );
+          rawData = rawData.concat(result.split(' ').slice(2, -1));
         }
         this.progress = 128;
         this.errorText = null;
@@ -930,12 +928,19 @@ app.component('raw-data-panel', {
           .map(i => 'Channel ' + i)
           .join(', ')
           + '\r\n';
-        for (let i = 0; i < Math.ceil(this.rawData.length / 8); i++) {
-          this.fileContent += this.rawData
+        for (let i = 0; i < Math.ceil(rawData.length / 8); i++) {
+          this.fileContent += rawData
             .slice(i * 8, i * 8 + 8)
             .join(', ')
             + '\r\n';
         }
+        this.fileName = 'raw_' +
+          new Date()
+            .toLocaleString()
+            .replaceAll(' ', '_')
+            .replaceAll('/', '_')
+            .replaceAll(',', '') +
+          '.csv';
         this.progress = null;
       } catch (e) {
         this.progress = null;
