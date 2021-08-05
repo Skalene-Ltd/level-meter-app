@@ -17,5 +17,6 @@ The 'Serial port' panel should now say 'connected'.
 ## Use panels to control the device
 
 - [bootloader panel](panels/bootloader.md)
+- [raw data and results panels](panels/data-and-results.md)
 
 For more help, email alex@skalene.com.
