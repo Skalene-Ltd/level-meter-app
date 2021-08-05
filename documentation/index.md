@@ -18,5 +18,6 @@ The 'Serial port' panel should now say 'connected'.
 
 - [bootloader panel](panels/bootloader.md)
 - [raw data and results panels](panels/data-and-results.md)
+- [live data panel](panels/live-data.md)
 
 For more help, email alex@skalene.com.
