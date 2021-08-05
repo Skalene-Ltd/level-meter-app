@@ -21,5 +21,6 @@ Before you use the app, make sure the device is plugged in and switched on.
 - [bootloader panel](panels/bootloader.md)
 - [raw data and results panels](panels/data-and-results.md)
 - [live data panel](panels/live-data.md)
+- [config panel](panels/config.md)
 
 For more help, email alex@skalene.com.
