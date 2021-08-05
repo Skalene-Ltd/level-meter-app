@@ -232,6 +232,7 @@
                           spellcheck="false"
                           v-model.number="config.integrationTime"
                           v-on:change="setIntegration($event.target.value)"
+                          v-bind:disabled="!configEnabled"
                         >
                       </div>
                     </div>
@@ -288,7 +289,11 @@
               </div>
             </section>
 
-            <debug-panel v-bind:handler="debugMessageHandler"></debug-panel>
+            <debug-panel
+              v-bind:debug-readable-handler="debugMessageHandler"
+              v-bind:response-readable-handler="responseMessageHandler"
+              v-bind:writable-handler="writableHandler"
+            ></debug-panel>
 
           </div>
         </div>

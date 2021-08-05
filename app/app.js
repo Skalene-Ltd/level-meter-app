@@ -9,6 +9,8 @@ const CRC_OKAY = 0x53;
 
 const SK_SET_CONFIG = 1;
 const SK_GET_CONFIG = 3;
+const SK_START = 5;
+const SK_STOP = 7;
 const SK_GET_RESULTS = 9;
 const SK_BOOTLOADER_MODE = 13;
 const SK_DEBUG = 16;
@@ -866,9 +868,9 @@ app.component('results-panel', {
 app.component('raw-data-panel', {
   props: ['readableHandler', 'writableHandler'],
   data() { return {
-    rawData: [],
     progress: null,
     errorText: null,
+    fileName: null,
     fileContent: null
   } },
   computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
@@ -890,7 +892,7 @@ app.component('raw-data-panel', {
       <div v-if="fileContent && progress === null" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
         <div aria-hidden="true" style="font-size:3rem">📗</div>
         <div class="sk--flex-auto">
-          skalene-raw-data.csv
+          {{ fileName }}
           <button v-on:click.prevent="downloadRaw" class="sk-button sk-button--primary">⭳ download</button>
         </div>
       </div>
@@ -903,7 +905,7 @@ app.component('raw-data-panel', {
         'href',
         'data:text/csv;charset=utf-8,' + encodeURIComponent(this.fileContent)
       );
-      el.setAttribute('download', 'skalene-raw-data.csv');
+      el.setAttribute('download', this.fileName);
       el.style.display = 'none';
       document.body.appendChild(el);
       el.click();
@@ -914,13 +916,11 @@ app.component('raw-data-panel', {
         if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
+        let rawData = [];
         for (const i of [...Array(128).keys()]) {
           this.progress = i;
           const result = await querySkalene(`11 ${i}`, this.readableHandler, this.writableHandler);
-          this.rawData = this.rawData.concat(result
-            .split(' ')
-            .slice(2, -1)
-          );
+          rawData = rawData.concat(result.split(' ').slice(2, -1));
         }
         this.progress = 128;
         this.errorText = null;
@@ -928,12 +928,19 @@ app.component('raw-data-panel', {
           .map(i => 'Channel ' + i)
           .join(', ')
           + '\r\n';
-        for (let i = 0; i < Math.ceil(this.rawData.length / 8); i++) {
-          this.fileContent += this.rawData
+        for (let i = 0; i < Math.ceil(rawData.length / 8); i++) {
+          this.fileContent += rawData
             .slice(i * 8, i * 8 + 8)
             .join(', ')
             + '\r\n';
         }
+        this.fileName = 'raw_' +
+          new Date()
+            .toLocaleString()
+            .replaceAll(' ', '_')
+            .replaceAll('/', '_')
+            .replaceAll(',', '') +
+          '.csv';
         this.progress = null;
       } catch (e) {
         this.progress = null;
@@ -946,13 +953,18 @@ app.component('raw-data-panel', {
 });
 
 app.component('debug-panel', {
-  props: ['handler'],
+  props: ['debugReadableHandler', 'responseReadableHandler', 'writableHandler'],
   data() { return {
     text: ''
   } },
+  computed: { ready() { return Boolean(this.responseReadableHandler && this.writableHandler); } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Debug</h2>
+      <div class="sk-button-group">
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="startDevice" v-bind:disabled="!ready">start</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="stopDevice" v-bind:disabled="!ready">stop</button>
+      </div>
     </div>
     <div class="sk-panel__body">
       <pre class="sk--code sk--margin-0 sk--height-20rem sk--vertical-overflow-scrollable">{{ text }}</pre>
@@ -965,10 +977,24 @@ app.component('debug-panel', {
         .concat(line)
         .slice(-30)
         .join('\n');
+    },
+    async startDevice() {
+      try {
+        await querySkalene(SK_START + '', this.responseReadableHandler, this.writableHandler);
+      } catch (e) {
+        this.appendLine('APP start: ' + e);
+      }
+    },
+    async stopDevice() {
+      try {
+        await querySkalene(SK_STOP + '', this.responseReadableHandler, this.writableHandler);
+      } catch (e) {
+        this.appendLine('APP stop: ' + e);
+      }
     }
   },
   created() {
-    this.handler.every(this.appendLine);
+    this.debugReadableHandler.every(this.appendLine);
   }
 });
 
