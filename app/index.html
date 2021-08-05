@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Skalene Level Meter</title>
     <link href="/skalene.css" rel="stylesheet">
-    <script src="scripts/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/vue@next"></script>
     <style>
       .app-collapsible__toggle:not(:checked) ~ .app-collapsible__content {
         display: none;
@@ -114,6 +114,8 @@
       </header>
 
       <main class="sk-app__main sk--centre-panel-l sk--flex sk--flex-vertical sk--flex-gap">
+
+        <inline-status v-bind:kind="'success'" v-bind:details="'test message'"></inline-status>
 
         <section class="sk-notice sk-notice--problem" v-if="false">
           <h2 class="sk-notice__headline">The app failed to load.</h2>

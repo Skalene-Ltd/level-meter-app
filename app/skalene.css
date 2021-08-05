@@ -124,23 +124,25 @@
   display: inline-block;
   width: 1.2rem;
   height: 1.2rem;
-  line-height: 1rem;
   text-align: center;
-  font-size: 1.2rem;
   font-weight: bold;
   border-radius: 0.6rem;
-  transform: rotate(-10deg);
+  transform: rotate(-5deg);
   margin: 0 0.5ex;
 }
 
 .sk-notice--inline.sk-notice--inline--problem::before {
   content: "!";
+  line-height: 1rem;
+  font-size: 1.2rem;
   background: var(--problem-bg);
   color: var(--problem-fg);
 }
 
 .sk-notice--inline.sk-notice--inline--info::before {
   content: "i";
+  font-size: 1rem;
+  line-height: 1.1rem;
   background: var(--info-fg);
   color: var(--info-bg);
   font-style: italic;
@@ -148,6 +150,8 @@
 
 .sk-notice--inline.sk-notice--inline--success::before {
   content: "✔";
+  font-size: 0.8rem;
+  line-height: 1.1rem;
   background: var(--success-bg);
   color: var(--success-fg);
 }
