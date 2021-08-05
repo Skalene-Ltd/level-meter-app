@@ -467,6 +467,7 @@ const app = Vue.createApp({
     serialStatus: null,
     bootloaderStatus: null,
     configStatus: null,
+    configEnabled: false,
     fatalError: null,
     config: { leds: [] }
   } },
