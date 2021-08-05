@@ -22,6 +22,7 @@ Before you use the app, make sure the device is plugged in and switched on.
 - [raw data and results panels](panels/data-and-results.md)
 - [live data panel](panels/live-data.md)
 - [config panel](panels/config.md)
+- [debug panel](panels/config.md)
 
 ---
 
