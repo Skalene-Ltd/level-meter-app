@@ -111,8 +111,16 @@
   font-weight: bold;
 }
 
-.sk-notice--inline.sk-notice--inline--problem::before {
-  content: "!";
+.sk-notice--inline--info {
+  color: var(--info-fg);
+}
+
+.sk-notice--inline--success {
+  color: var(--success-bg);
+  font-weight: bold;
+}
+
+.sk-notice--inline::before {
   display: inline-block;
   width: 1.2rem;
   height: 1.2rem;
@@ -120,11 +128,27 @@
   text-align: center;
   font-size: 1.2rem;
   font-weight: bold;
-  background: var(--problem-bg);
-  color: var(--problem-fg);
   border-radius: 0.6rem;
   transform: rotate(-10deg);
-  margin: 0 1ex;
+  margin: 0 0.5ex;
+}
+
+.sk-notice--inline.sk-notice--inline--problem::before {
+  content: "!";
+  background: var(--problem-bg);
+  color: var(--problem-fg);
+}
+
+.sk-notice--inline.sk-notice--inline--info::before {
+  content: "i";
+  background: var(--info-fg);
+  color: var(--info-bg);
+  font-style: italic;
+}
+
+.sk-notice--inline.sk-notice--inline--success::before {
+  content: "";
+  background: var(--success-bg);
 }
 
 .sk-panel {
