@@ -104,8 +104,27 @@
 
 .sk-notice--inline {
   padding: 2px 5px;
-  border-width: 2px;
-  border-style: solid; 
+}
+
+.sk-notice--inline--problem {
+  color: var(--problem-bg);
+  font-weight: bold;
+}
+
+.sk-notice--inline.sk-notice--inline--problem::before {
+  content: "!";
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  line-height: 1rem;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background: var(--problem-bg);
+  color: var(--problem-fg);
+  border-radius: 0.6rem;
+  transform: rotate(-10deg);
+  margin: 0 1ex;
 }
 
 .sk-panel {

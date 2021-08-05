@@ -759,8 +759,9 @@ app.component('fatal-error-message', {
 
 app.component('inline-status', {
   props: ['kind', 'details'],
+  computed: { className() { return 'sk-notice--inline--' + this.kind } },
   template: `<div>
-    <div class="sk-notice--inline" v-bind:class="'sk--' + kind">{{ details }}</div>
+    <div class="sk-notice--inline" v-bind:class="[className]">{{ details }}</div>
   </div>`
 });
 
