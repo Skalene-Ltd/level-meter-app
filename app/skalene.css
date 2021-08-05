@@ -147,8 +147,9 @@
 }
 
 .sk-notice--inline.sk-notice--inline--success::before {
-  content: "";
+  content: "✔";
   background: var(--success-bg);
+  color: var(--success-fg);
 }
 
 .sk-panel {
