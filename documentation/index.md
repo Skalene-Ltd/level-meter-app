@@ -14,4 +14,8 @@ Then, plug your device into a USB port on your computer. The device should appea
 
 The 'Serial port' panel should now say 'connected'.
 
+## Use panels to control the device
+
+- [bootloader panel](panels/bootloader.md)
+
 For more help, email alex@skalene.com.
