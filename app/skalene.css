@@ -104,8 +104,56 @@
 
 .sk-notice--inline {
   padding: 2px 5px;
-  border-width: 2px;
-  border-style: solid; 
+}
+
+.sk-notice--inline--problem {
+  color: var(--problem-bg);
+  font-weight: bold;
+}
+
+.sk-notice--inline--info {
+  color: var(--info-fg);
+}
+
+.sk-notice--inline--success {
+  color: var(--success-bg);
+  font-weight: bold;
+}
+
+.sk-notice--inline::before {
+  display: inline-block;
+  width: 1.2rem;
+  height: 1.2rem;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 0.6rem;
+  transform: rotate(-5deg);
+  margin: 0 0.5ex;
+}
+
+.sk-notice--inline.sk-notice--inline--problem::before {
+  content: "!";
+  line-height: 1rem;
+  font-size: 1.2rem;
+  background: var(--problem-bg);
+  color: var(--problem-fg);
+}
+
+.sk-notice--inline.sk-notice--inline--info::before {
+  content: "i";
+  font-size: 1rem;
+  line-height: 1.1rem;
+  background: var(--info-fg);
+  color: var(--info-bg);
+  font-style: italic;
+}
+
+.sk-notice--inline.sk-notice--inline--success::before {
+  content: "✔";
+  font-size: 0.8rem;
+  line-height: 1.1rem;
+  background: var(--success-bg);
+  color: var(--success-fg);
 }
 
 .sk-panel {

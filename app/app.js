@@ -467,6 +467,7 @@ const app = Vue.createApp({
     serialStatus: null,
     bootloaderStatus: null,
     configStatus: null,
+    configEnabled: false,
     fatalError: null,
     config: { leds: [] }
   } },
@@ -758,8 +759,9 @@ app.component('fatal-error-message', {
 
 app.component('inline-status', {
   props: ['kind', 'details'],
+  computed: { className() { return 'sk-notice--inline--' + this.kind } },
   template: `<div>
-    <div class="sk-notice--inline" v-bind:class="'sk--' + kind">{{ details }}</div>
+    <div class="sk-notice--inline" v-bind:class="[className]">{{ details }}</div>
   </div>`
 });
 
@@ -1021,7 +1023,8 @@ app.component('live-view-panel', {
     </div>
     <div class="sk-panel__body">
       <div class="app-live-grid">
-        <div v-for="value in values" class="app-peak-meter__wrapper">
+        <div v-for="(value, index) in values" class="app-peak-meter__wrapper">
+          <h3 class="app-peak-meter__label">{{ index + 1 }}</h3>
           <peak-meter v-bind:isActive="polling" v-bind:value="value"></peak-meter>
         </div>
       </div>
