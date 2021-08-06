@@ -887,7 +887,7 @@ app.component('raw-data-panel', {
       <h2 class="sk-panel__title">Raw data</h2>
 
       <inline-status v-if="error" v-bind:kind="'problem'" v-bind:details="error"></inline-status>
-      <div v-else-if="progress !== null" class="sk--flex-greedy">
+      <div v-else-if="progress !== null">
         <progress v-bind:value="progress" max="256"></progress>
       </div>
 
