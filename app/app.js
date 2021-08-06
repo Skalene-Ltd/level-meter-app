@@ -105,7 +105,9 @@ class StreamHandler {
           if (index > -1) {
             self.nextCallbackQueue.splice(index, 1);
           }
-          reject(new Error('timeout'));
+          const err = new Error('timeout');
+          err.helpURL = 'https://github.com/Skalene-Ltd/level-meter-app/blob/trunk/documentation/errors/timeout#timeout-error';
+          reject(err);
         },
         timeout
       );
@@ -759,9 +761,15 @@ app.component('fatal-error-message', {
 
 app.component('inline-status', {
   props: ['kind', 'details'],
-  computed: { className() { return 'sk-notice--inline--' + this.kind } },
+  computed: {
+    className() { return 'sk-notice--inline--' + this.kind },
+    detailsText() { return this.details instanceof Error ? this.details.message : this.details }
+  },
   template: `<div>
-    <div class="sk-notice--inline" v-bind:class="[className]">{{ details }}</div>
+    <div class="sk-notice--inline" v-bind:class="[className]">
+      {{ detailsText }}
+      <a v-if="details.helpURL" v-bind:href="details.helpURL" target="_blank" class="sk-notice--inline__help-link">Help</a>
+    </div>
   </div>`
 });
 
@@ -833,7 +841,7 @@ app.component('results-panel', {
         console.error(e);
         this.status = {
           kind: 'problem',
-          details: e.message
+          details: e
         };
       }
     }
