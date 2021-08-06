@@ -880,7 +880,7 @@ app.component('raw-data-panel', {
 
       <inline-status v-if="errorText" v-bind:kind="'problem'" v-bind:details="errorText"></inline-status>
       <div v-else-if="progress !== null" class="sk--flex-greedy">
-        <progress v-bind:value="progress" max="128"></progress>
+        <progress v-bind:value="progress" max="256"></progress>
       </div>
 
       <div>
@@ -917,12 +917,12 @@ app.component('raw-data-panel', {
           throw new Error('no serial port connected');
         }
         let rawData = [];
-        for (const i of [...Array(128).keys()]) {
+        for (const i of [...Array(256).keys()]) {
           this.progress = i;
           const result = await querySkalene(`11 ${i}`, this.readableHandler, this.writableHandler);
           rawData = rawData.concat(result.split(' ').slice(2, -1));
         }
-        this.progress = 128;
+        this.progress = 256;
         this.errorText = null;
         this.fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
           .map(i => 'Channel ' + i)
