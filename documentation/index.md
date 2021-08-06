@@ -4,7 +4,7 @@ The level meter app lets you configure the level meter and update its firmware.
 
 ## Launch the app
 
-To launch the app, open a window in a compatible web browser (the latest Google Chrome or Microsoft Edge) and navigate to [level-meter.app.skalene.com](https://level-meter.app.skalene.com).
+To launch the app, open a window in a compatible web browser (the latest Google Chrome or Microsoft Edge) and navigate to [skalene-level-meter.netlify.app/]https://skalene-level-meter.netlify.app/).
 
 ## Connect to the device
 
