@@ -108,7 +108,7 @@ class StreamHandler {
             self.nextCallbackQueue.splice(index, 1);
           }
           const err = new Error('timeout');
-          err.helpURL = 'https://github.com/Skalene-Ltd/level-meter-app/blob/trunk/documentation/errors/timeout#timeout-error';
+          err.helpURL = 'https://github.com/Skalene-Ltd/level-meter-app/blob/trunk/documentation/errors/timeout.md#timeout-error';
           reject(err);
         },
         timeout
