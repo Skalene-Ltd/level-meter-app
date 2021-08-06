@@ -42,6 +42,41 @@
 	--danger-hover-bg: #8e0510;
 }
 
+@media (prefers-color-scheme: dark) { :root {
+  --primary-bg: #333;
+  --primary-fg: #eee;
+	--primary-shadow: rgba(0, 0, 0, 0.5);
+
+  --secondary-bg: #222;
+	--secondary-fg: #ccc;
+	--secondary-shadow: rgba(0, 0, 0, 0.05);
+
+  --primary-interaction-bg: #205b9a;
+  --primary-interaction-fg: #eaf2fb;
+  --primary-interaction-hover-bg: #2276d0;
+  --primary-interaction-hover-fg: #fff;
+
+  --interaction-field-bg: #205b9a;
+  --interaction-field-fg: #71adec;
+
+  --secondary-interaction-bg: #cac9c8;
+  --secondary-interaction-fg: #1d1c1b;
+	--secondary-interaction-hover-bg: #a09f9e;
+	--secondary-interaction-hover-fg: #000;
+  --secondary-interaction-shadow: rgba(0,0,0,0.5);
+
+	--problem-bg: #ce8288;
+	--problem-fg: #3f0207;
+
+	--success-bg: #59bb50;
+	--success-fg: #052f01;
+}
+
+a { color: #6666f4 }
+a:visited { color: #9975b9 }
+
+}
+
 *, ::before, ::after {
   box-sizing: border-box;
 }
@@ -49,6 +84,8 @@
 .sk-body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
+  background: var(--primary-bg);
+  color: var(--primary-fg)
 }
 
 .sk-header {
