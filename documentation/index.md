@@ -14,4 +14,16 @@ Then, plug your device into a USB port on your computer. The device should appea
 
 The 'Serial port' panel should now say 'connected'.
 
+Before you use the app, make sure the device is plugged in and switched on.
+
+## Use panels to control the device
+
+- [bootloader panel](panels/bootloader.md)
+- [raw data and results panels](panels/data-and-results.md)
+- [live data panel](panels/live-data.md)
+- [config panel](panels/config.md)
+- [debug panel](panels/config.md)
+
+---
+
 For more help, email alex@skalene.com.

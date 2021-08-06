@@ -156,6 +156,15 @@
   color: var(--success-fg);
 }
 
+.sk-notice--inline__help-link {
+  margin: 0 0.5ex;
+  color: inherit;
+}
+
+.sk-notice--inline__help-link:visited {
+  color: inherit;
+}
+
 .sk-panel {
   border: 1px solid var(--primary-shadow);
   border-radius: 6px;

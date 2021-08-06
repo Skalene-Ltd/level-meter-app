@@ -107,7 +107,9 @@ class StreamHandler {
           if (index > -1) {
             self.nextCallbackQueue.splice(index, 1);
           }
-          reject(new Error('timeout'));
+          const err = new Error('timeout');
+          err.helpURL = 'https://github.com/Skalene-Ltd/level-meter-app/blob/trunk/documentation/errors/timeout#timeout-error';
+          reject(err);
         },
         timeout
       );
@@ -761,9 +763,15 @@ app.component('fatal-error-message', {
 
 app.component('inline-status', {
   props: ['kind', 'details'],
-  computed: { className() { return 'sk-notice--inline--' + this.kind } },
+  computed: {
+    className() { return 'sk-notice--inline--' + this.kind },
+    detailsText() { return this.details instanceof Error ? this.details.message : this.details }
+  },
   template: `<div>
-    <div class="sk-notice--inline" v-bind:class="[className]">{{ details }}</div>
+    <div class="sk-notice--inline" v-bind:class="[className]">
+      {{ detailsText }}
+      <a v-if="details.helpURL" v-bind:href="details.helpURL" target="_blank" class="sk-notice--inline__help-link">Help</a>
+    </div>
   </div>`
 });
 
@@ -835,7 +843,7 @@ app.component('results-panel', {
         console.error(e);
         this.status = {
           kind: 'problem',
-          details: e.message
+          details: e
         };
       }
     }
@@ -869,7 +877,7 @@ app.component('raw-data-panel', {
   props: ['readableHandler', 'writableHandler'],
   data() { return {
     progress: null,
-    errorText: null,
+    error: null,
     fileName: null,
     fileContent: null
   } },
@@ -878,7 +886,7 @@ app.component('raw-data-panel', {
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Raw data</h2>
 
-      <inline-status v-if="errorText" v-bind:kind="'problem'" v-bind:details="errorText"></inline-status>
+      <inline-status v-if="error" v-bind:kind="'problem'" v-bind:details="error"></inline-status>
       <div v-else-if="progress !== null" class="sk--flex-greedy">
         <progress v-bind:value="progress" max="256"></progress>
       </div>
@@ -913,6 +921,7 @@ app.component('raw-data-panel', {
     },
     async getRaw() {
       try {
+        this.error = null;
         if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
@@ -923,7 +932,6 @@ app.component('raw-data-panel', {
           rawData = rawData.concat(result.split(' ').slice(2, -1));
         }
         this.progress = 256;
-        this.errorText = null;
         this.fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
           .map(i => 'Channel ' + i)
           .join(', ')
@@ -946,7 +954,7 @@ app.component('raw-data-panel', {
         this.progress = null;
         this.fileContent = '';
         console.error(e);
-        this.errorText = e.message;
+        this.error = e;
       }
     }
   }
