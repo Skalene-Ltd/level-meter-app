@@ -876,7 +876,7 @@ app.component('raw-data-panel', {
   data() { return {
     rawData: [],
     progress: null,
-    errorText: null,
+    error: null,
     fileContent: null
   } },
   computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
@@ -884,7 +884,7 @@ app.component('raw-data-panel', {
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Raw data</h2>
 
-      <inline-status v-if="errorText" v-bind:kind="'problem'" v-bind:details="errorText"></inline-status>
+      <inline-status v-if="error" v-bind:kind="'problem'" v-bind:details="error"></inline-status>
       <div v-else-if="progress !== null" class="sk--flex-greedy">
         <progress v-bind:value="progress" max="128"></progress>
       </div>
@@ -919,6 +919,7 @@ app.component('raw-data-panel', {
     },
     async getRaw() {
       try {
+        this.error = null;
         if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
@@ -931,7 +932,6 @@ app.component('raw-data-panel', {
           );
         }
         this.progress = 128;
-        this.errorText = null;
         this.fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
           .map(i => 'Channel ' + i)
           .join(', ')
@@ -947,7 +947,7 @@ app.component('raw-data-panel', {
         this.progress = null;
         this.fileContent = '';
         console.error(e);
-        this.errorText = e.message;
+        this.error = e;
       }
     }
   }
