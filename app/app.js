@@ -1045,11 +1045,13 @@ app.component('live-view-panel', {
   props: ['readableHandler', 'writableHandler'],
   data() { return {
     polling: false,
-    values: []
+    values: [],
+    error: null
   } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Live data</h2>
+      <inline-status v-if="error" v-bind:kind="'problem'" v-bind:details="error"></inline-status>
       <div>
         <input type="checkbox" id="live_view_is_polling" v-model="polling" v-bind:disabled="!writableHandler" class="sk-checkbox" />
         <label for="live_view_is_polling">update</label>
@@ -1072,9 +1074,10 @@ app.component('live-view-panel', {
         }
         const response = await querySkalene(SK_GET_LIVE_DATA + '', this.readableHandler, this.writableHandler);
         this.values = response.split(' ').slice(1, 9);
+        this.error = null;
       } catch (e) {
-        // TODO: alert user of error
         console.error(e);
+        this.error = e;
         this.polling = false;
       }
     }
