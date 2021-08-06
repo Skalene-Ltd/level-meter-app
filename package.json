@@ -1,7 +1,7 @@
 {
   "name": "level-meter-app",
   "version": "0.0.0",
-  "description": "[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/Skalene-Ltd/level-meter-app)",
+  "description": "Webapp for managing the level meter",
   "main": "app.js",
   "scripts": {
     "start": "npx http-server app",
