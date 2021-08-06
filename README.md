@@ -4,4 +4,6 @@
 
 Webapp for managing the level meter
 
+[Documentation](documentation/index.md)
+
 [skalene-level-meter.netlify.app](https://skalene-level-meter.netlify.app)
