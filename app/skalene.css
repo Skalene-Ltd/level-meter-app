@@ -514,6 +514,10 @@
   justify-content: space-around;
 }
 
+.sk--flex-space-items-evenly {
+  justify-content: space-evenly;
+}
+
 .sk--flex-vertical-centre-items {
   align-items: center;
 }
