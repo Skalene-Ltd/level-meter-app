@@ -298,7 +298,7 @@ const parseConfig = candidate => {
   } else {
     const check = candidateLed => {
       const parsedLed = parseInt(candidateLed);
-      if (1 <= parsedLed && parsedLed <= 100) {
+      if (0 <= parsedLed && parsedLed <= 100) {
         return parsedLed;
       } else {
         return new RangeError(

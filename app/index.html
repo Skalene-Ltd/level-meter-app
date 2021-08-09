@@ -278,7 +278,7 @@
                         <div class="sk-input__affix">
                           <label v-bind:for="'led' + i" class="sk-input__affix-text">CH{{ i }}</label>
                         </div>
-                        <input type="number" min="1" max="100" v-model.number="config.leds[i - 1]" v-bind:id="'led' + i" v-bind:name="'led' + i" class="sk-input sk--width-4rem">
+                        <input type="number" min="0" max="100" v-model.number="config.leds[i - 1]" v-bind:id="'led' + i" v-bind:name="'led' + i" class="sk-input sk--width-4rem">
                         <div class="sk-input__affix">
                           <span class="sk-input__affix-text">%</span>
                         </div>
