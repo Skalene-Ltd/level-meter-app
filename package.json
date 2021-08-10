@@ -18,8 +18,8 @@
   },
   "homepage": "https://github.com/Skalene-Ltd/level-meter-app#readme",
   "dependencies": {
-    "npm": "^6.14.14",
     "@11ty/eleventy": "^0.12.1",
-    "markdown-it-anchor": "^8.1.2"
+    "markdown-it-anchor": "^8.1.2",
+    "npm": "^6.14.14"
   }
 }
