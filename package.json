@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/Skalene-Ltd/level-meter-app/issues"
   },
-  "homepage": "https://github.com/Skalene-Ltd/level-meter-app#readme"
+  "homepage": "https://github.com/Skalene-Ltd/level-meter-app#readme",
+  "devDependencies": {
+    "@11ty/eleventy": "^0.12.1",
+    "markdown-it-anchor": "^8.1.2"
+  }
 }
