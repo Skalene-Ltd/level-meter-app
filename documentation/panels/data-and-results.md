@@ -2,7 +2,7 @@
 
 The 'raw data' and 'results' panels can be used to get data from the device. 
 
-> First, make sure the app is [connected to the device](../index.md#connect-to-the-device).
+> First, make sure the app is [connected to the device](../../#connect-to-the-device).
 
 ## Raw data
 
