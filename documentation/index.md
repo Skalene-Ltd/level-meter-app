@@ -18,11 +18,11 @@ Before you use the app, make sure the device is plugged in and switched on.
 
 ## Use panels to control the device
 
-- [bootloader panel](panels/bootloader.md)
-- [raw data and results panels](panels/data-and-results.md)
-- [live data panel](panels/live-data.md)
-- [config panel](panels/config.md)
-- [debug panel](panels/config.md)
+- [bootloader panel](panels/bootloader)
+- [raw data and results panels](panels/data-and-results)
+- [live data panel](panels/live-data)
+- [config panel](panels/config)
+- [debug panel](panels/debug)
 
 ---
 

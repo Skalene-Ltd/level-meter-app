@@ -2,9 +2,9 @@
   "name": "level-meter-app",
   "version": "0.0.0",
   "description": "Webapp for managing the level meter",
-  "main": "app.js",
   "scripts": {
     "start": "npx http-server app",
+    "build": "npx @11ty/eleventy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/Skalene-Ltd/level-meter-app/issues"
   },
-  "homepage": "https://github.com/Skalene-Ltd/level-meter-app#readme"
+  "homepage": "https://github.com/Skalene-Ltd/level-meter-app#readme",
+  "dependencies": {
+    "@11ty/eleventy": "^0.12.1",
+    "markdown-it-anchor": "^8.1.2",
+    "npm": "^6.14.14"
+  }
 }
