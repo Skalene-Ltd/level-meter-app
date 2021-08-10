@@ -2,9 +2,9 @@
   "name": "level-meter-app",
   "version": "0.0.0",
   "description": "Webapp for managing the level meter",
-  "main": "app.js",
   "scripts": {
     "start": "npx http-server app",
+    "build": "npx @11ty/eleventy",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
