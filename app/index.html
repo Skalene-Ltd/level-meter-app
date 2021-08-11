@@ -186,6 +186,9 @@
                   <button class="sk-button sk-button--secondary" v-on:click.prevent="getConfig">get config</button>
                   <button class="sk-button sk-button--secondary" v-on:click.prevent="setConfig" v-bind:disabled="!configEnabled">set config</button>
                 </div>
+                <div>
+                  <button class="sk-button sk-button--primary" v-on:click.prevent="saveConfigFile" v-bind:disabled="!isConfigValid">save file</button>
+                </div>
               </div>
               <div class="sk-panel__body">
                 <div class="sk-dropzone sk--padding-1rem sk--seethrough sk--flex sk--flex-vertical sk--flex-gap" @dragover.prevent="" @drop.prevent="handleConfigDrop">

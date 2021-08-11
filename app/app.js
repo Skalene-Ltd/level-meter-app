@@ -475,6 +475,9 @@ const app = Vue.createApp({
     fatalError: null,
     config: { leds: [] }
   } },
+  computed: {
+    isConfigValid() { return !parseConfig(this.config).errors; }
+  },
   methods: {
     async connect() {
       try {
@@ -669,6 +672,35 @@ const app = Vue.createApp({
         console.log('done');
         this.config = config;
         this.configStatus = { kind: 'success', details: 'config loaded from file' }
+      } catch (err) {
+        this.configStatus = { kind: 'problem', details: err };
+      }
+    },
+    saveConfigFile() {
+      try {
+        const { config, errors } = parseConfig(this.config);
+        if (errors) {
+          console.error(errors);
+          throw new Error('invalid config');
+        }
+        const configText = JSON.stringify(config);
+        const el = document.createElement('a');
+        el.setAttribute(
+          'href',
+          'data:text/json;charset=utf-8,' + encodeURIComponent(configText)
+        );
+        el.setAttribute('download', 'config_' +
+          new Date()
+            .toLocaleString()
+            .replaceAll(' ', '_')
+            .replaceAll('/', '_')
+            .replaceAll(',', '') +
+          '.json'
+        );
+        el.style.display = 'none';
+        document.body.appendChild(el);
+        el.click();
+        document.body.removeChild(el);
       } catch (err) {
         this.configStatus = { kind: 'problem', details: err };
       }
