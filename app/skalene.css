@@ -1,6 +1,6 @@
 :root {
 	--primary-bg: #fff;
-	--primary-fg: #000;
+	--primary-fg: #1a1a1a;
 	--primary-shadow: rgba(0, 0, 0, 0.2);
 
   --header-bg: #181b1f;
@@ -556,8 +556,33 @@
   background: transparent;
 }
 
+.sk--Boneless {
+  line-height: 1.4;
+}
+
 .sk--Boneless :where(h1, h2, h3, h4, h5, h6):focus-visible {
   background: var(--focus-fg);
   color: var(--focus-bg);
   outline: none;
+}
+
+.sk--Boneless h1 {
+  font-size: 2.5rem;
+  box-shadow: 0 1px var(--primary-shadow);
+}
+
+.sk--Boneless :where(h1, h2, h3, h4, h5) {
+  line-height: 1;
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sk--Boneless :where(address, area, article, aside, audio, blockquote, datalist, details, dl, fieldset, figure, form, iframe, img, input, meter, nav, ol, optgroup, option, output, p, pre, progress, ruby, section, table, textarea, ul, video) {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.sk--Boneless p {
+  color: var(--primary-fg);
 }
