@@ -314,6 +314,10 @@
   width: 1.2rem;
 }
 
+.sk-radio__label {
+  color: var(--primary-fg);
+}
+
 .sk-input__descriptor {
   color: var(--primary-fg);
   display: inline-block;
@@ -385,6 +389,7 @@
   border: 1px solid var(--primary-shadow);
   border-radius: 4px;
   padding: 1rem;
+  color: var(--primary-fg);
 }
 
 .sk-fieldset > :last-child {
