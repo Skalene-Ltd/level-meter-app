@@ -645,6 +645,34 @@ const app = Vue.createApp({
         console.error(e);
       }
     },
+    async handleConfigDrop(event) {
+      try {
+        const items = event.dataTransfer.items;
+        if (items.length !== 1) {
+          throw new Error('incorrect number of files');
+        }
+        const droppedItem = items[0];
+        if (droppedItem.kind !== 'file') {
+          throw new Error('dropped item is not a file');
+        }
+        const configFile = droppedItem.getAsFile();
+        const configText = await configFile.text();
+        let configCandidate;
+        try {
+          configCandidate = JSON.parse(configText);
+        } catch (err) { throw new Error('invalid file format'); }
+        const { config, errors } = parseConfig(configCandidate);
+        if (errors) {
+          console.error(errors);
+          throw new Error('file contained invalid config.')
+        }
+        console.log('done');
+        this.config = config;
+        this.configStatus = { kind: 'success', details: 'config loaded from file' }
+      } catch (err) {
+        this.configStatus = { kind: 'problem', details: err };
+      }
+    },
     async getConfig() {
       this.configStatus = null;
       try {
