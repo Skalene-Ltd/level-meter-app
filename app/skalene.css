@@ -207,6 +207,14 @@
   text-align: center;
 }
 
+.sk-panel__filler {
+  display: block;
+  height: 4rem;
+  padding: 1rem;
+  text-align: center;
+  line-height: 2rem;
+}
+
 .sk-form > :last-child {
   margin-bottom: 0;
 }
@@ -306,6 +314,10 @@
   width: 1.2rem;
 }
 
+.sk-radio__label {
+  color: var(--primary-fg);
+}
+
 .sk-input__descriptor {
   color: var(--primary-fg);
   display: inline-block;
@@ -377,6 +389,7 @@
   border: 1px solid var(--primary-shadow);
   border-radius: 4px;
   padding: 1rem;
+  color: var(--primary-fg);
 }
 
 .sk-fieldset > :last-child {
@@ -414,8 +427,7 @@
 .sk-dropzone {
   background: var(--interaction-field-bg);
   color: var(--interaction-field-fg);
-  padding: 3rem 1rem;
-  text-align: center;
+  border: 4px solid var(--interaction-field-bg);
   border-radius: 6px;
 }
 
@@ -534,6 +546,10 @@
 
 .sk--colour-primary-shadow a, .sk--colour-primary-shadow a:visited {
   color: inherit;
+}
+
+.sk--seethrough {
+  background: transparent;
 }
 
 .sk--Boneless :where(h1, h2, h3, h4, h5, h6):focus-visible {

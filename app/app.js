@@ -475,6 +475,9 @@ const app = Vue.createApp({
     fatalError: null,
     config: { leds: [] }
   } },
+  computed: {
+    isConfigValid() { return !parseConfig(this.config).errors; }
+  },
   methods: {
     async connect() {
       try {
@@ -643,6 +646,63 @@ const app = Vue.createApp({
           details: e.message
         };
         console.error(e);
+      }
+    },
+    async handleConfigDrop(event) {
+      try {
+        const items = event.dataTransfer.items;
+        if (items.length !== 1) {
+          throw new Error('incorrect number of files');
+        }
+        const droppedItem = items[0];
+        if (droppedItem.kind !== 'file') {
+          throw new Error('dropped item is not a file');
+        }
+        const configFile = droppedItem.getAsFile();
+        const configText = await configFile.text();
+        let configCandidate;
+        try {
+          configCandidate = JSON.parse(configText);
+        } catch (err) { throw new Error('invalid file format'); }
+        const { config, errors } = parseConfig(configCandidate);
+        if (errors) {
+          console.error(errors);
+          throw new Error('file contained invalid config.')
+        }
+        console.log('done');
+        this.config = config;
+        this.configStatus = { kind: 'success', details: 'config loaded from file' }
+      } catch (err) {
+        this.configStatus = { kind: 'problem', details: err };
+      }
+    },
+    saveConfigFile() {
+      try {
+        const { config, errors } = parseConfig(this.config);
+        if (errors) {
+          console.error(errors);
+          throw new Error('invalid config');
+        }
+        const configText = JSON.stringify(config);
+        const el = document.createElement('a');
+        el.setAttribute(
+          'href',
+          'data:text/json;charset=utf-8,' + encodeURIComponent(configText)
+        );
+        el.setAttribute('download', 'config_' +
+          new Date()
+            .toLocaleString()
+            .replaceAll(' ', '_')
+            .replaceAll('/', '_')
+            .replaceAll(',', '') +
+          '.json'
+        );
+        el.style.display = 'none';
+        document.body.appendChild(el);
+        el.click();
+        document.body.removeChild(el);
+      } catch (err) {
+        this.configStatus = { kind: 'problem', details: err };
       }
     },
     async getConfig() {
