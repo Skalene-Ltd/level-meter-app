@@ -422,6 +422,7 @@
 .sk-dropzone {
   background: var(--interaction-field-bg);
   color: var(--interaction-field-fg);
+  border: 4px solid var(--interaction-field-bg);
   border-radius: 6px;
 }
 
@@ -540,6 +541,10 @@
 
 .sk--colour-primary-shadow a, .sk--colour-primary-shadow a:visited {
   color: inherit;
+}
+
+.sk--seethrough {
+  background: transparent;
 }
 
 .sk--Boneless :where(h1, h2, h3, h4, h5, h6):focus-visible {
