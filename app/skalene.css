@@ -453,7 +453,12 @@
   overflow-y: auto;
 }
 
-.sk--centre-panel-l, .sk--Boneless main {
+.sk--centre-panel-m, .sk--Boneless main {
+  margin: 0 auto;
+  max-width: 45rem;
+}
+
+.sk--centre-panel-l {
   margin: 0 auto;
   max-width: 60rem;
 }
