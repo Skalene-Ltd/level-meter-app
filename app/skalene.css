@@ -398,7 +398,7 @@
 .sk-footer {
   background: var(--secondary-bg);
   color: var(--secondary-fg);
-  box-shadow: inset 0 2px var(--secondary-shadow);
+  box-shadow: inset 0 1px var(--secondary-shadow);
 }
 
 .sk-footer__wrapper {
@@ -453,7 +453,7 @@
   overflow-y: auto;
 }
 
-.sk--centre-panel-m, .sk--Boneless main {
+.sk--centre-panel-m, .sk--Boneless main, .sk--Boneless header > * {
   margin: 0 auto;
   max-width: 45rem;
 }
@@ -558,6 +558,32 @@
 
 .sk--Boneless {
   line-height: 1.4;
+}
+
+.sk--Boneless header {
+  background: var(--secondary-bg);
+  color: var(--secondary-fg);
+  padding: 1rem;
+  box-shadow: inset 0 -1px var(--secondary-shadow);
+}
+
+.sk--Boneless header > * {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.sk--Boneless header > :first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.sk--Boneless header > :last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sk--Boneless header h1 {
+  box-shadow: none;
 }
 
 .sk--Boneless :where(h1, h2, h3, h4, h5, h6):focus-visible {
