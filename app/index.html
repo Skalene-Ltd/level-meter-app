@@ -156,7 +156,7 @@
             </div>
           </div>
           <div class="sk-panel__body">
-            <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone">
+            <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone sk-panel__filler">
               Drag and drop a file here
             </div>
             <file-details v-if="bootloaderFile" v-bind:file="bootloaderFile"></file-details>

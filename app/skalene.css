@@ -207,6 +207,14 @@
   text-align: center;
 }
 
+.sk-panel__filler {
+  display: block;
+  height: 4rem;
+  padding: 1rem;
+  text-align: center;
+  line-height: 2rem;
+}
+
 .sk-form > :last-child {
   margin-bottom: 0;
 }
@@ -414,8 +422,6 @@
 .sk-dropzone {
   background: var(--interaction-field-bg);
   color: var(--interaction-field-fg);
-  padding: 3rem 1rem;
-  text-align: center;
   border-radius: 6px;
 }
 
