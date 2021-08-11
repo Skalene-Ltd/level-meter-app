@@ -183,8 +183,8 @@
                   <label for="config_enabled">allow config changes</label>
                 </div>
                 <div class="sk-button-group">
-                  <button class="sk-button sk-button--secondary" v-on:click.prevent="getConfig">get config</button>
-                  <button class="sk-button sk-button--secondary" v-on:click.prevent="setConfig" v-bind:disabled="!configEnabled">set config</button>
+                  <button class="sk-button sk-button--secondary" v-on:click.prevent="getConfig" v-bind:disabled="!serialPort">get config</button>
+                  <button class="sk-button sk-button--secondary" v-on:click.prevent="setConfig" v-bind:disabled="!configEnabled || !isConfigValid">set config</button>
                 </div>
                 <div>
                   <button class="sk-button sk-button--primary" v-on:click.prevent="saveConfigFile" v-bind:disabled="!isConfigValid">save file</button>
