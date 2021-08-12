@@ -1,6 +1,6 @@
 :root {
 	--primary-bg: #fff;
-	--primary-fg: #000;
+	--primary-fg: #1a1a1a;
 	--primary-shadow: rgba(0, 0, 0, 0.2);
 
   --header-bg: #181b1f;
@@ -46,6 +46,10 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
 .sk-body, .sk--Boneless {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
@@ -70,7 +74,7 @@
   background: url("/images/logo-white-transparent.png") no-repeat center/contain;
 }
 
-.sk-app__main, .sk--Boneless main {
+.sk-app__main {
   padding: 1rem;
 }
 
@@ -212,7 +216,6 @@
   height: 4rem;
   padding: 1rem;
   text-align: center;
-  line-height: 2rem;
 }
 
 .sk-form > :last-child {
@@ -268,6 +271,10 @@
   text-decoration-line: line-through;
   text-decoration-thickness: 2px;
   opacity: 0.5;
+}
+
+.sk-button-group {
+  display: flex;
 }
 
 .sk-button-group > .sk-button {
@@ -396,10 +403,10 @@
   margin-bottom: 0;
 }
 
-.sk-footer {
+.sk-footer, .sk--Boneless footer {
   background: var(--secondary-bg);
   color: var(--secondary-fg);
-  box-shadow: inset 0 2px var(--secondary-shadow);
+  box-shadow: inset 0 1px var(--secondary-shadow);
 }
 
 .sk-footer__wrapper {
@@ -409,19 +416,21 @@
   gap: 1rem;
 }
 
-.sk-footer__section {
+.sk-footer__section, .sk--Boneless footer > section {
   margin: 1rem 0;
   padding: 0 1rem;
   border-left: 1px solid var(--secondary-shadow);
   flex-grow: 1;
 }
 
-.sk-footer__section > :first-child {
+.sk-footer__section > :first-child, .sk--Boneless footer > section > :first-child {
   margin-top: 0;
+  padding-top: 0;
 }
 
-.sk-footer__section > :last-child {
+.sk-footer__section > :last-child, .sk--Boneless footer > section > :last-child {
   margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .sk-dropzone {
@@ -454,7 +463,12 @@
   overflow-y: auto;
 }
 
-.sk--centre-panel-l, .sk--Boneless main {
+.sk--centre-panel-m {
+  margin: 0 auto;
+  max-width: 45rem;
+}
+
+.sk--centre-panel-l {
   margin: 0 auto;
   max-width: 60rem;
 }
@@ -552,8 +566,80 @@
   background: transparent;
 }
 
+.sk--Boneless {
+  line-height: 1.4;
+}
+
+body.sk--Boneless {
+  display: flex;
+  flex-direction: column;
+}
+
+body.sk--Boneless main {
+  flex-grow: 1;
+}
+
+.sk--Boneless :where(main, header, footer) {
+  padding: 1rem max(calc(50vw - 21.5rem), 1rem);
+}
+
+.sk--Boneless header {
+  background: var(--secondary-bg);
+  color: var(--secondary-fg);
+  box-shadow: inset 0 -1px var(--secondary-shadow);
+}
+
+.sk--Boneless header > :first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.sk--Boneless header > :last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sk--Boneless header h1 {
+  box-shadow: none;
+}
+
 .sk--Boneless :where(h1, h2, h3, h4, h5, h6):focus-visible {
   background: var(--focus-fg);
   color: var(--focus-bg);
   outline: none;
+}
+
+.sk--Boneless h1 {
+  font-size: 2.5rem;
+  box-shadow: 0 1px var(--primary-shadow);
+}
+
+.sk--Boneless :where(h1, h2, h3, h4, h5) {
+  line-height: 1;
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sk--Boneless :where(address, area, article, aside, audio, blockquote, datalist, details, dl, fieldset, figure, form, iframe, img, input, meter, nav, ol, optgroup, option, output, p, pre, progress, ruby, section, table, textarea, ul, video) {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.sk--Boneless p {
+  color: var(--primary-fg);
+}
+
+.sk--Boneless footer {
+  width: 100%;
+  display: flex;
+}
+
+.sk--Boneless footer > section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sk--Boneless footer > section li:not(:last-child) {
+  margin-bottom: 1rem;
 }

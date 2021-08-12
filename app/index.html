@@ -125,7 +125,7 @@
           <h2 class="sk-notice__headline">Serial is not supported.</h2>
           <p class="sk-notice__details">This app needs to connect to a serial port, but this browser does not support connecting to serial ports.</p>
           <p class="sk-notice__details">Use a browser that supports serial connections. For example, the latest Microsoft Edge.</p>
-          <a href="documentation/serial-is-not-supported/#serial-is-not-supported-error" target="_blank">Help</a>
+          <a href="documentation/errors/serial-is-not-supported/#serial-is-not-supported-error" target="_blank">Help</a>
         </section>
 
         <fatal-error-message v-if="fatalError" v-bind:error="fatalError"></fatal-error-message>
@@ -192,7 +192,7 @@
               </div>
               <div class="sk-panel__body">
                 <div class="sk-dropzone sk--padding-1rem sk--seethrough sk--flex sk--flex-vertical sk--flex-gap" @dragover.prevent="" @drop.prevent="handleConfigDrop">
-                  <span>Drag and drop a config file</span>
+                  <span style="text-align:center">Drag and drop a config file</span>
                   <form class="sk-form sk--flex sk--flex-gap sk--flex-wrap sk--flex-space-items-evenly">
                     <div>
                       <div class="sk-form-group">
