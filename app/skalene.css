@@ -580,13 +580,8 @@ body.sk--Boneless main {
 .sk--Boneless header {
   background: var(--secondary-bg);
   color: var(--secondary-fg);
-  padding: 1rem;
+  padding: 1rem calc(50vw - 21.5rem);
   box-shadow: inset 0 -1px var(--secondary-shadow);
-}
-
-.sk--Boneless header > * {
-  padding-left: 1rem;
-  padding-right: 1rem;
 }
 
 .sk--Boneless header > :first-child {
