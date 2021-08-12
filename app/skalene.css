@@ -416,19 +416,21 @@ html, body {
   gap: 1rem;
 }
 
-.sk-footer__section {
+.sk-footer__section, .sk--Boneless footer > section {
   margin: 1rem 0;
   padding: 0 1rem;
   border-left: 1px solid var(--secondary-shadow);
   flex-grow: 1;
 }
 
-.sk-footer__section > :first-child {
+.sk-footer__section > :first-child, .sk--Boneless footer > section > :first-child {
   margin-top: 0;
+  padding-top: 0;
 }
 
-.sk-footer__section > :last-child {
+.sk-footer__section > :last-child, .sk--Boneless footer > section > :last-child {
   margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .sk-dropzone {
@@ -627,4 +629,5 @@ body.sk--Boneless main {
 
 .sk--Boneless footer {
   padding: 1rem calc(50% - 21.5rem);
+  display: flex;
 }
