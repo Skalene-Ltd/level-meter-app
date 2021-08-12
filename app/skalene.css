@@ -461,7 +461,7 @@ html, body {
   overflow-y: auto;
 }
 
-.sk--centre-panel-m, .sk--Boneless main, .sk--Boneless header > * {
+.sk--centre-panel-m, .sk--Boneless main {
   margin: 0 auto;
   max-width: 45rem;
 }
@@ -580,7 +580,7 @@ body.sk--Boneless main {
 .sk--Boneless header {
   background: var(--secondary-bg);
   color: var(--secondary-fg);
-  padding: 1rem calc(50vw - 21.5rem);
+  padding: 1rem calc(50% - 21.5rem);
   box-shadow: inset 0 -1px var(--secondary-shadow);
 }
 
@@ -626,5 +626,5 @@ body.sk--Boneless main {
 }
 
 .sk--Boneless footer {
-  padding: 1rem calc(50vw - 21.5rem);
+  padding: 1rem calc(50% - 21.5rem);
 }
