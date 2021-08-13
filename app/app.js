@@ -1030,8 +1030,8 @@ app.component('debug-panel', {
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Debug</h2>
       <div class="sk-button-group">
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="startDevice" v-bind:disabled="!ready">start</button>
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="stopDevice" v-bind:disabled="!ready">stop</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="startDevice" v-bind:disabled="!ready"><code class="sk--code">START</code> command</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="stopDevice" v-bind:disabled="!ready"><code class="sk--code">STOP</code> command</button>
       </div>
     </div>
     <div class="sk-panel__body">
