@@ -412,7 +412,7 @@ const parseSkaleneMessage = payload => {
 
 const querySkalene = async (bodyText, readableHandler, writableHandler) => {
   await sendSkaleneCommand(writableHandler, bodyText);
-  const response = await readableHandler.next(1_000).finally(() => writableHandler.done());
+  const response = await readableHandler.next(10_000).finally(() => writableHandler.done());
   return parseSkaleneMessage(response);
 };
 
