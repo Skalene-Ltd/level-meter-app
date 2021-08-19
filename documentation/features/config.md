@@ -4,7 +4,9 @@ The config panel can be used to view and change the device configuration.
 
 > First, make sure the app is [connected to the device](../../#connect-to-the-device).
 
-To show the config panel, check the 'show advanced' checkbox at the bottom of the app.
+## Open the advanced panels
+
+At the bottom of the app, check the 'show advanced' checkbox. More panels should open under the checkbox.
 
 ## View the device configuration
 

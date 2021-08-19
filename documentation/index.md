@@ -16,13 +16,13 @@ The 'Serial port' section should now say "serial port connected".
 
 Before you use the app, make sure the device is plugged in and switched on.
 
-## Use panels to control the device
+## Control the device
 
-- [bootloader panel](panels/bootloader)
-- [raw data and results panels](panels/data-and-results)
-- [live data panel](panels/live-data)
-- [config panel](panels/config)
-- [debug panel](panels/debug)
+- [get data and results](features/data-and-results)
+- [view live data](features/live-data)
+- [bootloader panel](features/bootloader)
+- [config panel](features/config)
+- [debug panel](features/debug)
 
 ---
 

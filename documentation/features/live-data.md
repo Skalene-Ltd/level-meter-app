@@ -2,10 +2,6 @@
 
 The live data panel streams live data from the device and displays it.
 
-## Open the advanced panels
-
-At the bottom of the app, check the 'show advanced' checkbox. More panels should open under the checkbox.
-
 ## Turn on live updating
 
 > First, make sure the app is [connected to the device](../../#connect-to-the-device).
