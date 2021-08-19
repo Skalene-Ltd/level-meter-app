@@ -19,6 +19,7 @@ Before you use the app, make sure the device is plugged in and switched on.
 ## Control the device
 
 - [get data and results](features/data-and-results)
+- [use the sidebar controls](features/controls)
 - [view live data](features/live-data)
 - [bootloader panel](features/bootloader)
 - [config panel](features/config)
