@@ -134,11 +134,34 @@
             v-bind:writable-handler="writableHandler"
           ></results-section>
 
-          <commands-section
-            class="sk--sticky"
-            v-bind:readable-handler="responseMessageHandler"
-            v-bind:writable-handler="writableHandler"
-          ></commands-section>
+          <section class="sk-sidebar__section sk--sticky">
+            <h3 class="sk-sidebar__heading">Device controls</h3>
+            <div class="sk-sidebar__body">
+
+              <div class="sk-form-group">
+                <label class="sk-input__descriptor" for="integration_slider">live patch integration time</label>
+                <div class="sk-input__wrapper">
+                  <input
+                    type="range"
+                    id="integration_slider"
+                    min="50"
+                    max="5000"
+                    class="sk--flex-greedy"
+                    spellcheck="false"
+                    v-model.number="config.integrationTime"
+                    v-on:change="setIntegration($event.target.value)"
+                    v-bind:disabled="!configEnabled"
+                  >
+                </div>
+                <div><span class="sk--code">{{ config.integrationTime === undefined ? 'unknown' : config.integrationTime }}</span></div>
+              </div>
+
+              <commands-section
+                v-bind:readable-handler="responseMessageHandler"
+                v-bind:writable-handler="writableHandler"
+              ></commands-section>
+            </div>
+          </section>
         </div>
 
         <div class="sk--flex-basis-0 sk--flex-grow-2 sk--flex sk--flex-vertical sk--flex-gap">
@@ -213,23 +236,6 @@
                             <div class="sk-input__affix" aria-hidden="true">
                               <span class="sk-input__affix-text">µs</span>
                             </div>
-                          </div>
-                        </div>
-
-                        <div class="sk-form-group">
-                          <label class="sk-input__descriptor" for="integration_slider">live patch integration time</label>
-                          <div class="sk-input__wrapper">
-                            <input
-                              type="range"
-                              id="integration_slider"
-                              min="50"
-                              max="5000"
-                              class="sk--flex-greedy"
-                              spellcheck="false"
-                              v-model.number="config.integrationTime"
-                              v-on:change="setIntegration($event.target.value)"
-                              v-bind:disabled="!configEnabled"
-                            >
                           </div>
                         </div>
 
