@@ -8,11 +8,11 @@ To launch the app, open a window in a compatible web browser (the latest Google 
 
 ## Connect to the device
 
-Click on the blue 'connect' button in the 'Serial port' panel. A dialogue box should open saying the page wants to connect to the serial port.
+Click on the blue 'connect' button in the 'Serial port' section of the sidebar. A dialogue box should open saying the page wants to connect to the serial port.
 
 Then, plug your device into a USB port on your computer. The device should appear in the dialogue box as `USB Serial Port`. Click to select this opion, and then click 'connect'.
 
-The 'Serial port' panel should now say 'connected'.
+The 'Serial port' section should now say "serial port connected".
 
 Before you use the app, make sure the device is plugged in and switched on.
 
