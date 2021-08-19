@@ -455,6 +455,7 @@ html, body {
 .sk-sidebar__heading {
   margin-top: 0;
   font-size: 1rem;
+  font-weight: 500;
 }
 
 .sk-sidebar__body {
