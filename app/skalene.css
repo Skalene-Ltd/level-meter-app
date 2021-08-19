@@ -448,7 +448,7 @@ html, body {
 
 .sk-sidebar__section {
   box-shadow: 0 1px var(--primary-shadow);
-  padding: 1rem 0;
+  padding-bottom: 1rem;
   margin: 0 1rem;
 }
 
