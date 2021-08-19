@@ -1013,21 +1013,18 @@ app.component('commands-section', {
       this.status = { kind: 'problem', details: e };
     } }
   },
-  template: `<section class="sk-sidebar__section">
-    <h3 class="sk-sidebar__heading">Device commands</h3>
-    <div class="sk-sidebar__body">
-      <div class="sk-button-group">
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="start" v-bind:disabled="!ready">start</button>
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="stop" v-bind:disabled="!ready">stop</button>
-      </div>
-      <inline-status
-        style="padding:1ex 0"
-        v-if="status"
-        v-bind:kind="status.kind"
-        v-bind:details="status.details"
-      ></inline-status>
+  template: `
+    <div class="sk-button-group">
+      <button class="sk-button sk-button--secondary" v-on:click.prevent="start" v-bind:disabled="!ready">start</button>
+      <button class="sk-button sk-button--secondary" v-on:click.prevent="stop" v-bind:disabled="!ready">stop</button>
     </div>
-  </section>`
+    <inline-status
+      style="padding:1ex 0"
+      v-if="status"
+      v-bind:kind="status.kind"
+      v-bind:details="status.details"
+    ></inline-status>
+  `
 });
 
 app.component('debug-panel', {
