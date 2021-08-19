@@ -835,33 +835,6 @@ app.component('inline-status', {
   </div>`
 });
 
-app.component('serial-port-details', {
-  props: ['port'],
-  data() { return {
-    usbVendorId: undefined,
-    usbProductId: undefined
-  } },
-  template: `<div class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
-    <div aria-hidden="true" style="font-size:3rem">✅</div>
-    <div class="sk--flex-auto">
-      <h3 style="font-size:1rem;margin:0 0 0.5rem 0;font-weight:500">connected</h3>
-      <p style="margin:0">
-        vendor ID: <span class="sk--code">{{ usbVendorId || 'unknown' }}</span>
-        product ID: <span class="sk--code">{{ usbProductId || 'unknown' }}</span>
-      </p>
-    </div>
-  </div>`,
-  methods: {
-    async getInfo() {
-      const { usbVendorId, usbProductId } = await this.port.getInfo();
-      this.usbVendorId = usbVendorId;
-      this.usbProductId = usbProductId;
-    }
-  },
-  created() { this.getInfo(); },
-  beforeUpdate() { this.getInfo(); }
-});
-
 app.component('file-details', {
   props: ['file'],
   template: `<div class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
