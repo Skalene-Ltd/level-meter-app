@@ -440,6 +440,28 @@ html, body {
   border-radius: 6px;
 }
 
+.sk-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sk-sidebar__section {
+  box-shadow: 0 1px var(--primary-shadow);
+  padding: 1rem 0;
+  margin: 0 1rem;
+}
+
+.sk-sidebar__heading {
+  margin-top: 0;
+  font-size: 1rem;
+}
+
+.sk-sidebar__body {
+  margin-top: 1rem;
+  clear: both;
+}
+
 .sk--code, .sk--Boneless code {
   background: var(--secondary-shadow);
   font-family: monospace;
@@ -556,8 +578,16 @@ html, body {
   flex-grow: 1;
 }
 
-.sk--flex-grow-3 {
-  flex-grow: 3;
+.sk--flex-grow-2 {
+  flex-grow: 2;
+}
+
+.sk--float-left {
+  float: left;
+}
+
+.sk--float-right {
+  float: right;
 }
 
 .sk--sticky {

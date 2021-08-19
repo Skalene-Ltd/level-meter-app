@@ -114,11 +114,24 @@
     </header>
 
     <div id="app" class="sk--flex-greedy">
-      <main class="sk-app__main sk--centre-panel-l sk--flex sk--flex-wrap sk--flex-gap">
+      <main class="sk-app__main sk--centre-panel-xl sk--flex sk--flex-wrap sk--flex-gap">
 
-        <div class="sk-sidebar sk--flex-basis-0 sk--flex-grow-1"></div>
+        <div class="sk-sidebar sk--flex-basis-0 sk--flex-grow-1">
+          <section class="sk-sidebar__section">
+            <h3 class="sk-sidebar__heading sk--float-left">Serial port</h3>
+            <button v-on:click="connect" class="sk-button sk-button--primary sk--float-right" v-bind:disabled="!isSerialSupported || serialPort">connect</button>
+            <div class="sk-sidebar__body">
+              <inline-status v-if="serialStatus" v-bind:kind="serialStatus.kind" v-bind:details="serialStatus.details"></inline-status>
+              <serial-port-details
+                v-if="serialPort"
+                v-bind:port="serialPort"
+              ></serial-port-details>
+              <div v-if="!serialPort" class="sk-panel__empty">No serial port connected</div>
+            </div>
+          </section>
+        </div>
 
-        <div class="sk--flex-basis-0 sk--flex-grow-3 sk--flex sk--flex-vertical sk--flex-gap">
+        <div class="sk--flex-basis-0 sk--flex-grow-2 sk--flex sk--flex-vertical sk--flex-gap">
           <section class="sk-notice sk-notice--problem" v-if="false">
             <h2 class="sk-notice__headline">The app failed to load.</h2>
             <p class="sk-notice__details">A component of this app failed to load.</p>
@@ -133,23 +146,6 @@
           </section>
 
           <fatal-error-message v-if="fatalError" v-bind:error="fatalError"></fatal-error-message>
-
-          <section class="sk-panel">
-            <div class="sk-panel__header">
-              <h2 class="sk-panel__title">Serial port</h2>
-              <inline-status v-if="serialStatus" v-bind:kind="serialStatus.kind" v-bind:details="serialStatus.details"></inline-status>
-              <div>
-                <button v-on:click="connect" class="sk-button sk-button--primary" v-bind:disabled="!isSerialSupported || serialPort">connect</button>
-              </div>
-            </div>
-            <div class="sk-panel__body">
-              <serial-port-details
-                v-if="serialPort"
-                v-bind:port="serialPort"
-              ></serial-port-details>
-              <div v-if="!serialPort" class="sk-panel__empty">No serial port connected</div>
-            </div>
-          </section>
 
           <raw-data-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></raw-data-panel>
 
