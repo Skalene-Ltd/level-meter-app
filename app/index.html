@@ -136,6 +136,12 @@
             v-bind:readable-handler="responseMessageHandler"
             v-bind:writable-handler="writableHandler"
           ></results-section>
+
+          <commands-section
+            class="sk--sticky"
+            v-bind:readable-handler="responseMessageHandler"
+            v-bind:writable-handler="writableHandler"
+          ></commands-section>
         </div>
 
         <div class="sk--flex-basis-0 sk--flex-grow-2 sk--flex sk--flex-vertical sk--flex-gap">
@@ -301,8 +307,6 @@
 
               <debug-panel
                 v-bind:debug-readable-handler="debugMessageHandler"
-                v-bind:response-readable-handler="responseMessageHandler"
-                v-bind:writable-handler="writableHandler"
               ></debug-panel>
 
             </div>

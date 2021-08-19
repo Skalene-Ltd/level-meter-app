@@ -989,47 +989,67 @@ app.component('raw-data-panel', {
   }
 });
 
+app.component('commands-section', {
+  props: ['readableHandler', 'writableHandler'],
+  data() { return {
+    status: null
+  } },
+  computed: { ready() {
+    return Boolean(this.readableHandler && this.writableHandler);
+  } },
+  methods: {
+    async start() { try {
+      this.status = null;
+      await querySkalene(SK_START + '', this.readableHandler, this.writableHandler);
+      this.status = { kind: 'success', details: 'sent START command' };
+    } catch (e) {
+      this.status = { kind: 'problem', details: e };
+    } },
+    async stop() { try {
+      this.status = null;
+      await querySkalene(SK_STOP + '', this.readableHandler, this.writableHandler);
+      this.status = { kind: 'success', details: 'sent STOP command' };
+    } catch (e) {
+      this.status = { kind: 'problem', details: e };
+    } }
+  },
+  template: `<section class="sk-sidebar__section">
+    <h3 class="sk-sidebar__heading">Device commands</h3>
+    <div class="sk-sidebar__body">
+      <div class="sk-button-group">
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="start" v-bind:disabled="!ready">start</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="stop" v-bind:disabled="!ready">stop</button>
+      </div>
+      <inline-status
+        style="padding:1ex 0"
+        v-if="status"
+        v-bind:kind="status.kind"
+        v-bind:details="status.details"
+      ></inline-status>
+    </div>
+  </section>`
+});
+
 app.component('debug-panel', {
-  props: ['debugReadableHandler', 'responseReadableHandler', 'writableHandler'],
+  props: ['debugReadableHandler'],
   data() { return {
     text: ''
   } },
-  computed: { ready() { return Boolean(this.responseReadableHandler && this.writableHandler); } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Debug</h2>
-      <div class="sk-button-group">
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="startDevice" v-bind:disabled="!ready"><code class="sk--code">START</code> command</button>
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="stopDevice" v-bind:disabled="!ready"><code class="sk--code">STOP</code> command</button>
-      </div>
     </div>
     <div class="sk-panel__body">
       <pre class="sk--code sk--margin-0 sk--height-20rem sk--vertical-overflow-scrollable">{{ text }}</pre>
     </div>
   </section>`,
-  methods: {
-    appendLine(line) {
-      this.text = this.text
-        .split('\n')
-        .concat(line)
-        .slice(-30)
-        .join('\n');
-    },
-    async startDevice() {
-      try {
-        await querySkalene(SK_START + '', this.responseReadableHandler, this.writableHandler);
-      } catch (e) {
-        this.appendLine('APP start: ' + e);
-      }
-    },
-    async stopDevice() {
-      try {
-        await querySkalene(SK_STOP + '', this.responseReadableHandler, this.writableHandler);
-      } catch (e) {
-        this.appendLine('APP stop: ' + e);
-      }
-    }
-  },
+  methods: { appendLine(line) {
+    this.text = this.text
+      .split('\n')
+      .concat(line)
+      .slice(-30)
+      .join('\n');
+  } },
   created() {
     this.debugReadableHandler.every(this.appendLine);
   }
