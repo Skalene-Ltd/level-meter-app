@@ -122,11 +122,11 @@
             <button v-on:click="connect" class="sk-button sk-button--primary sk--float-right" v-bind:disabled="!isSerialSupported || serialPort">connect</button>
             <div class="sk-sidebar__body">
               <inline-status v-if="serialStatus" v-bind:kind="serialStatus.kind" v-bind:details="serialStatus.details"></inline-status>
-              <serial-port-details
-                v-if="serialPort"
-                v-bind:port="serialPort"
-              ></serial-port-details>
-              <div v-if="!serialPort" class="sk-panel__empty">No serial port connected</div>
+              <div v-if="serialPort" style="height:4rem;color:var(--success-bg)">
+                <span role="none" style="font-size:2rem;line-height:4rem;vertical-align:middle">✔ </span>
+                <span style="line-height:4rem;vertical-align:middle;font-weight:500">connected.</span>
+              </div>
+              <div v-else class="sk-panel__empty">No serial port connected</div>
             </div>
           </section>
         </div>
