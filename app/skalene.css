@@ -520,6 +520,10 @@ html, body {
   flex-wrap: wrap;
 }
 
+.sk--flex-basis-0 {
+  flex-basis: 0;
+}
+
 .sk--flex-auto {
   flex: auto;
 }
@@ -546,6 +550,14 @@ html, body {
 
 .sk--flex-vertical-centre-items {
   align-items: center;
+}
+
+.sk--flex-grow-1 {
+  flex-grow: 1;
+}
+
+.sk--flex-grow-3 {
+  flex-grow: 3;
 }
 
 .sk--sticky {
