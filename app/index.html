@@ -107,12 +107,13 @@
       }
     </style>
   </head>
-  <body class="sk-body">
-    <div id="app">
-      <header class="sk-header">
-        <h1 class="sk-header__title">Level Meter</h1>
-      </header>
+  <body class="sk-body sk--flex sk--flex-vertical">
+    
+    <header class="sk-header">
+      <h1 class="sk-header__title">Level Meter</h1>
+    </header>
 
+    <div id="app" class="sk--flex-greedy">
       <main class="sk-app__main sk--centre-panel-l sk--flex sk--flex-vertical sk--flex-gap">
 
         <section class="sk-notice sk-notice--problem" v-if="false">
@@ -144,22 +145,6 @@
               v-bind:port="serialPort"
             ></serial-port-details>
             <div v-if="!serialPort" class="sk-panel__empty">No serial port connected</div>
-          </div>
-        </section>
-
-        <section class="sk-panel">
-          <div class="sk-panel__header">
-            <h2 class="sk-panel__title">Bootloader</h2>
-            <inline-status v-if="bootloaderStatus" v-bind:kind="bootloaderStatus.kind" v-bind:details="bootloaderStatus.details"></inline-status>
-            <div>
-              <button @click="program" class="sk-button sk-button--primary" v-bind:disabled="!(serialPort && bootloaderFile)">program</button>
-            </div>
-          </div>
-          <div class="sk-panel__body">
-            <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone sk-panel__filler">
-              Drag and drop a file here
-            </div>
-            <file-details v-if="bootloaderFile" v-bind:file="bootloaderFile"></file-details>
           </div>
         </section>
 
@@ -295,6 +280,22 @@
               </div>
             </section>
 
+            <section class="sk-panel">
+              <div class="sk-panel__header">
+                <h2 class="sk-panel__title">Bootloader</h2>
+                <inline-status v-if="bootloaderStatus" v-bind:kind="bootloaderStatus.kind" v-bind:details="bootloaderStatus.details"></inline-status>
+                <div>
+                  <button @click="program" class="sk-button sk-button--primary" v-bind:disabled="!(serialPort && bootloaderFile)">program</button>
+                </div>
+              </div>
+              <div class="sk-panel__body">
+                <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone sk-panel__filler">
+                  Drag and drop a file here
+                </div>
+                <file-details v-if="bootloaderFile" v-bind:file="bootloaderFile"></file-details>
+              </div>
+            </section>
+
             <debug-panel
               v-bind:debug-readable-handler="debugMessageHandler"
               v-bind:response-readable-handler="responseMessageHandler"
@@ -304,29 +305,30 @@
           </div>
         </div>
       </main>
-
-      <footer class="sk-footer">
-        <div class="sk-footer__wrapper sk--centre-panel-l">
-          <section class="sk-footer__section">
-            <h3 class="sk-footer__section-header">Contact</h3>
-            <address>
-              Skalene,<br>
-              William James House,<br>
-              Cowley Road,<br>
-              Cambridge,<br>
-              CB4 0WX<br>
-              United Kingdom
-            </address>
-            <p><a href="https://www.skalene.com">skalene.com</a></p>
-          </section>
-          <section class="sk-footer__section">
-            <h3 class="sk-footer__section-header">Help</h3>
-            <p><a href="/documentation/" target="_blank">Documentation</a></p>
-            <p>alex@skalene.com</p>
-          </section>
-        </div>
-      </footer>
     </div>
+
+    <footer class="sk-footer">
+      <div class="sk-footer__wrapper sk--centre-panel-l">
+        <section class="sk-footer__section">
+          <h3 class="sk-footer__section-header">Contact</h3>
+          <address>
+            Skalene,<br>
+            William James House,<br>
+            Cowley Road,<br>
+            Cambridge,<br>
+            CB4 0WX<br>
+            United Kingdom
+          </address>
+          <p><a href="https://www.skalene.com">skalene.com</a></p>
+        </section>
+        <section class="sk-footer__section">
+          <h3 class="sk-footer__section-header">Help</h3>
+          <p><a href="/documentation/" target="_blank">Documentation</a></p>
+          <p>alex@skalene.com</p>
+        </section>
+      </div>
+    </footer>
+
     <script src="app.js"></script>
   </body>
 </html>
