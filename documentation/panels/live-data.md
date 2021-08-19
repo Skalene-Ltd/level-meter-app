@@ -8,7 +8,7 @@ At the bottom of the app, check the 'show advanced' checkbox. More panels should
 
 ## Turn on live updating
 
-> First, make sure the app is [connected to the device](../index.md#connect-to-the-device).
+> First, make sure the app is [connected to the device](../../#connect-to-the-device).
 
 In the live data panel, check the 'update' checkbox to turn on live updating.
 

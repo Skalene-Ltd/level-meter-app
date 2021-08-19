@@ -108,7 +108,7 @@ class StreamHandler {
             self.nextCallbackQueue.splice(index, 1);
           }
           const err = new Error('timeout');
-          err.helpURL = 'https://github.com/Skalene-Ltd/level-meter-app/blob/trunk/documentation/errors/timeout.md#timeout-error';
+          err.helpURL = "/documentation/errors/timeout/#'timeout'-error";
           reject(err);
         },
         timeout
@@ -298,7 +298,7 @@ const parseConfig = candidate => {
   } else {
     const check = candidateLed => {
       const parsedLed = parseInt(candidateLed);
-      if (1 <= parsedLed && parsedLed <= 100) {
+      if (0 <= parsedLed && parsedLed <= 100) {
         return parsedLed;
       } else {
         return new RangeError(
@@ -412,7 +412,7 @@ const parseSkaleneMessage = payload => {
 
 const querySkalene = async (bodyText, readableHandler, writableHandler) => {
   await sendSkaleneCommand(writableHandler, bodyText);
-  const response = await readableHandler.next(1_000).finally(() => writableHandler.done());
+  const response = await readableHandler.next(10_000).finally(() => writableHandler.done());
   return parseSkaleneMessage(response);
 };
 
@@ -475,6 +475,9 @@ const app = Vue.createApp({
     fatalError: null,
     config: { leds: [] }
   } },
+  computed: {
+    isConfigValid() { return !parseConfig(this.config).errors; }
+  },
   methods: {
     async connect() {
       try {
@@ -643,6 +646,63 @@ const app = Vue.createApp({
           details: e.message
         };
         console.error(e);
+      }
+    },
+    async handleConfigDrop(event) {
+      try {
+        const items = event.dataTransfer.items;
+        if (items.length !== 1) {
+          throw new Error('incorrect number of files');
+        }
+        const droppedItem = items[0];
+        if (droppedItem.kind !== 'file') {
+          throw new Error('dropped item is not a file');
+        }
+        const configFile = droppedItem.getAsFile();
+        const configText = await configFile.text();
+        let configCandidate;
+        try {
+          configCandidate = JSON.parse(configText);
+        } catch (err) { throw new Error('invalid file format'); }
+        const { config, errors } = parseConfig(configCandidate);
+        if (errors) {
+          console.error(errors);
+          throw new Error('file contained invalid config.')
+        }
+        console.log('done');
+        this.config = config;
+        this.configStatus = { kind: 'success', details: 'config loaded from file' }
+      } catch (err) {
+        this.configStatus = { kind: 'problem', details: err };
+      }
+    },
+    saveConfigFile() {
+      try {
+        const { config, errors } = parseConfig(this.config);
+        if (errors) {
+          console.error(errors);
+          throw new Error('invalid config');
+        }
+        const configText = JSON.stringify(config);
+        const el = document.createElement('a');
+        el.setAttribute(
+          'href',
+          'data:text/json;charset=utf-8,' + encodeURIComponent(configText)
+        );
+        el.setAttribute('download', 'config_' +
+          new Date()
+            .toLocaleString()
+            .replaceAll(' ', '_')
+            .replaceAll('/', '_')
+            .replaceAll(',', '') +
+          '.json'
+        );
+        el.style.display = 'none';
+        document.body.appendChild(el);
+        el.click();
+        document.body.removeChild(el);
+      } catch (err) {
+        this.configStatus = { kind: 'problem', details: err };
       }
     },
     async getConfig() {
@@ -970,8 +1030,8 @@ app.component('debug-panel', {
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Debug</h2>
       <div class="sk-button-group">
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="startDevice" v-bind:disabled="!ready">start</button>
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="stopDevice" v-bind:disabled="!ready">stop</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="startDevice" v-bind:disabled="!ready"><code class="sk--code">START</code> command</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="stopDevice" v-bind:disabled="!ready"><code class="sk--code">STOP</code> command</button>
       </div>
     </div>
     <div class="sk-panel__body">

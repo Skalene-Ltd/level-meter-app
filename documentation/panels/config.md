@@ -2,7 +2,7 @@
 
 The config panel can be used to view and change the device configuration.
 
-> First, make sure the app is [connected to the device](../index.md#connect-to-the-device).
+> First, make sure the app is [connected to the device](../../#connect-to-the-device).
 
 To show the config panel, check the 'show advanced' checkbox at the bottom of the app.
 

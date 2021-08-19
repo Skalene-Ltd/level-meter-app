@@ -1,6 +1,6 @@
 :root {
 	--primary-bg: #fff;
-	--primary-fg: #000;
+	--primary-fg: #1a1a1a;
 	--primary-shadow: rgba(0, 0, 0, 0.2);
 
   --header-bg: #181b1f;
@@ -81,7 +81,11 @@ a:visited { color: #9975b9 }
   box-sizing: border-box;
 }
 
-.sk-body {
+html, body {
+  height: 100%;
+}
+
+.sk-body, .sk--Boneless {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
   background: var(--primary-bg);
@@ -244,6 +248,13 @@ a:visited { color: #9975b9 }
   text-align: center;
 }
 
+.sk-panel__filler {
+  display: block;
+  height: 4rem;
+  padding: 1rem;
+  text-align: center;
+}
+
 .sk-form > :last-child {
   margin-bottom: 0;
 }
@@ -299,6 +310,10 @@ a:visited { color: #9975b9 }
   opacity: 0.5;
 }
 
+.sk-button-group {
+  display: flex;
+}
+
 .sk-button-group > .sk-button {
   border-radius: 0;
   margin-right: -1px;
@@ -341,6 +356,10 @@ a:visited { color: #9975b9 }
   margin: 0;
   height: 1.2rem;
   width: 1.2rem;
+}
+
+.sk-radio__label {
+  color: var(--primary-fg);
 }
 
 .sk-input__descriptor {
@@ -414,16 +433,17 @@ a:visited { color: #9975b9 }
   border: 1px solid var(--primary-shadow);
   border-radius: 4px;
   padding: 1rem;
+  color: var(--primary-fg);
 }
 
 .sk-fieldset > :last-child {
   margin-bottom: 0;
 }
 
-.sk-footer {
+.sk-footer, .sk--Boneless footer {
   background: var(--secondary-bg);
   color: var(--secondary-fg);
-  box-shadow: inset 0 2px var(--secondary-shadow);
+  box-shadow: inset 0 1px var(--secondary-shadow);
 }
 
 .sk-footer__wrapper {
@@ -433,30 +453,31 @@ a:visited { color: #9975b9 }
   gap: 1rem;
 }
 
-.sk-footer__section {
+.sk-footer__section, .sk--Boneless footer > section {
   margin: 1rem 0;
   padding: 0 1rem;
   border-left: 1px solid var(--secondary-shadow);
   flex-grow: 1;
 }
 
-.sk-footer__section > :first-child {
+.sk-footer__section > :first-child, .sk--Boneless footer > section > :first-child {
   margin-top: 0;
+  padding-top: 0;
 }
 
-.sk-footer__section > :last-child {
+.sk-footer__section > :last-child, .sk--Boneless footer > section > :last-child {
   margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .sk-dropzone {
   background: var(--interaction-field-bg);
   color: var(--interaction-field-fg);
-  padding: 3rem 1rem;
-  text-align: center;
+  border: 4px solid var(--interaction-field-bg);
   border-radius: 6px;
 }
 
-.sk--code {
+.sk--code, .sk--Boneless code {
   background: var(--secondary-shadow);
   font-family: monospace;
   border-radius: 4px;
@@ -477,6 +498,11 @@ a:visited { color: #9975b9 }
 
 .sk--vertical-overflow-scrollable {
   overflow-y: auto;
+}
+
+.sk--centre-panel-m {
+  margin: 0 auto;
+  max-width: 45rem;
 }
 
 .sk--centre-panel-l {
@@ -571,4 +597,86 @@ a:visited { color: #9975b9 }
 
 .sk--colour-primary-shadow a, .sk--colour-primary-shadow a:visited {
   color: inherit;
+}
+
+.sk--seethrough {
+  background: transparent;
+}
+
+.sk--Boneless {
+  line-height: 1.4;
+}
+
+body.sk--Boneless {
+  display: flex;
+  flex-direction: column;
+}
+
+body.sk--Boneless main {
+  flex-grow: 1;
+}
+
+.sk--Boneless :where(main, header, footer) {
+  padding: 1rem max(calc(50vw - 21.5rem), 1rem);
+}
+
+.sk--Boneless header {
+  background: var(--secondary-bg);
+  color: var(--secondary-fg);
+  box-shadow: inset 0 -1px var(--secondary-shadow);
+}
+
+.sk--Boneless header > :first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.sk--Boneless header > :last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.sk--Boneless header h1 {
+  box-shadow: none;
+}
+
+.sk--Boneless :where(h1, h2, h3, h4, h5, h6):focus-visible {
+  background: var(--focus-fg);
+  color: var(--focus-bg);
+  outline: none;
+}
+
+.sk--Boneless h1 {
+  font-size: 2.5rem;
+  box-shadow: 0 1px var(--primary-shadow);
+}
+
+.sk--Boneless :where(h1, h2, h3, h4, h5) {
+  line-height: 1;
+  padding-top: 1rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sk--Boneless :where(address, area, article, aside, audio, blockquote, datalist, details, dl, fieldset, figure, form, iframe, img, input, meter, nav, ol, optgroup, option, output, p, pre, progress, ruby, section, table, textarea, ul, video) {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.sk--Boneless p {
+  color: var(--primary-fg);
+}
+
+.sk--Boneless footer {
+  width: 100%;
+  display: flex;
+}
+
+.sk--Boneless footer > section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sk--Boneless footer > section li:not(:last-child) {
+  margin-bottom: 1rem;
 }
