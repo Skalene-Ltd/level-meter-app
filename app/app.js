@@ -843,7 +843,7 @@ app.component('file-details', {
   </div>`
 });
 
-app.component('results-panel', {
+app.component('results-section', {
   props: ['readableHandler', 'writableHandler'],
   data() { return {
     results: null,
@@ -881,25 +881,21 @@ app.component('results-panel', {
       }
     }
   },
-  template: `<section class="sk-panel">
-    <div class="sk-panel__header">
-      <h2 class="sk-panel__title">Results</h2>
+  template: `<section class="sk-sidebar__section">
+    <h3 class="sk-sidebar__heading sk--float-left">Results</h3>
+    <button
+      class="sk-button sk-button--primary sk--float-right"
+      v-on:click.prevent="getResults"
+      v-bind:disabled="!ready"
+    >get results</button>
+    <div class="sk-sidebar__body">
       <inline-status
         v-if="status"
         v-bind:kind="status.kind"
         v-bind:details="status.details"
       ></inline-status>
-      <div>
-        <button
-          class="sk-button sk-button--primary"
-          v-on:click.prevent="getResults"
-          v-bind:disabled="!ready"
-        >get results</button>
-      </div>
-    </div>
-    <div class="sk-panel__body">
       <div v-if="results" class="app-results-grid">
-        <span v-for="result in results">{{ result }}</span>
+        <span v-for="result in results" class="sk--code">{{ result }}</span>
       </div>
       <div v-else class="sk-panel__empty">no results</div>
     </div>

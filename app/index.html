@@ -129,6 +129,11 @@
               <div v-else class="sk-panel__empty">No serial port connected</div>
             </div>
           </section>
+
+          <results-section
+            v-bind:readable-handler="responseMessageHandler"
+            v-bind:writable-handler="writableHandler"
+          ></results-section>
         </div>
 
         <div class="sk--flex-basis-0 sk--flex-grow-2 sk--flex sk--flex-vertical sk--flex-gap">
@@ -148,8 +153,6 @@
           <fatal-error-message v-if="fatalError" v-bind:error="fatalError"></fatal-error-message>
 
           <raw-data-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></raw-data-panel>
-
-          <results-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></results-panel>
 
           <div class="app-collapsible__wrapper">
             <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
