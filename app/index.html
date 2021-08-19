@@ -153,8 +153,8 @@
                     v-bind:disabled="!configEnabled"
                   >
                 </div>
-                <div>
-                  <span class="sk--code">{{ config.integrationTime === undefined ? 'unknown' : config.integrationTime }}</span>
+                <div style="height: 1rem;">
+                  <span v-if="config.integrationTime !== undefined" class="sk--code">{{ config.integrationTime }}</span>
                   <span v-if="!configEnabled"> 🔒</span>
                 </div>
               </div>
