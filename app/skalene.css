@@ -447,7 +447,7 @@ html, body {
 }
 
 .sk-sidebar__section {
-  box-shadow: 0 1px var(--primary-shadow);
+  box-shadow: 0 1px var(--secondary-shadow);
   padding-bottom: 1rem;
   margin: 0 1rem;
 }
