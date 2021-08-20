@@ -4,17 +4,13 @@ The config panel can be used to view and change the device configuration.
 
 > First, make sure the app is [connected to the device](../../#connect-to-the-device).
 
-To show the config panel, check the 'show advanced' checkbox at the bottom of the app.
+## Open the advanced panels
+
+At the bottom of the app, check the 'show advanced' checkbox. More panels should open under the checkbox.
 
 ## View the device configuration
 
 Click the 'get config' button in the config panel. The options in the config panel should update to show the current configuration.
-
-## Quickly change the integration time
-
-To change just the integration time, use the slider labelled 'live patch integration time'.
-
-Click and drag the slider. The 'integration time' field will show the value changing. When you release the slider, the value will be set on the device.
 
 ## Change the device configuration
 

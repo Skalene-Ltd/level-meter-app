@@ -440,6 +440,32 @@ html, body {
   border-radius: 6px;
 }
 
+.sk-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sk-sidebar__section {
+  padding-bottom: 1rem;
+  margin: 0 1rem;
+}
+
+.sk-sidebar__section:not(:last-child) {
+  box-shadow: 0 1px var(--secondary-shadow);
+}
+
+.sk-sidebar__heading {
+  margin-top: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.sk-sidebar__body {
+  margin-top: 1rem;
+  clear: both;
+}
+
 .sk--code, .sk--Boneless code {
   background: var(--secondary-shadow);
   font-family: monospace;
@@ -475,7 +501,7 @@ html, body {
 
 .sk--centre-panel-xl {
   margin: 0 auto;
-  max-width: 80rem;
+  max-width: 75rem;
 }
 
 .sk--problem {
@@ -520,6 +546,10 @@ html, body {
   flex-wrap: wrap;
 }
 
+.sk--flex-basis-0 {
+  flex-basis: 0;
+}
+
 .sk--flex-auto {
   flex: auto;
 }
@@ -546,6 +576,22 @@ html, body {
 
 .sk--flex-vertical-centre-items {
   align-items: center;
+}
+
+.sk--flex-grow-1 {
+  flex-grow: 1;
+}
+
+.sk--flex-grow-2 {
+  flex-grow: 2;
+}
+
+.sk--float-left {
+  float: left;
+}
+
+.sk--float-right {
+  float: right;
 }
 
 .sk--sticky {

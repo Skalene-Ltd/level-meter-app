@@ -1,6 +1,7 @@
-# Get data from the device with the raw data and results panels
+# Get data from the device with the raw data panel and results section
 
-The 'raw data' and 'results' panels can be used to get data from the device. 
+The 'raw data' panel can be used to get data from the device.
+The 'results' section of the sidebar can be used to get the processed results.
 
 > First, make sure the app is [connected to the device](../../#connect-to-the-device).
 
@@ -17,7 +18,7 @@ The file will be a `csv` file, so you can open it in a spreadsheet application.
 
 ## Results
 
-To get the results from the device, click the 'get results' button in the results panel.
+To get the results from the device, click the 'get results' button in the side bar.
 
 The results should be shown in a grid.
 Channels 1 - 4 are in the top row, ordered left to right, and channels 5 - 8 are in the bottom row, ordered left to right.

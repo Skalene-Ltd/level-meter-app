@@ -835,33 +835,6 @@ app.component('inline-status', {
   </div>`
 });
 
-app.component('serial-port-details', {
-  props: ['port'],
-  data() { return {
-    usbVendorId: undefined,
-    usbProductId: undefined
-  } },
-  template: `<div class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
-    <div aria-hidden="true" style="font-size:3rem">✅</div>
-    <div class="sk--flex-auto">
-      <h3 style="font-size:1rem;margin:0 0 0.5rem 0;font-weight:500">connected</h3>
-      <p style="margin:0">
-        vendor ID: <span class="sk--code">{{ usbVendorId || 'unknown' }}</span>
-        product ID: <span class="sk--code">{{ usbProductId || 'unknown' }}</span>
-      </p>
-    </div>
-  </div>`,
-  methods: {
-    async getInfo() {
-      const { usbVendorId, usbProductId } = await this.port.getInfo();
-      this.usbVendorId = usbVendorId;
-      this.usbProductId = usbProductId;
-    }
-  },
-  created() { this.getInfo(); },
-  beforeUpdate() { this.getInfo(); }
-});
-
 app.component('file-details', {
   props: ['file'],
   template: `<div class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
@@ -870,7 +843,7 @@ app.component('file-details', {
   </div>`
 });
 
-app.component('results-panel', {
+app.component('results-section', {
   props: ['readableHandler', 'writableHandler'],
   data() { return {
     results: null,
@@ -908,25 +881,21 @@ app.component('results-panel', {
       }
     }
   },
-  template: `<section class="sk-panel">
-    <div class="sk-panel__header">
-      <h2 class="sk-panel__title">Results</h2>
+  template: `<section class="sk-sidebar__section">
+    <h3 class="sk-sidebar__heading sk--float-left">Results</h3>
+    <button
+      class="sk-button sk-button--primary sk--float-right"
+      v-on:click.prevent="getResults"
+      v-bind:disabled="!ready"
+    >get results</button>
+    <div class="sk-sidebar__body">
       <inline-status
         v-if="status"
         v-bind:kind="status.kind"
         v-bind:details="status.details"
       ></inline-status>
-      <div>
-        <button
-          class="sk-button sk-button--primary"
-          v-on:click.prevent="getResults"
-          v-bind:disabled="!ready"
-        >get results</button>
-      </div>
-    </div>
-    <div class="sk-panel__body">
       <div v-if="results" class="app-results-grid">
-        <span v-for="result in results">{{ result }}</span>
+        <span v-for="result in results" class="sk--code">{{ result }}</span>
       </div>
       <div v-else class="sk-panel__empty">no results</div>
     </div>
@@ -1020,47 +989,64 @@ app.component('raw-data-panel', {
   }
 });
 
+app.component('commands-section', {
+  props: ['readableHandler', 'writableHandler'],
+  data() { return {
+    status: null
+  } },
+  computed: { ready() {
+    return Boolean(this.readableHandler && this.writableHandler);
+  } },
+  methods: {
+    async start() { try {
+      this.status = null;
+      await querySkalene(SK_START + '', this.readableHandler, this.writableHandler);
+      this.status = { kind: 'success', details: 'sent START command' };
+    } catch (e) {
+      this.status = { kind: 'problem', details: e };
+    } },
+    async stop() { try {
+      this.status = null;
+      await querySkalene(SK_STOP + '', this.readableHandler, this.writableHandler);
+      this.status = { kind: 'success', details: 'sent STOP command' };
+    } catch (e) {
+      this.status = { kind: 'problem', details: e };
+    } }
+  },
+  template: `
+    <div class="sk-button-group">
+      <button class="sk-button sk-button--secondary" v-on:click.prevent="start" v-bind:disabled="!ready">start</button>
+      <button class="sk-button sk-button--secondary" v-on:click.prevent="stop" v-bind:disabled="!ready">stop</button>
+    </div>
+    <inline-status
+      style="padding:1ex 0"
+      v-if="status"
+      v-bind:kind="status.kind"
+      v-bind:details="status.details"
+    ></inline-status>
+  `
+});
+
 app.component('debug-panel', {
-  props: ['debugReadableHandler', 'responseReadableHandler', 'writableHandler'],
+  props: ['debugReadableHandler'],
   data() { return {
     text: ''
   } },
-  computed: { ready() { return Boolean(this.responseReadableHandler && this.writableHandler); } },
   template: `<section class="sk-panel">
     <div class="sk-panel__header">
       <h2 class="sk-panel__title">Debug</h2>
-      <div class="sk-button-group">
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="startDevice" v-bind:disabled="!ready"><code class="sk--code">START</code> command</button>
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="stopDevice" v-bind:disabled="!ready"><code class="sk--code">STOP</code> command</button>
-      </div>
     </div>
     <div class="sk-panel__body">
       <pre class="sk--code sk--margin-0 sk--height-20rem sk--vertical-overflow-scrollable">{{ text }}</pre>
     </div>
   </section>`,
-  methods: {
-    appendLine(line) {
-      this.text = this.text
-        .split('\n')
-        .concat(line)
-        .slice(-30)
-        .join('\n');
-    },
-    async startDevice() {
-      try {
-        await querySkalene(SK_START + '', this.responseReadableHandler, this.writableHandler);
-      } catch (e) {
-        this.appendLine('APP start: ' + e);
-      }
-    },
-    async stopDevice() {
-      try {
-        await querySkalene(SK_STOP + '', this.responseReadableHandler, this.writableHandler);
-      } catch (e) {
-        this.appendLine('APP stop: ' + e);
-      }
-    }
-  },
+  methods: { appendLine(line) {
+    this.text = this.text
+      .split('\n')
+      .concat(line)
+      .slice(-30)
+      .join('\n');
+  } },
   created() {
     this.debugReadableHandler.every(this.appendLine);
   }

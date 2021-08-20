@@ -1,8 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xml:lang="en" xmlns= "http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Language" content="en">
+    <meta name="google" content="notranslate">
     <title>Skalene Level Meter</title>
     <link href="/skalene.css" rel="stylesheet">
     <script src="scripts/vue.global.prod.js"></script>
@@ -107,226 +109,240 @@
       }
     </style>
   </head>
-  <body class="sk-body">
-    <div id="app">
-      <header class="sk-header">
-        <h1 class="sk-header__title">Level Meter</h1>
-      </header>
+  <body class="sk-body sk--flex sk--flex-vertical">
+    
+    <header class="sk-header">
+      <h1 class="sk-header__title">Level Meter</h1>
+    </header>
 
-      <main class="sk-app__main sk--centre-panel-l sk--flex sk--flex-vertical sk--flex-gap">
+    <div id="app" class="sk--flex-greedy">
+      <main class="sk-app__main sk--centre-panel-xl sk--flex sk--flex-wrap sk--flex-gap">
 
-        <section class="sk-notice sk-notice--problem" v-if="false">
-          <h2 class="sk-notice__headline">The app failed to load.</h2>
-          <p class="sk-notice__details">A component of this app failed to load.</p>
-          <p class="sk-notice__details">Make sure JavaScript is enabled in your web browser.</p>
-        </section>
-
-        <section class="sk-notice sk-notice--problem" v-if="!isSerialSupported">
-          <h2 class="sk-notice__headline">Serial is not supported.</h2>
-          <p class="sk-notice__details">This app needs to connect to a serial port, but this browser does not support connecting to serial ports.</p>
-          <p class="sk-notice__details">Use a browser that supports serial connections. For example, the latest Microsoft Edge.</p>
-          <a href="documentation/errors/serial-is-not-supported/#serial-is-not-supported-error" target="_blank">Help</a>
-        </section>
-
-        <fatal-error-message v-if="fatalError" v-bind:error="fatalError"></fatal-error-message>
-
-        <section class="sk-panel">
-          <div class="sk-panel__header">
-            <h2 class="sk-panel__title">Serial port</h2>
-            <inline-status v-if="serialStatus" v-bind:kind="serialStatus.kind" v-bind:details="serialStatus.details"></inline-status>
-            <div>
-              <button v-on:click="connect" class="sk-button sk-button--primary" v-bind:disabled="!isSerialSupported || serialPort">connect</button>
+        <div class="sk-sidebar sk--flex-basis-0 sk--flex-grow-1">
+          <section class="sk-sidebar__section">
+            <h3 class="sk-sidebar__heading sk--float-left">Serial port</h3>
+            <button v-on:click="connect" class="sk-button sk-button--primary sk--float-right" v-bind:disabled="!isSerialSupported || serialPort">connect</button>
+            <div class="sk-sidebar__body">
+              <inline-status v-if="serialStatus" v-bind:kind="serialStatus.kind" v-bind:details="serialStatus.details"></inline-status>
+              <inline-status v-else-if="serialPort" kind="success" details="serial port connected."></inline-status>
+              <inline-status v-else kind="info" details="no serial port connected"></inline-status>
             </div>
-          </div>
-          <div class="sk-panel__body">
-            <serial-port-details
-              v-if="serialPort"
-              v-bind:port="serialPort"
-            ></serial-port-details>
-            <div v-if="!serialPort" class="sk-panel__empty">No serial port connected</div>
-          </div>
-        </section>
+          </section>
 
-        <section class="sk-panel">
-          <div class="sk-panel__header">
-            <h2 class="sk-panel__title">Bootloader</h2>
-            <inline-status v-if="bootloaderStatus" v-bind:kind="bootloaderStatus.kind" v-bind:details="bootloaderStatus.details"></inline-status>
-            <div>
-              <button @click="program" class="sk-button sk-button--primary" v-bind:disabled="!(serialPort && bootloaderFile)">program</button>
-            </div>
-          </div>
-          <div class="sk-panel__body">
-            <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone sk-panel__filler">
-              Drag and drop a file here
-            </div>
-            <file-details v-if="bootloaderFile" v-bind:file="bootloaderFile"></file-details>
-          </div>
-        </section>
+          <results-section
+            v-bind:readable-handler="responseMessageHandler"
+            v-bind:writable-handler="writableHandler"
+          ></results-section>
 
-        <raw-data-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></raw-data-panel>
+          <section class="sk-sidebar__section sk--sticky">
+            <h3 class="sk-sidebar__heading">Device controls</h3>
+            <div class="sk-sidebar__body">
 
-        <results-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></results-panel>
-
-        <div class="app-collapsible__wrapper">
-          <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
-          <label for="show_advanced">show advanced</label>
-          <div class="app-collapsible__content sk--flex sk--flex-vertical sk--flex-gap">
-
-            <live-view-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></live-view-panel>
-
-            <section class="sk-panel">
-              <div class="sk-panel__header">
-                <h2 class="sk-panel__title">Config</h2>
-                <inline-status v-if="configStatus" v-bind:kind="configStatus.kind" v-bind:details="configStatus.details"></inline-status>
-                <div>
-                  <input type="checkbox" id="config_enabled" v-model="configEnabled">
-                  <label for="config_enabled">allow config changes</label>
+              <div class="sk-form-group">
+                <label class="sk-input__descriptor" for="integration_slider">live patch integration time</label>
+                <div class="sk-input__wrapper">
+                  <input
+                    type="range"
+                    id="integration_slider"
+                    min="50"
+                    max="5000"
+                    class="sk--flex-greedy"
+                    spellcheck="false"
+                    v-model.number="config.integrationTime"
+                    v-on:change="setIntegration($event.target.value)"
+                    v-bind:disabled="!configEnabled"
+                  >
                 </div>
-                <div class="sk-button-group">
-                  <button class="sk-button sk-button--secondary" v-on:click.prevent="getConfig" v-bind:disabled="!serialPort">get config</button>
-                  <button class="sk-button sk-button--secondary" v-on:click.prevent="setConfig" v-bind:disabled="!configEnabled || !isConfigValid">set config</button>
-                </div>
-                <div>
-                  <button class="sk-button sk-button--primary" v-on:click.prevent="saveConfigFile" v-bind:disabled="!isConfigValid">save file</button>
+                <div style="height: 1rem;">
+                  <span v-if="config.integrationTime !== undefined" class="sk--code">{{ config.integrationTime }}</span>
+                  <span v-if="!configEnabled"> 🔒</span>
                 </div>
               </div>
-              <div class="sk-panel__body">
-                <div class="sk-dropzone sk--padding-1rem sk--seethrough sk--flex sk--flex-vertical sk--flex-gap" @dragover.prevent="" @drop.prevent="handleConfigDrop">
-                  <span style="text-align:center">Drag and drop a config file</span>
-                  <form class="sk-form sk--flex sk--flex-gap sk--flex-wrap sk--flex-space-items-evenly">
-                    <div>
-                      <div class="sk-form-group">
-                        <label class="sk-input__descriptor" for="window_size">window size</label>
-                        <div class="sk-input__wrapper">
-                          <input type="number" min="0" max="3000" v-model.number="config.windowSize" id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
-                          <div class="sk-input__affix" aria-hidden="true">
-                            <span class="sk-input__affix-text">ms</span>
-                          </div>
-                        </div>
-                      </div>
-      
-                      <div class="sk-form-group">
-                        <label class="sk-input__descriptor" for="discharge_time">discharge time</label>
-                        <div class="sk-input__wrapper">
-                          <input type="number" min="50" max="1000" v-model.number="config.dischargeTime" id="discharge_time" name="discharge_time" spellcheck="false" class="sk-input sk--width-4rem">
-                          <div class="sk-input__affix" aria-hidden="true">
-                            <span class="sk-input__affix-text">µs</span>
-                          </div>
-                        </div>
-                      </div>
-      
-                      <div class="sk-form-group">
-                        <label class="sk-input__descriptor" for="integration_time">integration time</label>
-                        <div class="sk-input__wrapper">
-                          <input type="number" min="50" max="5000" v-model.number="config.integrationTime" id="integration_time" name="integration_time" spellcheck="false" class="sk-input sk--width-4rem">
-                          <div class="sk-input__affix" aria-hidden="true">
-                            <span class="sk-input__affix-text">µs</span>
-                          </div>
-                        </div>
-                      </div>
 
-                      <div class="sk-form-group">
-                        <label class="sk-input__descriptor" for="integration_slider">live patch integration time</label>
-                        <div class="sk-input__wrapper">
-                          <input
-                            type="range"
-                            id="integration_slider"
-                            min="50"
-                            max="5000"
-                            class="sk--flex-greedy"
-                            spellcheck="false"
-                            v-model.number="config.integrationTime"
-                            v-on:change="setIntegration($event.target.value)"
-                            v-bind:disabled="!configEnabled"
-                          >
-                        </div>
-                      </div>
+              <commands-section
+                v-bind:readable-handler="responseMessageHandler"
+                v-bind:writable-handler="writableHandler"
+              ></commands-section>
+            </div>
+          </section>
+        </div>
 
-                      <div class="sk-form-group">
-                        <span class="sk-input__descriptor">start trigger</span>
-                        <div class="sk--flex sk--flex-gap">
-                          <div class="sk-radio__wrapper">
-                            <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_comms" v-bind:value="0" class="sk-radio__input">
-                            <label for="start_trigger_comms" class="sk-radio__label">comms</label>
-                          </div>
-                          <div class="sk-radio__wrapper">
-                            <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_hardware" v-bind:value="1" class="sk-radio__input">
-                            <label for="start_trigger_hardware" class="sk-radio__label">hardware</label>
-                          </div>
-                          <div class="sk-radio__wrapper">
-                            <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_config" v-bind:value="2" class="sk-radio__input">
-                            <label for="start_trigger_config" class="sk-radio__label">config</label>
-                          </div>
-                        </div>
-                      </div>
+        <div class="sk--flex-basis-0 sk--flex-grow-2 sk--flex sk--flex-vertical sk--flex-gap">
+          <section class="sk-notice sk-notice--problem" v-if="false">
+            <h2 class="sk-notice__headline">The app failed to load.</h2>
+            <p class="sk-notice__details">A component of this app failed to load.</p>
+            <p class="sk-notice__details">Make sure JavaScript is enabled in your web browser.</p>
+          </section>
 
-                      <div class="sk-form-group">
-                        <span class="sk-input__descriptor">stop trigger</span>
-                        <div class="sk--flex sk--flex-gap">
-                          <div class="sk-radio__wrapper">
-                            <input type="radio" v-model.number="config.stopTrigger" name="stop_trigger" id="stop_trigger_comms" v-bind:value="0" class="sk-radio__input">
-                            <label for="stop_trigger_comms" class="sk-radio__label">comms</label>
-                          </div>
-                          <div class="sk-radio__wrapper">
-                            <input type="radio" v-model.number="config.stopTrigger" name="stop_trigger" id="stop_trigger_hardware" v-bind:value="1" class="sk-radio__input">
-                            <label for="stop_trigger_hardware" class="sk-radio__label">hardware</label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-      
-                    <fieldset class="sk-fieldset">
-                      <legend>LEDs</legend>
-      
-                      <div v-for="i in [1,2,3,4,5,6,7,8]" class="sk-form-group">
-                        <div class="sk-input__wrapper">
-                          <div class="sk-input__affix">
-                            <label v-bind:for="'led' + i" class="sk-input__affix-text">CH{{ i }}</label>
-                          </div>
-                          <input type="number" min="0" max="100" v-model.number="config.leds[i - 1]" v-bind:id="'led' + i" v-bind:name="'led' + i" class="sk-input sk--width-4rem">
-                          <div class="sk-input__affix">
-                            <span class="sk-input__affix-text">%</span>
-                          </div>
-                        </div>
-                      </div>
-                    </fieldset>
-                  </form>
+          <section class="sk-notice sk-notice--problem" v-if="!isSerialSupported">
+            <h2 class="sk-notice__headline">Serial is not supported.</h2>
+            <p class="sk-notice__details">This app needs to connect to a serial port, but this browser does not support connecting to serial ports.</p>
+            <p class="sk-notice__details">Use a browser that supports serial connections. For example, the latest Microsoft Edge.</p>
+            <a href="documentation/errors/serial-is-not-supported/#serial-is-not-supported-error" target="_blank">Help</a>
+          </section>
+
+          <fatal-error-message v-if="fatalError" v-bind:error="fatalError"></fatal-error-message>
+
+          <live-view-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></live-view-panel>
+
+          <raw-data-panel v-bind:readable-handler="responseMessageHandler" v-bind:writable-handler="writableHandler"></raw-data-panel>
+
+          <div class="app-collapsible__wrapper">
+            <input id="show_advanced" class="app-collapsible__toggle" type="checkbox">
+            <label for="show_advanced">show advanced</label>
+            <div class="app-collapsible__content sk--flex sk--flex-vertical sk--flex-gap">
+              <section class="sk-panel">
+                <div class="sk-panel__header">
+                  <h2 class="sk-panel__title">Config</h2>
+                  <inline-status v-if="configStatus" v-bind:kind="configStatus.kind" v-bind:details="configStatus.details"></inline-status>
+                  <div>
+                    <input type="checkbox" id="config_enabled" v-model="configEnabled">
+                    <label for="config_enabled">allow config changes</label>
+                  </div>
+                  <div class="sk-button-group">
+                    <button class="sk-button sk-button--secondary" v-on:click.prevent="getConfig" v-bind:disabled="!serialPort">get config</button>
+                    <button class="sk-button sk-button--secondary" v-on:click.prevent="setConfig" v-bind:disabled="!configEnabled || !isConfigValid">set config</button>
+                  </div>
+                  <div>
+                    <button class="sk-button sk-button--primary" v-on:click.prevent="saveConfigFile" v-bind:disabled="!isConfigValid">save file</button>
+                  </div>
                 </div>
-              </div>
-            </section>
+                <div class="sk-panel__body">
+                  <div class="sk-dropzone sk--padding-1rem sk--seethrough sk--flex sk--flex-vertical sk--flex-gap" @dragover.prevent="" @drop.prevent="handleConfigDrop">
+                    <span style="text-align:center">Drag and drop a config file</span>
+                    <form class="sk-form sk--flex sk--flex-gap sk--flex-wrap sk--flex-space-items-evenly">
+                      <div>
+                        <div class="sk-form-group">
+                          <label class="sk-input__descriptor" for="window_size">window size</label>
+                          <div class="sk-input__wrapper">
+                            <input type="number" min="0" max="3000" v-model.number="config.windowSize" id="window_size" name="window_size" spellcheck="false" class="sk-input sk--width-4rem">
+                            <div class="sk-input__affix" aria-hidden="true">
+                              <span class="sk-input__affix-text">ms</span>
+                            </div>
+                          </div>
+                        </div>
+        
+                        <div class="sk-form-group">
+                          <label class="sk-input__descriptor" for="discharge_time">discharge time</label>
+                          <div class="sk-input__wrapper">
+                            <input type="number" min="50" max="1000" v-model.number="config.dischargeTime" id="discharge_time" name="discharge_time" spellcheck="false" class="sk-input sk--width-4rem">
+                            <div class="sk-input__affix" aria-hidden="true">
+                              <span class="sk-input__affix-text">µs</span>
+                            </div>
+                          </div>
+                        </div>
+        
+                        <div class="sk-form-group">
+                          <label class="sk-input__descriptor" for="integration_time">integration time</label>
+                          <div class="sk-input__wrapper">
+                            <input type="number" min="50" max="5000" v-model.number="config.integrationTime" id="integration_time" name="integration_time" spellcheck="false" class="sk-input sk--width-4rem">
+                            <div class="sk-input__affix" aria-hidden="true">
+                              <span class="sk-input__affix-text">µs</span>
+                            </div>
+                          </div>
+                        </div>
 
-            <debug-panel
-              v-bind:debug-readable-handler="debugMessageHandler"
-              v-bind:response-readable-handler="responseMessageHandler"
-              v-bind:writable-handler="writableHandler"
-            ></debug-panel>
+                        <div class="sk-form-group">
+                          <span class="sk-input__descriptor">start trigger</span>
+                          <div class="sk--flex sk--flex-gap">
+                            <div class="sk-radio__wrapper">
+                              <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_comms" v-bind:value="0" class="sk-radio__input">
+                              <label for="start_trigger_comms" class="sk-radio__label">comms</label>
+                            </div>
+                            <div class="sk-radio__wrapper">
+                              <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_hardware" v-bind:value="1" class="sk-radio__input">
+                              <label for="start_trigger_hardware" class="sk-radio__label">hardware</label>
+                            </div>
+                            <div class="sk-radio__wrapper">
+                              <input type="radio" v-model.number="config.startTrigger" name="start_trigger" id="start_trigger_config" v-bind:value="2" class="sk-radio__input">
+                              <label for="start_trigger_config" class="sk-radio__label">config</label>
+                            </div>
+                          </div>
+                        </div>
 
+                        <div class="sk-form-group">
+                          <span class="sk-input__descriptor">stop trigger</span>
+                          <div class="sk--flex sk--flex-gap">
+                            <div class="sk-radio__wrapper">
+                              <input type="radio" v-model.number="config.stopTrigger" name="stop_trigger" id="stop_trigger_comms" v-bind:value="0" class="sk-radio__input">
+                              <label for="stop_trigger_comms" class="sk-radio__label">comms</label>
+                            </div>
+                            <div class="sk-radio__wrapper">
+                              <input type="radio" v-model.number="config.stopTrigger" name="stop_trigger" id="stop_trigger_hardware" v-bind:value="1" class="sk-radio__input">
+                              <label for="stop_trigger_hardware" class="sk-radio__label">hardware</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+        
+                      <fieldset class="sk-fieldset">
+                        <legend>LEDs</legend>
+        
+                        <div v-for="i in [1,2,3,4,5,6,7,8]" class="sk-form-group">
+                          <div class="sk-input__wrapper">
+                            <div class="sk-input__affix">
+                              <label v-bind:for="'led' + i" class="sk-input__affix-text">CH{{ i }}</label>
+                            </div>
+                            <input type="number" min="0" max="100" v-model.number="config.leds[i - 1]" v-bind:id="'led' + i" v-bind:name="'led' + i" class="sk-input sk--width-4rem">
+                            <div class="sk-input__affix">
+                              <span class="sk-input__affix-text">%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </form>
+                  </div>
+                </div>
+              </section>
+
+              <section class="sk-panel">
+                <div class="sk-panel__header">
+                  <h2 class="sk-panel__title">Bootloader</h2>
+                  <inline-status v-if="bootloaderStatus" v-bind:kind="bootloaderStatus.kind" v-bind:details="bootloaderStatus.details"></inline-status>
+                  <div>
+                    <button @click="program" class="sk-button sk-button--primary" v-bind:disabled="!(serialPort && bootloaderFile)">program</button>
+                  </div>
+                </div>
+                <div class="sk-panel__body">
+                  <div v-if="!bootloaderFile" @dragover.prevent="" @drop.prevent="handleDrop" class="sk-dropzone sk-panel__filler">
+                    Drag and drop a file here
+                  </div>
+                  <file-details v-if="bootloaderFile" v-bind:file="bootloaderFile"></file-details>
+                </div>
+              </section>
+
+              <debug-panel
+                v-bind:debug-readable-handler="debugMessageHandler"
+              ></debug-panel>
+
+            </div>
           </div>
         </div>
       </main>
-
-      <footer class="sk-footer">
-        <div class="sk-footer__wrapper sk--centre-panel-l">
-          <section class="sk-footer__section">
-            <h3 class="sk-footer__section-header">Contact</h3>
-            <address>
-              Skalene,<br>
-              William James House,<br>
-              Cowley Road,<br>
-              Cambridge,<br>
-              CB4 0WX<br>
-              United Kingdom
-            </address>
-            <p><a href="https://www.skalene.com">skalene.com</a></p>
-          </section>
-          <section class="sk-footer__section">
-            <h3 class="sk-footer__section-header">Help</h3>
-            <p><a href="/documentation/" target="_blank">Documentation</a></p>
-            <p>alex@skalene.com</p>
-          </section>
-        </div>
-      </footer>
     </div>
+
+    <footer class="sk-footer">
+      <div class="sk-footer__wrapper sk--centre-panel-xl">
+        <section class="sk-footer__section">
+          <h3 class="sk-footer__section-header">Contact</h3>
+          <address>
+            Skalene,<br>
+            William James House,<br>
+            Cowley Road,<br>
+            Cambridge,<br>
+            CB4 0WX<br>
+            United Kingdom
+          </address>
+          <p><a href="https://www.skalene.com">skalene.com</a></p>
+        </section>
+        <section class="sk-footer__section">
+          <h3 class="sk-footer__section-header">Help</h3>
+          <p><a href="/documentation/" target="_blank">Documentation</a></p>
+          <p>alex@skalene.com</p>
+        </section>
+      </div>
+    </footer>
+
     <script src="app.js"></script>
   </body>
 </html>
