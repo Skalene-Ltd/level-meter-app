@@ -20,7 +20,8 @@
   "dependencies": {
     "@11ty/eleventy": "^0.12.1",
     "markdown-it-anchor": "^8.1.2",
-    "npm": "^6.14.14"
+    "npm": "^6.14.14",
+    "regression": "^2.0.1"
   },
   "devDependencies": {
     "netlify-cli": "^2.37.0"
