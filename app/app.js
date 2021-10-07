@@ -908,7 +908,7 @@ app.component('raw-data-panel', {
     progress: null,
     error: null,
     fileName: null,
-    fileContent: null
+    rawData: null
   } },
   computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
   template: `<section class="sk-panel">
@@ -937,10 +937,20 @@ app.component('raw-data-panel', {
   </section>`,
   methods: {
     downloadRaw() {
+      let fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
+        .map(i => 'Channel ' + i)
+        .join(', ')
+        + '\r\n';
+      for (let i = 0; i < Math.ceil(rawData.length / 8); i++) {
+        fileContent += rawData
+          .slice(i * 8, i * 8 + 8)
+          .join(', ')
+          + '\r\n';
+      }
       const el = document.createElement('a');
       el.setAttribute(
         'href',
-        'data:text/csv;charset=utf-8,' + encodeURIComponent(this.fileContent)
+        'data:text/csv;charset=utf-8,' + encodeURIComponent(fileContent)
       );
       el.setAttribute('download', this.fileName);
       el.style.display = 'none';
@@ -954,23 +964,13 @@ app.component('raw-data-panel', {
         if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
-        let rawData = [];
+        this.rawData = [];
         for (const i of [...Array(256).keys()]) {
           this.progress = i;
           const result = await querySkalene(`11 ${i}`, this.readableHandler, this.writableHandler);
-          rawData = rawData.concat(result.split(' ').slice(2, -1));
+          this.rawData = this.rawData.concat(result.split(' ').slice(2, -1));
         }
         this.progress = 256;
-        this.fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
-          .map(i => 'Channel ' + i)
-          .join(', ')
-          + '\r\n';
-        for (let i = 0; i < Math.ceil(rawData.length / 8); i++) {
-          this.fileContent += rawData
-            .slice(i * 8, i * 8 + 8)
-            .join(', ')
-            + '\r\n';
-        }
         this.fileName = 'raw_' +
           new Date()
             .toLocaleString()
@@ -981,7 +981,6 @@ app.component('raw-data-panel', {
         this.progress = null;
       } catch (e) {
         this.progress = null;
-        this.fileContent = '';
         console.error(e);
         this.error = e;
       }
