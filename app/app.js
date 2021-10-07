@@ -925,14 +925,14 @@ app.component('raw-data-panel', {
       </div>
     </div>
     <div class="sk-panel__body">
-      <div v-if="!fileContent || progress !== null" class="sk-panel__empty">no data</div>
-      <div v-if="fileContent && progress === null" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
+      <div v-if="ready && rawData" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
         <div aria-hidden="true" style="font-size:3rem">📗</div>
         <div class="sk--flex-auto">
           {{ fileName }}
           <button v-on:click.prevent="downloadRaw" class="sk-button sk-button--primary">⭳ download</button>
         </div>
       </div>
+      <div v-else class="sk-panel__empty">no data</div>
     </div>
   </section>`,
   methods: {
@@ -941,8 +941,8 @@ app.component('raw-data-panel', {
         .map(i => 'Channel ' + i)
         .join(', ')
         + '\r\n';
-      for (let i = 0; i < Math.ceil(rawData.length / 8); i++) {
-        fileContent += rawData
+      for (let i = 0; i < Math.ceil(this.rawData.length / 8); i++) {
+        fileContent += this.rawData
           .slice(i * 8, i * 8 + 8)
           .join(', ')
           + '\r\n';
