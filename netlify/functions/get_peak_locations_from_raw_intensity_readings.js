@@ -38,10 +38,16 @@ exports.handler = async function(event, _context) {
     channels[i] = raw.filter((_element, index) => (index % 8) === i );
   }
 
+  /* for each channel, convert the array of values to a 2d array of
+  ** [[0, value], [1, value] ... ]
+  ** the remove all values until the first non-zero value. ie remove
+  ** leading zeroes */
   const cubics = channels.map(values => 
     regression.polynomial(
-      values.map((element, index) =>
-        [index, element]),
+      values
+        .map((element, index) => [index, element])
+        // actual magic that strips off leading zeroes
+        .filter((last => v => last = last || v[1])(false)),
       { order: 3 }
     ).equation
   );
