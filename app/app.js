@@ -908,7 +908,8 @@ app.component('raw-data-panel', {
     progress: null,
     error: null,
     fileName: null,
-    rawData: null
+    rawData: null,
+    analysis: null
   } },
   computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
   template: `<section class="sk-panel">
@@ -918,6 +919,10 @@ app.component('raw-data-panel', {
       <inline-status v-if="error" v-bind:kind="'problem'" v-bind:details="error"></inline-status>
       <div v-else-if="progress !== null">
         <progress v-bind:value="progress" max="256"></progress>
+      </div>
+
+      <div>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="analyse" v-bind:disabled="!(ready && rawData)">analyse</button>
       </div>
 
       <div>
@@ -933,6 +938,12 @@ app.component('raw-data-panel', {
         </div>
       </div>
       <div v-else class="sk-panel__empty">no data</div>
+    </div>
+    <div class="sk-panel__body">
+      <div v-if="ready && analysis" class="app-results-grid">
+        <span v-for="result in analysis" class="sk--code">{{ result === null ? 'inconclusive' : result }}</span>
+      </div>
+      <div v-else class="sk-panel__empty">no analysis</div>
     </div>
   </section>`,
   methods: {
@@ -958,6 +969,20 @@ app.component('raw-data-panel', {
       el.click();
       document.body.removeChild(el);
     },
+    async analyse() {
+      this.analysis = await fetch('/.netlify/functions/get_peak_locations_from_raw_intensity_readings', {
+        method: 'POST',
+        body: JSON.stringify(this.rawData)
+      })
+        .then(res => res.json())
+        .catch(error => {
+          console.error(error);
+          const userFriendlyError = new Error('analysis failed');
+          // TODO: help link
+          console.error(userFriendlyError);
+          this.error = userFriendlyError;
+        })
+    },
     async getRaw() {
       try {
         this.error = null;
@@ -979,8 +1004,10 @@ app.component('raw-data-panel', {
             .replaceAll(',', '') +
           '.csv';
         this.progress = null;
+        this.analysis = null;
       } catch (e) {
         this.progress = null;
+        this.analysis = null;
         console.error(e);
         this.error = e;
       }
