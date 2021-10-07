@@ -108,3 +108,5 @@ app/documentation
 
 # Local Netlify folder
 .netlify
+
+test-data
