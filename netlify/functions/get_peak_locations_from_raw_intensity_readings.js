@@ -46,19 +46,35 @@ exports.handler = async function(event, _context) {
   }
 
   /* for each channel, convert the array of values to a 2d array of
-  ** [[0, value], [1, value] ... ]
-  ** the remove all values until the first non-zero value. ie remove
+  ** [[0, value], [1, value] ... ] */
+  const channelPoints = channels.map(values =>
+    values.map((element, index) => [index, element -0])
+  );
+
+  // get the mean value of each channel, to use later
+  const channelMeans = channelPoints.map(channel =>
+    channel.reduce(
+      (previous, current) => previous + current[1],
+      0
+    ) / channel.length
+  );
+
+  /* remove all leading and trailing zeroes and then remove any points
+  ** that are below the mean. this means we only get the peak */
+  const channelPointsOfInterest = channelPoints.map((points, index) => points
+    .filter((last => v => last = last || v[1])(false))
+    // and strip off trailing zeroes
+    .reverse()
+    .filter((last => v => last = last || v[1])(false))
+    .reverse()
+    .filter(point => point[1] > channelMeans[index])
+  );
+
+  /* the remove all values until the first non-zero value. ie remove
   ** leading zeroes. also strip trailing zeroes the same way */
-  const cubics = channels.map(values => 
+  const cubics = channelPointsOfInterest.map(values => 
     regression.polynomial(
-      values
-        .map((element, index) => [index, element - 0])
-        // actual magic that strips off leading zeroes
-        .filter((last => v => last = last || v[1])(false))
-        // and strip off trailing zeroes
-        .reverse()
-        .filter((last => v => last = last || v[1])(false))
-        .reverse(),
+      values,
       { order: 3 }
     ).equation
   );
