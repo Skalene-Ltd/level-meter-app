@@ -1,6 +1,7 @@
 const regression = require('regression');
 
 const differentiatePolynomial = coefficients => coefficients
+  .flat() // copy array because reverse() mutates
   .reverse()
   .map((element, index) => index * element)
   .reverse()
@@ -8,10 +9,16 @@ const differentiatePolynomial = coefficients => coefficients
 
 const solveQuadratic = coefficients => {
   const [a, b, c] = coefficients;
-  return [
-    (-b + Math.sqrt(b**2 - 4*a*c)) / (2*a),
-    (-b - Math.sqrt(b**2 - 4*a*c)) / (2*a)
-  ].filter(Number.isFinite);
+  if (a) {
+    return [
+      (-b + Math.sqrt(b**2 - 4*a*c)) / (2*a),
+      (-b - Math.sqrt(b**2 - 4*a*c)) / (2*a)
+    ].filter(Number.isFinite);
+  } else if (b) {
+    return [-c / b]
+  } else {
+    return []
+  }
 };
 
 exports.handler = async function(event, _context) {
@@ -26,13 +33,13 @@ exports.handler = async function(event, _context) {
     return { statusCode: 400, body: "request body wasn't an array" };
   }
   
-  if (!raw.length === 2048) {
+  if (raw.length !== 32768) {
     return { statusCode: 400, body: "array in request body wasn't 2048 long" };
   }
 
-  /* there are eight channels. each will be an array of 256 values.
-  ** reshape the raw array from a 1-dimensional, 2048-long array, to
-  ** a 2d, 8 x 256 array */
+  /* there are eight channels. each will be an array of 4096 values.
+  ** reshape the raw array from a 1-dimensional, 32768-long array, to
+  ** a 2d, 8 x 4096 array */
   let channels = Array(8).fill([]);
   for (let i = 0; i < 8; i++) {
     channels[i] = raw.filter((_element, index) => (index % 8) === i );
@@ -41,13 +48,17 @@ exports.handler = async function(event, _context) {
   /* for each channel, convert the array of values to a 2d array of
   ** [[0, value], [1, value] ... ]
   ** the remove all values until the first non-zero value. ie remove
-  ** leading zeroes */
+  ** leading zeroes. also strip trailing zeroes the same way */
   const cubics = channels.map(values => 
     regression.polynomial(
       values
-        .map((element, index) => [index, element])
+        .map((element, index) => [index, element - 0])
         // actual magic that strips off leading zeroes
-        .filter((last => v => last = last || v[1])(false)),
+        .filter((last => v => last = last || v[1])(false))
+        // and strip off trailing zeroes
+        .reverse()
+        .filter((last => v => last = last || v[1])(false))
+        .reverse(),
       { order: 3 }
     ).equation
   );
