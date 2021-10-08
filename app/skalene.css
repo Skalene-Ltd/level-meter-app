@@ -205,10 +205,12 @@ html, body {
   display: block;
   height: 4rem;
   padding: 1rem;
-  border: 4px dotted var(--secondary-bg);
+  line-height: 2rem;
   color: var(--secondary-fg);
   border-radius: 1rem;
   text-align: center;
+  background: rgb(0,0,0,0.02);
+  opacity: 0.6;
 }
 
 .sk-panel__filler {
