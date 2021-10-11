@@ -20,3 +20,24 @@ test('creates correct points from array of base-ten strings', () => {
     [40, 17]
   ]);
 });
+
+test('differentiates simple cubic', () => {
+  // x^3 + x^2 + x + 1
+  const input = [1, 1, 1, 1];
+  expect(lib.differentiatePolynomial(input))
+    .toEqual([3, 2, 1]);
+});
+
+test('differentiates another cubic', () => {
+  // 5x^3 + 0x^2 + 3x + 0
+  const input = [5, 0, 3, 0];
+  expect(lib.differentiatePolynomial(input))
+    .toEqual([15, 0, 3]);
+});
+
+test('differentiates a quadratic', () => {
+  // 2.3x^2 - 2x -8
+  const input = [2.3, -2, 8];
+  expect(lib.differentiatePolynomial(input))
+    .toEqual([4.6, -2]);
+});
