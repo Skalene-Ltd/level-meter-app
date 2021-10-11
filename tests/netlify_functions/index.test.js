@@ -36,7 +36,7 @@ test('differentiates another cubic', () => {
 });
 
 test('differentiates a quadratic', () => {
-  // 2.3x^2 - 2x -8
+  // 2.3x^2 - 2x + 8
   const input = [2.3, -2, 8];
   expect(lib.differentiatePolynomial(input))
     .toEqual([4.6, -2]);
