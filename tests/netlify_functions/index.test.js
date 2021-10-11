@@ -41,3 +41,13 @@ test('differentiates a quadratic', () => {
   expect(lib.differentiatePolynomial(input))
     .toEqual([4.6, -2]);
 });
+
+test('solves a quadratic', () => {
+  // x^2 - 3x - 8
+  const input = [1, -3, -8];
+  const result = lib.solveQuadratic(input).sort() // don't care about order;
+  const expectedResult = [-1.7016, 4.7016];
+  result.forEach((value, index) => {
+    expect(value).toBeCloseTo(expectedResult[index]);
+  });
+});
