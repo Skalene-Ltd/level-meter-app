@@ -34,5 +34,5 @@ exports.stripTrailingZeroPoints = points => points
   .reverse();
 
 exports.fitCubic = points => regression
-  .polynomial(points, { order: 3 })
+  .polynomial(points, { order: 3, precision: 4 })
   .equation;
