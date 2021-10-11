@@ -94,3 +94,33 @@ describe('stripLeadingZeroPoints', () => {
       ]);
   });
 });
+
+describe('stripTrailingZeroPoints', () => {
+  test('leaves an array with no trailing zeroes untouched', () => {
+    const input = [
+      [0, 0],
+      [10, 15],
+      [20, 0],
+      [30, 57]
+    ];
+    expect(lib.stripTrailingZeroPoints(input))
+      .toEqual(input);
+  });
+
+  test('strips a trailing zero', () => {
+    const input = [
+      [0, 0],
+      [10, 15],
+      [20, 0],
+      [30, 57],
+      [40, 0]
+    ];
+    expect(lib.stripTrailingZeroPoints(input))
+      .toEqual([
+        [0, 0],
+        [10, 15],
+        [20, 0],
+        [30, 57]
+      ]);
+  });
+});
