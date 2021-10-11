@@ -941,7 +941,7 @@ app.component('raw-data-panel', {
     </div>
     <div class="sk-panel__body">
       <div v-if="ready && analysis" class="app-results-grid">
-        <span v-for="result in analysis" class="sk--code">{{ result === null ? 'inconclusive' : result }}</span>
+        <span v-for="result in analysis" class="sk--code">{{ result === null ? 'inconclusive' : result + ' ms' }}</span>
       </div>
       <div v-else class="sk-panel__empty">no analysis</div>
     </div>
