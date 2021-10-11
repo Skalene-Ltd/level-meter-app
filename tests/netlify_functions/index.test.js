@@ -67,3 +67,30 @@ describe('solveQuadratic', () => {
     expect(result[0]).toBeCloseTo(3.5);
   });
 });
+
+describe('stripLeadingZeroPoints', () => {
+  test('leaves an array with no zeroes untouched', () => {
+    const input = [
+      [0, 5],
+      [10, 0],
+      [20, 8]
+    ];
+    expect(lib.stripLeadingZeroPoints(input))
+      .toEqual(input);
+  });
+
+  test('strips three leading zeroes', () => {
+    const input = [
+      [0, 0],
+      [10, 0],
+      [20, 0],
+      [30, 17],
+      [40, 0]
+    ];
+    expect(lib.stripLeadingZeroPoints(input))
+      .toEqual([
+        [30, 17],
+        [40, 0]
+      ]);
+  });
+});
