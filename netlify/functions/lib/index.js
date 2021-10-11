@@ -44,3 +44,8 @@ exports.filterPointsGreaterThanMean = points => {
   );
   return points.filter(point => point[1] > mean);
 };
+
+exports.getLinearFunctionFromCoefficients = coefficients => {
+  const [m, c] = coefficients;
+  return x => (m*x) + c;
+};

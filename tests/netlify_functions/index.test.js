@@ -167,3 +167,13 @@ describe('filterPointsGreaterThanMean', () => {
     });
   });
 });
+
+describe('getLinearFunctionFromCoefficients', () => {
+  test('creates linear function y = x', () => {
+    const coefficients = [1, 0];
+    const result = lib.getLinearFunctionFromCoefficients(coefficients);
+    expect(result(0)).toBe(0);
+    expect(result(8)).toBe(8);
+    expect(result(-23.4)).toBeCloseTo(-23.4);
+  });
+});
