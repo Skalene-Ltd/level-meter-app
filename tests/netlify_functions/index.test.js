@@ -124,3 +124,23 @@ describe('stripTrailingZeroPoints', () => {
       ]);
   });
 });
+
+describe('fitCubic', () => {
+  test('fits a known cubic', () => {
+    // -0.0006x^3 + 0.0292x^2 + 0.3353x + 4.881
+    const points = [
+      [0, 4.881],
+      [10, 10.554],
+      [20, 18.467],
+      [30, 25.02],
+      [40, 26.613]
+    ];
+    const result = lib.fitCubic(points);
+    result.forEach((coefficient, index) => {
+      expect(coefficient).toBeCloseTo(
+        [-0.0006, 0.0292, 0.3353, 4.881][index],
+        4 // high precision
+      );
+    });
+  });
+});
