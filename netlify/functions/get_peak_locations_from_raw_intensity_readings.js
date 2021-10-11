@@ -88,9 +88,13 @@ exports.handler = async function(event, _context) {
     const [m, c] = secondDerivativeCoefficients; // y = mx + c
     const secondDerivative = x => (m*x) + c;
 
-    return solutions.filter(solution =>
-      Math.sign(secondDerivative(solution)) === -1
-    )[0];
+    return solutions
+      // select only solutions where second derivative is negative, ie maxima
+      .filter(solution => Math.sign(secondDerivative(solution)) === -1 )
+      // should be 1 or 0 solutions. extract it or get undefined
+      [0]
+      // multiply by 10 ms
+      * 10;
   });
 
   return { statusCode: 200, body: JSON.stringify(maxima) };
