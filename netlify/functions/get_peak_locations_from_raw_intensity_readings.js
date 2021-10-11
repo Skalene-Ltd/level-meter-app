@@ -23,4 +23,31 @@ exports.handler = async function(event, _context) {
   for (let i = 0; i < 8; i++) {
     channels[i] = raw.filter((_element, index) => (index % 8) === i );
   }
+
+  const results = channels.map(channel => {
+    const points = lib.generatePointsAt10msIntervals(channel);
+
+    const dataPoints = lib.stripLeadingZeroPoints(
+      lib.stripTrailingZeroPoints(points)
+    );
+
+    const peakPoints = lib.filterPointsGreaterThanMean(dataPoints);
+
+    const cubicCoefficients = lib.fitCubic(peakPoints);
+    const differentialCoefficients = lib.differentiatePolynomial(cubicCoefficients);
+    const secondDifferentialCoefficients = lib.differentiatePolynomial(differentialCoefficients);
+    const secondDifferential = lib.getLinearFunctionFromCoefficients(secondDifferentialCoefficients);
+
+    const solutions = lib.solveQuadratic(differentialCoefficients);
+    const maxima = solutions.filter(solution => secondDifferential(solution) < 0);
+
+    // there should be 1 or 0 maxima
+    if (maxima.length) {
+      return maxima[0];
+    } else {
+      return null;
+    }
+  });
+
+  return { statusCode: 200, body: JSON.stringify(results) };
 };
