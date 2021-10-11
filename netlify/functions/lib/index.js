@@ -36,3 +36,11 @@ exports.stripTrailingZeroPoints = points => points
 exports.fitCubic = points => regression
   .polynomial(points, { order: 3, precision: 4 })
   .equation;
+
+exports.filterPointsGreaterThanMean = points => {
+  const mean = (
+    points.reduce((previous, current) => previous + current[1], 0)
+    / points.length
+  );
+  return points.filter(point => point[1] > mean);
+};

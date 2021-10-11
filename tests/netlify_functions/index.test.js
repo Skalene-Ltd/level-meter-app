@@ -144,3 +144,26 @@ describe('fitCubic', () => {
     });
   });
 });
+
+describe('filterPointsGreaterThanMean', () => {
+  test('removes the correct points', () => {
+    const input = [
+      [0, 12],
+      [10, 100],
+      [20, 52.354],
+      [30, 7.3478],
+      [40, 43.2]
+    ];
+    const results = lib.filterPointsGreaterThanMean(input);
+    const expectedResult = [
+      [10, 100],
+      [20, 52.354],
+      [40, 43.2]
+    ];
+    expect(results.length).toBe(expectedResult.length);
+    results.forEach((result, index) => {
+      expect(result[0]).toBe(expectedResult[index][0]);
+      expect(result[1]).toBeCloseTo(expectedResult[index][1]);
+    });
+  });
+});
