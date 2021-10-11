@@ -56,4 +56,14 @@ describe('solveQuadratic', () => {
       expect(value).toBeCloseTo(expectedResult[index]);
     });
   });
+
+  test('solves a straight line', () => {
+    // 0x^2 + 2x - 7
+    const input = [0, 2, -7];
+    const result = lib.solveQuadratic(input);
+    // should be only one root;
+    expect(result.length).toBe(1);
+    // result should be 3.5
+    expect(result[0]).toBeCloseTo(3.5);
+  });
 });
