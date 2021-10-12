@@ -110,3 +110,5 @@ app/documentation
 .netlify
 
 test-data
+
+*.tmp.*
