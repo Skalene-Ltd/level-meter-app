@@ -3,23 +3,35 @@ const lib = require('../../netlify/functions/lib');
 describe('generatePointsAt10msIntervals', () => {
   test('creates correct points from array of numbers', () => {
     const input = [5, 7, 2, 3];
-    expect(lib.generatePointsAt10msIntervals(input)).toEqual([
+    const result = lib.generatePointsAt10msIntervals(input);
+    const expectedResult = [
       [0, 5],
-      [10, 7],
-      [20, 2],
-      [30, 3]
-    ]);
+      [0.01, 7],
+      [0.02, 2],
+      [0.03, 3]
+    ];
+    expect(result.length).toBe(4);
+    expectedResult.forEach((expectedPoint, index) => {
+      expect(expectedPoint[0]).toBeCloseTo(result[index][0]);
+      expect(expectedPoint[0]).toBeCloseTo(result[index][0]);
+    });
   });
   
   test('creates correct points from array of base-ten strings', () => {
     const input = ['8', '1', '10', '03', '17'];
-    expect(lib.generatePointsAt10msIntervals(input)).toEqual([
+    const result = lib.generatePointsAt10msIntervals(input);
+    const expectedResult = [
       [0, 8],
-      [10, 1],
-      [20, 10],
-      [30, 3],
-      [40, 17]
-    ]);
+      [0.01, 1],
+      [0.02, 10],
+      [0.03, 3],
+      [0.04, 17]
+    ];
+    expect(result.length).toBe(5);
+    expectedResult.forEach((expectedPoint, index) => {
+      expect(expectedPoint[0]).toBeCloseTo(result[index][0]);
+      expect(expectedPoint[0]).toBeCloseTo(result[index][0]);
+    });
   });
 });
 

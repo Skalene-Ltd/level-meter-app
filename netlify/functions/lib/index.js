@@ -1,7 +1,7 @@
 const regression = require('regression');
 
 exports.generatePointsAt10msIntervals = values =>
-  values.map((element, index) => [index * 10, element - 0]);
+  values.map((element, index) => [0.01 * index, element - 0]);
 
 exports.differentiatePolynomial = coefficients => coefficients
   .flat() // copy array because reverse() mutates

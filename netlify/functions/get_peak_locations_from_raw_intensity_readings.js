@@ -43,7 +43,7 @@ exports.handler = async function(event, _context) {
 
     // there should be 1 or 0 maxima
     if (maxima.length) {
-      return maxima[0];
+      return maxima[0] * 1000; // convert seconds to ms
     } else {
       return null;
     }
