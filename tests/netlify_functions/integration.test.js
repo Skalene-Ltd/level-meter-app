@@ -11,11 +11,9 @@ test('gets correct maximum for a known curve', async () => {
     .map(line => line.split(','))
     .flat()
     .slice(0, -1);
-  console.log(rawData.length);
   const payload = JSON.stringify(rawData);
   const response = await endpoint({ body: payload });
   const result = JSON.parse(response.body);
-  console.log(result);
   expect(result[0]).toBeGreaterThan(2500);
   expect(result[0]).toBeLessThan(3000);
 });
