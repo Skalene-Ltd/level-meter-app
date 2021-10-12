@@ -148,7 +148,8 @@ describe('fitCubic', () => {
       [40, 26.613]
     ];
     const result = lib.fitCubic(points);
-    result.forEach((coefficient, index) => {
+    expect(result.r2).toBeCloseTo(1);
+    result.equation.forEach((coefficient, index) => {
       expect(coefficient).toBeCloseTo(
         [-0.0006, 0.0292, 0.3353, 4.881][index],
         4 // high precision

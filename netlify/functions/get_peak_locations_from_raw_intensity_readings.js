@@ -33,8 +33,13 @@ exports.handler = async function(event, _context) {
 
     const peakPoints = lib.filterPointsGreaterThanMean(dataPoints);
 
-    const cubicCoefficients = lib.fitCubic(peakPoints);
-    const differentialCoefficients = lib.differentiatePolynomial(cubicCoefficients);
+    const { equation, r2 } = lib.fitCubic(peakPoints);
+
+    if (r2 < 0.8) {
+      return null;
+    }
+
+    const differentialCoefficients = lib.differentiatePolynomial(equation);
     const secondDifferentialCoefficients = lib.differentiatePolynomial(differentialCoefficients);
     const secondDifferential = lib.getLinearFunctionFromCoefficients(secondDifferentialCoefficients);
 
@@ -43,7 +48,7 @@ exports.handler = async function(event, _context) {
 
     // there should be 1 or 0 maxima
     if (maxima.length) {
-      return maxima[0] * 1000; // convert seconds to ms
+      return Math.round(maxima[0] * 1000); // convert seconds to ms
     } else {
       return null;
     }
