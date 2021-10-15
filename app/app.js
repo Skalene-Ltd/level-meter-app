@@ -940,10 +940,16 @@ app.component('raw-data-panel', {
       <div v-else class="sk-panel__empty">no data</div>
     </div>
     <div class="sk-panel__body">
-      <div v-if="ready && analysis" class="app-results-grid">
-        <span v-for="result in analysis" class="sk--code">{{ result === null ? 'inconclusive' : result + ' ms' }}</span>
+      <div v-if="ready && analysis" class="app-results-grid" style="height:12rem">
+        <div v-for="result in analysis">
+          <div v-if="result" style="text-align:center">
+            <span class="sk--code">{{ result.tPeak }} ms</span>
+            <div style='height:1rem' style="font-size:0.8rem">{{result.derivativeCoefficients[0]}}𝑡²+{{result.derivativeCoefficients[1]}}𝑡+{{result.derivativeCoefficients[2]}}</div>
+          </div>
+          <span v-else>inconclusive</span>
+        </div>
       </div>
-      <div v-else class="sk-panel__empty">no analysis</div>
+      <div v-else class="sk-panel__empty" style="height:12rem;line-height:10rem">no analysis</div>
     </div>
   </section>`,
   methods: {

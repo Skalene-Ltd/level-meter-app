@@ -39,16 +39,19 @@ exports.handler = async function(event, _context) {
       return null;
     }
 
-    const differentialCoefficients = lib.differentiatePolynomial(equation);
-    const secondDifferentialCoefficients = lib.differentiatePolynomial(differentialCoefficients);
+    const derivativeCoefficients = lib.differentiatePolynomial(equation);
+    const secondDifferentialCoefficients = lib.differentiatePolynomial(derivativeCoefficients);
     const secondDifferential = lib.getLinearFunctionFromCoefficients(secondDifferentialCoefficients);
 
-    const solutions = lib.solveQuadratic(differentialCoefficients);
+    const solutions = lib.solveQuadratic(derivativeCoefficients);
     const maxima = solutions.filter(solution => secondDifferential(solution) < 0);
 
     // there should be 1 or 0 maxima
     if (maxima.length) {
-      return Math.round(maxima[0] * 1000); // convert seconds to ms
+      return {
+        derivativeCoefficients: derivativeCoefficients.map(c => c.toFixed(1)),
+        tPeak: Math.round(maxima[0] * 1000)  // convert seconds to ms
+      };
     } else {
       return null;
     }
