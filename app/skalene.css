@@ -719,3 +719,16 @@ body.sk--Boneless main {
 .sk--Boneless footer > section li:not(:last-child) {
   margin-bottom: 1rem;
 }
+
+.sk--Boneless blockquote {
+  margin: 0;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--secondary-bg);
+  color: var(--secondary-fg);
+  box-shadow: inset 1ex 0 var(--secondary-shadow);
+}
+
+.sk--Boneless blockquote > :last-child {
+  margin-bottom: 0;
+}
