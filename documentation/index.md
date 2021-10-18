@@ -18,12 +18,13 @@ Before you use the app, make sure the device is plugged in and switched on.
 
 ## Control the device
 
-- [get data and results](features/data-and-results)
+- [get data and analyse it](features/data)
 - [use the sidebar controls](features/controls)
 - [view live data](features/live-data)
-- [config panel](features/config)
-- [bootloader panel](features/bootloader)
-- [debug panel](features/debug)
+- [get results from the device](features/results)
+- [change the device configuration](features/config)
+- [update the firmware](features/bootloader)
+- [view debug messages](features/debug)
 
 ---
 
