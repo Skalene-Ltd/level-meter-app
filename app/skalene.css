@@ -275,7 +275,32 @@ html, body {
 }
 
 .sk-button--waiting {
-  background: red;
+  color: transparent;
+  background: transparent;
+  position: relative;
+}
+
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.sk-button--waiting::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: inherit;
+  border-bottom: none;
+  animation-name: spin;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
 .sk-button-group {
