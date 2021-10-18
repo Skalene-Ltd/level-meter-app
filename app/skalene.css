@@ -209,8 +209,7 @@ html, body {
   color: var(--secondary-fg);
   border-radius: 1rem;
   text-align: center;
-  background: rgb(0,0,0,0.02);
-  opacity: 0.6;
+  background: rgb(50,50,50,0.02);
 }
 
 .sk-panel__filler {
