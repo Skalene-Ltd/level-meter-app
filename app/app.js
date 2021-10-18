@@ -922,11 +922,11 @@ app.component('raw-data-panel', {
       </div>
 
       <div>
-        <button class="sk-button sk-button--secondary" v-on:click.prevent="analyse" v-bind:disabled="!(ready && rawData)">analyse</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="getRaw" v-bind:disabled="!ready">retrieve raw data</button>
       </div>
 
       <div>
-        <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!ready">retrieve raw data</button>
+        <button class="sk-button sk-button--primary" v-on:click.prevent="analyse" v-bind:disabled="!(ready && rawData)">analyse</button>
       </div>
     </div>
     <div class="sk-panel__body">
