@@ -6,14 +6,14 @@
   --header-bg: #181b1f;
   --header-fg: #fbfcfd;
 
-	--secondary-bg: #f3f2f1;
-	--secondary-fg: #4b4540;
+	--secondary-bg: #F8F8F8;
+	--secondary-fg: #444;
 	--secondary-shadow: rgba(0, 0, 0, 0.05);
 
-  --secondary-interaction-bg: #fdfcfb;
-  --secondary-interaction-fg: #4b4540;
-	--secondary-interaction-hover-bg: #eeeceb;
-	--secondary-interaction-hover-fg: #211e1c;
+  --secondary-interaction-bg: #fcfcfc;
+  --secondary-interaction-fg: #4b4b4b;
+	--secondary-interaction-hover-bg: #eee;
+	--secondary-interaction-hover-fg: #222;
   --secondary-interaction-shadow: rgba(0,0,0,0.2);
 
   --primary-interaction-bg: #2e83dd;
