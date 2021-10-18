@@ -909,7 +909,8 @@ app.component('raw-data-panel', {
     error: null,
     fileName: null,
     rawData: null,
-    analysis: null
+    analysis: null,
+    isAnalysing: false
   } },
   computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
   template: `<section class="sk-panel">
@@ -926,7 +927,7 @@ app.component('raw-data-panel', {
       </div>
 
       <div>
-        <button class="sk-button sk-button--primary" v-on:click.prevent="analyse" v-bind:disabled="!(ready && rawData)">analyse</button>
+        <button class="sk-button sk-button--primary" v-bind:class="{ 'sk-button--waiting': isAnalysing }" v-on:click.prevent="analyse" v-bind:disabled="!(ready && rawData) || isAnalysing">analyse</button>
       </div>
     </div>
     <div class="sk-panel__body">
@@ -976,6 +977,7 @@ app.component('raw-data-panel', {
       document.body.removeChild(el);
     },
     async analyse() {
+      this.isAnalysing = true;
       this.analysis = await fetch('/.netlify/functions/get_peak_locations_from_raw_intensity_readings', {
         method: 'POST',
         body: JSON.stringify(this.rawData)
@@ -988,6 +990,7 @@ app.component('raw-data-panel', {
           console.error(userFriendlyError);
           this.error = userFriendlyError;
         })
+        .finally(() => { this.isAnalysing = false; });
     },
     async getRaw() {
       try {

@@ -274,6 +274,10 @@ html, body {
   opacity: 0.5;
 }
 
+.sk-button--waiting {
+  background: red;
+}
+
 .sk-button-group {
   display: flex;
 }
