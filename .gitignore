@@ -105,3 +105,10 @@ dist
 
 # eleventy built docs
 app/documentation
+
+# Local Netlify folder
+.netlify
+
+test-data
+
+*.tmp.*

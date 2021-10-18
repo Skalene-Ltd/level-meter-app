@@ -908,7 +908,9 @@ app.component('raw-data-panel', {
     progress: null,
     error: null,
     fileName: null,
-    fileContent: null
+    rawData: null,
+    analysis: null,
+    isAnalysing: false
   } },
   computed: { ready() { return Boolean(this.writableHandler && (this.progress === null)) } },
   template: `<section class="sk-panel">
@@ -921,26 +923,52 @@ app.component('raw-data-panel', {
       </div>
 
       <div>
-        <button class="sk-button sk-button--primary" v-on:click.prevent="getRaw" v-bind:disabled="!ready">retrieve raw data</button>
+        <button class="sk-button sk-button--secondary" v-on:click.prevent="getRaw" v-bind:disabled="!ready">retrieve raw data</button>
+      </div>
+
+      <div>
+        <button class="sk-button sk-button--primary" v-bind:class="{ 'sk-button--waiting': isAnalysing }" v-on:click.prevent="analyse" v-bind:disabled="!(ready && rawData) || isAnalysing">analyse</button>
       </div>
     </div>
     <div class="sk-panel__body">
-      <div v-if="!fileContent || progress !== null" class="sk-panel__empty">no data</div>
-      <div v-if="fileContent && progress === null" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
+      <div v-if="ready && rawData" class="sk--flex sk--flex-gap sk--flex-wrap sk--flex-vertical-centre-items">
         <div aria-hidden="true" style="font-size:3rem">📗</div>
         <div class="sk--flex-auto">
           {{ fileName }}
           <button v-on:click.prevent="downloadRaw" class="sk-button sk-button--primary">⭳ download</button>
         </div>
       </div>
+      <div v-else class="sk-panel__empty">no data</div>
+    </div>
+    <div class="sk-panel__body">
+      <div v-if="ready && analysis" class="app-results-grid" style="height:12rem">
+        <div v-for="result in analysis">
+          <div v-if="result" style="text-align:center">
+            <span class="sk--code">{{ result.tPeak }} ms</span>
+            <div style='height:1rem' style="font-size:0.8rem">{{result.derivativeCoefficients[0]}}𝑡²+{{result.derivativeCoefficients[1]}}𝑡+{{result.derivativeCoefficients[2]}}</div>
+          </div>
+          <span v-else>inconclusive</span>
+        </div>
+      </div>
+      <div v-else class="sk-panel__empty" style="height:12rem;line-height:10rem">no analysis</div>
     </div>
   </section>`,
   methods: {
     downloadRaw() {
+      let fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
+        .map(i => 'Channel ' + i)
+        .join(', ')
+        + '\r\n';
+      for (let i = 0; i < Math.ceil(this.rawData.length / 8); i++) {
+        fileContent += this.rawData
+          .slice(i * 8, i * 8 + 8)
+          .join(', ')
+          + '\r\n';
+      }
       const el = document.createElement('a');
       el.setAttribute(
         'href',
-        'data:text/csv;charset=utf-8,' + encodeURIComponent(this.fileContent)
+        'data:text/csv;charset=utf-8,' + encodeURIComponent(fileContent)
       );
       el.setAttribute('download', this.fileName);
       el.style.display = 'none';
@@ -948,29 +976,35 @@ app.component('raw-data-panel', {
       el.click();
       document.body.removeChild(el);
     },
+    async analyse() {
+      this.isAnalysing = true;
+      this.analysis = await fetch('/.netlify/functions/get_peak_locations_from_raw_intensity_readings', {
+        method: 'POST',
+        body: JSON.stringify(this.rawData)
+      })
+        .then(res => res.json())
+        .catch(error => {
+          console.error(error);
+          const userFriendlyError = new Error('analysis failed');
+          // TODO: help link
+          console.error(userFriendlyError);
+          this.error = userFriendlyError;
+        })
+        .finally(() => { this.isAnalysing = false; });
+    },
     async getRaw() {
       try {
         this.error = null;
         if (!this.writableHandler) {
           throw new Error('no serial port connected');
         }
-        let rawData = [];
+        this.rawData = [];
         for (const i of [...Array(256).keys()]) {
           this.progress = i;
           const result = await querySkalene(`11 ${i}`, this.readableHandler, this.writableHandler);
-          rawData = rawData.concat(result.split(' ').slice(2, -1));
+          this.rawData = this.rawData.concat(result.split(' ').slice(2, -1));
         }
         this.progress = 256;
-        this.fileContent = [1, 2, 3, 4, 5, 6, 7, 8]
-          .map(i => 'Channel ' + i)
-          .join(', ')
-          + '\r\n';
-        for (let i = 0; i < Math.ceil(rawData.length / 8); i++) {
-          this.fileContent += rawData
-            .slice(i * 8, i * 8 + 8)
-            .join(', ')
-            + '\r\n';
-        }
         this.fileName = 'raw_' +
           new Date()
             .toLocaleString()
@@ -979,9 +1013,10 @@ app.component('raw-data-panel', {
             .replaceAll(',', '') +
           '.csv';
         this.progress = null;
+        this.analysis = null;
       } catch (e) {
         this.progress = null;
-        this.fileContent = '';
+        this.analysis = null;
         console.error(e);
         this.error = e;
       }
